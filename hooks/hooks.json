@@ -1,0 +1,65 @@
+{
+  "description": "Compound-Science ambient hooks — auto-detect research context and inject relevant agents/skills without explicit invocation",
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/scripts/session-init.sh\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "You are a silent context detector for the Compound-Science plugin. Analyze the user's prompt for research-domain signals.\n\nClassify the prompt into zero or more of these categories (only if STRONGLY signaled — do not over-trigger):\n\n1. **IDENTIFICATION** — user mentions: identification, exclusion restriction, instrument, endogeneity, exogeneity, rank condition, relevance, IV, 2SLS, GMM, moment condition, overidentification\n2. **ESTIMATION** — user mentions: estimate, MLE, maximum likelihood, GMM, simulated method of moments, NFXP, MPEC, BLP, nested fixed point, convergence, optimizer, standard error, bootstrap, clustering\n3. **SIMULATION** — user mentions: Monte Carlo, DGP, data generating process, simulate, replication, power, size, coverage, RMSE, bias\n4. **PROOF** — user mentions: prove, theorem, lemma, proposition, existence, uniqueness, fixed point, contraction, regularity condition, sufficient condition\n5. **EQUILIBRIUM** — user mentions: Nash, equilibrium, best response, fixed point, game, strategic, auction, mechanism, entry\n6. **PIPELINE** — user mentions: reproducible, pipeline, Makefile, snakemake, DVC, replication package, workflow, DAG\n7. **DATA** — user mentions: merge, panel, cross-section, cleaning, imputation, outlier, missing, sample selection, attrition\n\nIf ONE category is detected, return a systemMessage with a 1-2 sentence context nudge. Examples:\n- IDENTIFICATION: \"Compound-Science: The `identification-critic` agent and `causal-inference` skill are available for this. Use `/identify` to formalize the argument.\"\n- ESTIMATION: \"Compound-Science: The `econometrician` and `numerical-auditor` agents can review this code. The `structural-modeling` skill has estimation patterns.\"\n- SIMULATION: \"Compound-Science: The `monte-carlo-designer` agent can help design this study. Use `/simulate` for a structured workflow.\"\n- PROOF: \"Compound-Science: The `mathematical-prover` agent can verify proof steps. The `equilibrium-analyst` can check existence/uniqueness.\"\n- PIPELINE: \"Compound-Science: The `pipeline-validator` and `reproducibility-checker` agents can audit this. The `reproducible-pipelines` skill has patterns.\"\n\nIf ZERO categories detected, return nothing (empty response, no systemMessage). Do NOT trigger on generic programming tasks, general questions, or when the user is clearly using other tools.\n\nCritical: Be CONSERVATIVE. Only trigger when domain-specific terminology is clearly present. False positives are worse than false negatives — an unwanted nudge every prompt will annoy the user.",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "You are a silent file-type detector for the Compound-Science plugin. A file was just written or edited.\n\nCheck the file path and content summary from $TOOL_INPUT.\n\nTrigger ONLY if the file is clearly a research artifact:\n\n1. **Python estimation code** (imports statsmodels, linearmodels, pyblp, scipy.optimize, jax, autograd; defines likelihood/moment functions; runs optimization) → systemMessage: \"Compound-Science: Consider running the `econometrician` and `numerical-auditor` agents on this estimation code.\"\n\n2. **Simulation/Monte Carlo code** (loops over replications, generates synthetic data, computes bias/RMSE/coverage) → systemMessage: \"Compound-Science: The `monte-carlo-designer` agent can review this simulation design.\"\n\n3. **LaTeX/Markdown proof or derivation** (.tex file with theorem/proof environments, or .md with mathematical derivations) → systemMessage: \"Compound-Science: The `mathematical-prover` agent can verify these derivation steps.\"\n\n4. **Data pipeline code** (Makefile, Snakefile, DVC file, or script with clear ETL/pipeline structure) → systemMessage: \"Compound-Science: The `pipeline-validator` can audit this for reproducibility.\"\n\n5. **R estimation code** (uses fixest, lfe, ivreg, AER, BLP, estimatr) → systemMessage: \"Compound-Science: The `econometrician` agent can review this estimation code.\"\n\nIf the file is generic code (web, CLI, config, etc.), return nothing. Be CONSERVATIVE — only trigger for clear research artifacts.\n\nNever trigger on: package.json, requirements.txt, README, config files, test files, CI/CD files, or anything in the plugin directory itself.",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "You are a completeness checker for the Compound-Science plugin. The agent is about to stop.\n\nCheck ONLY if the conversation involved research-domain work (estimation, simulation, proofs, data analysis). If it was generic programming, approve immediately.\n\nFor research-domain work, check:\n1. If estimation code was written — were standard errors addressed? Was convergence checked?\n2. If a simulation was designed — were seeds set for reproducibility? Was the DGP documented?\n3. If a proof was written — were regularity conditions stated?\n4. If data was cleaned/merged — were the merge results validated (duplicates, missing)?\n5. If results were produced — were they saved to a reproducible location?\n\nIf any critical step was missed, return:\n```json\n{\"decision\": \"block\", \"reason\": \"Compound-Science: [specific missing step]\", \"systemMessage\": \"Consider: [specific action]\"}\n```\n\nIf work looks complete OR was not research-domain, return:\n```json\n{\"decision\": \"approve\"}\n```\n\nBe PRAGMATIC — only block for genuinely missing critical steps, not nice-to-haves. The user knows their domain. Block at most once per session.",
+            "timeout": 15
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "Before context compaction, preserve critical research state. Scan the conversation for:\n\n1. **Identification strategy** being discussed — summarize the key exclusion restrictions, instruments, and assumptions\n2. **Estimation results** — preserve parameter estimates, standard errors, convergence status\n3. **Proof progress** — which steps are complete, which remain\n4. **Data pipeline state** — which stages are done, which are pending\n5. **Open methodological questions** — unresolved issues about specification, robustness, etc.\n\nReturn a systemMessage with a concise summary (max 200 words) of the research state that should persist through compaction. Only include items that are actually present in the conversation.\n\nIf the conversation has no research-domain content, return nothing.",
+            "timeout": 15
+          }
+        ]
+      }
+    ]
+  }
+}
