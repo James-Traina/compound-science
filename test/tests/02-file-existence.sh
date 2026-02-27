@@ -91,3 +91,18 @@ assert_count "hooks = 5" 5 "$actual_hooks"
 
 total=$((actual_agents + actual_commands + actual_skills + actual_hooks))
 assert_count "total components = 38" 38 "$total"
+
+group "README Count Cross-check"
+
+# Verify README's Component Counts table matches filesystem reality
+if python3 -c "
+import re, sys
+text = open('$PLUGIN_DIR/README.md').read()
+counts = {m.group(1): m.group(2) for m in re.finditer(r'(Agents|Commands|Skills|Hooks|Total)\D+?(\d+)', text)}
+actual = {'Agents': '$actual_agents', 'Commands': '$actual_commands', 'Skills': '$actual_skills', 'Hooks': '$actual_hooks', 'Total': '$total'}
+assert all(counts.get(k) == v for k, v in actual.items())
+" 2>/dev/null; then
+  pass "README counts match filesystem"
+else
+  must_fix "README counts match filesystem" "Component Counts table is stale"
+fi

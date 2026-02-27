@@ -3,9 +3,9 @@
 # Run all tests and generate a consolidated report.
 #
 # Usage:
-#   bash .test/run-all.sh              # Run all tests
-#   bash .test/run-all.sh 05 07        # Run specific test groups
-#   bash .test/run-all.sh --list       # List available tests
+#   bash test/run-all.sh              # Run all tests
+#   bash test/run-all.sh 05 07        # Run specific test groups
+#   bash test/run-all.sh --list       # List available tests
 
 set -euo pipefail
 
@@ -128,13 +128,7 @@ fi
 
 echo ""
 
-# Clean up old reports (keep only latest)
-latest=$(ls -t "$REPORT_DIR"/report-*.log 2>/dev/null | head -1)
-for rpt in "$REPORT_DIR"/report-*.log; do
-  [ "$rpt" != "$latest" ] && rm -f "$rpt"
-done
-
-echo "  Report: $latest"
+echo "  Report: $SHARED_REPORT"
 echo ""
 
 # Exit with failure if must-fix issues exist

@@ -72,15 +72,15 @@ This plugin works alongside: pr-review-toolkit (generic code review), commit-com
 ## Development
 
 ### Testing
-- Run: `bash .test/run-all.sh` (286 tests across 10 groups)
-- Selective: `bash .test/run-all.sh 07` runs a single group; `--list` shows all groups
-- Reports are gitignored at `.test/reports/`
+- Run: `bash test/run-all.sh` (235 tests across 8 groups)
+- Selective: `bash test/run-all.sh 07` runs a single group; `--list` shows all groups
+- Reports are gitignored at `test/reports/`
 
 ### Critical Invariants
 - **Flat repo structure**: `.claude-plugin/plugin.json` must be at repo root — not nested in a subdirectory. `claude plugin install` won't find it otherwise.
 - **Hook wrapper format**: `hooks.json` requires the `{"description":"...","hooks":{...}}` envelope. Missing the outer wrapper silently disables all hooks.
 - **grep -P unavailable on macOS**: Use `python3 -c "import re; ..."` for Perl-compatible regex. All QA scripts avoid `grep -P`.
-- **QA self-scanning exclusions**: When the plugin root is the repo root, content greps must use `--exclude-dir=.test,.ralph,.serena,.git,.claude` to avoid false positives from test fixtures.
+- **QA self-scanning exclusions**: When the plugin root is the repo root, content greps must use `--exclude-dir=test,.ralph,.serena,.git,.claude` to avoid false positives from test fixtures.
 - **Chain command frontmatter**: `/lfg` and `/slfg` use `disable-model-invocation: true` so they delegate to sub-commands without an extra model call.
 
 ## Domain Keywords

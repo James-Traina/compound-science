@@ -55,12 +55,6 @@ for dir in "$PLUGIN_DIR"/skills/*/; do
   if [ -f "$file" ] && head -1 "$file" | grep -q '^---'; then
     pass "skill $name has frontmatter"
   elif [ -f "$file" ]; then
-    # Skills may not require frontmatter — check if it has meaningful content
-    lines=$(wc -l < "$file" | tr -d ' ')
-    if [ "$lines" -gt 20 ]; then
-      pass "skill $name has content ($lines lines, no frontmatter)"
-    else
-      should_fix "skill $name has frontmatter" "only $lines lines and no frontmatter"
-    fi
+    must_fix "skill $name has frontmatter" "must start with ---"
   fi
 done

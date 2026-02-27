@@ -1,5 +1,5 @@
 #!/bin/bash
-# Test Group 10: Hook prompt content covers design requirements
+# Test Group 8: Hook prompt content covers design requirements
 source "$(dirname "$0")/../lib/assert.sh"
 
 HOOKS_FILE="$PLUGIN_DIR/hooks/hooks.json"
