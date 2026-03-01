@@ -2,6 +2,7 @@
 name: monte-carlo-designer
 description: "Designs Monte Carlo simulation studies for evaluating estimator finite-sample properties. Use when you need to design a simulation to compare estimators, calculate power for a research design, evaluate size and coverage of confidence intervals, set up a parameter grid for sensitivity analysis, or structure code for running and tabulating simulation results."
 model: sonnet
+tools: Read, Grep, Glob, Bash, WebSearch, WebFetch
 ---
 
 <examples>

@@ -2,6 +2,7 @@
 name: reproducibility-checker
 description: "Pre-submission reproducibility verification for replication packages: checks whether the full analysis reproduces from the package, whether all data sources are documented and accessible, whether the computational environment is fully specified, whether output tables and figures match the manuscript, and whether hidden dependencies exist. Use when preparing to submit a replication package to a journal, verifying a co-author's package, or conducting a pre-submission dry run."
 model: sonnet
+tools: Read, Grep, Glob, Bash
 ---
 
 <examples>

@@ -2,6 +2,7 @@
 name: dgp-architect
 description: "Formalizes data generating processes from structural economic models, translating theory into simulable code. Use when you need to turn a theoretical model into a working simulation, calibrate DGP parameters to match empirical moments, verify that generated data satisfies model assumptions, build equilibrium solvers into a DGP, or design DGP variants for robustness checks."
 model: sonnet
+tools: Read, Grep, Glob, Bash, WebSearch, WebFetch
 ---
 
 <examples>

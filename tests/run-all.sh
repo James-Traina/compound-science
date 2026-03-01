@@ -3,9 +3,9 @@
 # Run all tests and generate a consolidated report.
 #
 # Usage:
-#   bash test/run-all.sh              # Run all tests
-#   bash test/run-all.sh 05 07        # Run specific test groups
-#   bash test/run-all.sh --list       # List available tests
+#   bash tests/run-all.sh              # Run all tests
+#   bash tests/run-all.sh 05 07        # Run specific test groups
+#   bash tests/run-all.sh --list       # List available tests
 
 set -euo pipefail
 

@@ -2,6 +2,7 @@
 name: pipeline-validator
 description: "Validates reproducible research pipelines for structural correctness: checks that all intermediate files are code-generated, random seeds are set and documented, package versions are pinned, pipelines run end-to-end, file paths are relative, and data files are properly managed. Use when preparing a replication package, auditing a research pipeline, reviewing Makefiles or Snakefiles, or checking reproducibility infrastructure before submission."
 model: sonnet
+tools: Read, Grep, Glob, Bash
 ---
 
 <examples>

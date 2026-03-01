@@ -2,6 +2,7 @@
 name: equilibrium-analyst
 description: "Verifies equilibrium properties in game-theoretic and market models — existence, uniqueness, stability, and comparative statics. Use when you need to check whether a game has an equilibrium, verify that the equilibrium is unique, analyze stability under perturbations, derive comparative statics, or audit whether a computational solver is finding the correct equilibrium."
 model: sonnet
+tools: Read, Grep, Glob, Bash, WebSearch, WebFetch
 ---
 
 <examples>

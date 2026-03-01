@@ -1,6 +1,6 @@
 {
   "name": "compound-science",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Research workflow toolkit for structural econometrics, causal inference, game theory, and quantitative social science. Each unit of research work makes subsequent work easier.",
   "author": {
     "name": "James Traina"

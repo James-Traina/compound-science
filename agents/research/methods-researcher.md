@@ -2,6 +2,7 @@
 name: methods-researcher
 description: "Conducts deep analysis of specific econometric and statistical methods, comparing estimator properties, software implementations, and computational tradeoffs. Use when choosing between estimation approaches, evaluating an estimator's properties, finding software packages for a method, or understanding computational considerations for structural estimation."
 model: sonnet
+tools: Read, Grep, Glob, Bash, WebSearch, WebFetch
 ---
 
 <examples>

@@ -1,6 +1,6 @@
 # compound-science
 
-A Claude Code plugin for quantitative social science research: structural econometrics, causal inference, game theory, identification arguments, Monte Carlo studies, and reproducible pipelines.
+A Claude Code plugin for quantitative social science research: structural econometrics, causal inference, game theory, applied micro, identification arguments, Monte Carlo studies, and reproducible pipelines.
 
 Every time you solve a methodological problem (a convergence fix, an identification argument, a numerical issue), that solution gets documented and made findable. The next project starts where the last one left off.
 
@@ -10,7 +10,7 @@ The core loop is Plan, Work, Review, Compound, Repeat.
 
 You describe a research task. The plugin plans an approach, executes it with convergence monitoring and quality gates, runs domain-specific review agents (an econometrician checks your identification, a numerical auditor checks your floating-point stability, a referee tries to reject your paper), and extracts reusable solutions into a knowledge base at `docs/solutions/`.
 
-Workflow commands chain the steps. `/lfg` runs the full loop autonomously; `/slfg` runs review and compound in parallel using agent swarms. Domain commands handle specific tasks: `/estimate` runs a complete estimation pipeline from data validation through robustness checks, `/simulate` designs Monte Carlo studies, `/identify` formalizes identification arguments. Ambient hooks run without being invoked: when you write estimation code the plugin offers relevant agents, and when a session ends it checks for missing standard errors or RNG seeds.
+Workflow commands chain the steps. `/lfg` runs the full loop autonomously; `/slfg` runs review and compound in parallel using agent swarms. Domain commands handle specific tasks: `/estimate` runs a complete estimation pipeline, `/simulate` designs Monte Carlo studies, `/identify` formalizes identification arguments. Utility commands handle output: `/diagnose` runs diagnostic batteries, `/tabulate` generates publication-ready tables, `/visualize` creates research figures, `/sensitivity` runs formal robustness analysis, `/replicate` builds AEA-compliant replication packages. Ambient hooks run without being invoked: when you write estimation code the plugin offers relevant agents, and when a session ends it checks for missing standard errors or RNG seeds.
 
 ## Install
 
@@ -37,10 +37,17 @@ claude plugin install /path/to/compound-science
 /workflows:review
 /workflows:compound
 
-# Domain-specific commands
+# Domain commands
 /estimate run 2SLS with Bartik instruments
 /simulate Monte Carlo for DiD with staggered adoption
 /identify formalize the identification argument for auction model
+
+# Utility commands
+/diagnose check my IV regression results
+/tabulate format regression table for AER submission
+/sensitivity run Oster bounds on baseline estimate
+/visualize create event study plot with confidence intervals
+/replicate build replication package for journal submission
 ```
 
 ## Commands
@@ -57,19 +64,24 @@ claude plugin install /path/to/compound-science
 | `/lfg` | Chain all four steps automatically |
 | `/slfg` | Same as `/lfg` with parallel swarm execution for review and compound |
 
-### Domain
+### Utility
 
 | Command | What it does |
 |---------|-------------|
 | `/estimate` | Run structural estimation pipeline: data validation, identification check, estimation with convergence monitoring, proper standard errors, automated robustness checks, formatted results |
 | `/simulate` | Design and run Monte Carlo studies: DGP specification, parameter selection, simulation execution, bias/RMSE/coverage metrics, results tables |
 | `/identify` | Formalize identification arguments: target parameter, model specification, derivation, regularity conditions, link to estimation |
+| `/diagnose` | Run diagnostic battery on estimation results: specification tests, instrument diagnostics, residual analysis, model fit assessment |
+| `/tabulate` | Generate publication-ready tables: regression results, summary statistics, Monte Carlo output, balance tables |
+| `/replicate` | Build and verify AEA-compliant replication packages: inventory, README, dependency audit, pipeline verification, data documentation |
+| `/visualize` | Generate publication-quality research visualization code: event studies, RD plots, coefficient plots, power curves, densities |
+| `/sensitivity` | Run sensitivity analysis on causal estimates: Oster bounds, Conley et al. bounds, breakdown frontier, specification curve |
 
-## Agents (15)
+## Agents (20)
 
 Organized by role. Each runs as a specialized subagent with deep domain knowledge.
 
-### Review — domain-specific code review
+### Review (10) — domain-specific code review and methodology verification
 
 | Agent | What it checks |
 |-------|---------------|
@@ -78,8 +90,13 @@ Organized by role. Each runs as a specialized subagent with deep domain knowledg
 | `numerical-auditor` | Floating-point stability, convergence, RNG seeding, matrix conditioning, gradient accuracy |
 | `identification-critic` | Identification argument completeness, exclusion restrictions, support conditions, point vs set identification |
 | `referee` | Adversarial journal referee simulation — contribution, literature gaps, robustness, external validity |
+| `monte-carlo-designer` | Design simulation studies — DGPs, sample sizes, replications, bias/RMSE/coverage metrics |
+| `dgp-architect` | Formalize data generating processes from structural models, verify equilibrium computation |
+| `equilibrium-analyst` | Verify equilibrium existence, uniqueness, stability, comparative statics |
+| `calibration-reviewer` | Calibration/moment-matching strategy, parameter identification from moments, sensitivity to targets |
+| `results-auditor` | Audit reported results against code output — table accuracy, text consistency, significance stars |
 
-### Research — literature and data investigation
+### Research (5) — literature and data investigation
 
 | Agent | What it does |
 |-------|-------------|
@@ -87,24 +104,19 @@ Organized by role. Each runs as a specialized subagent with deep domain knowledg
 | `methods-researcher` | Deep dive into estimator properties, computational considerations, software implementations |
 | `data-detective` | Data quality investigation — distributions, missingness, duplicates, panel structure, merge validation |
 | `learnings-researcher` | Search `docs/solutions/` for past methodological solutions and patterns |
+| `benchmark-researcher` | Research calibration targets, stylized facts, reference parameter values from the economics literature |
 
-### Methods — methodology-specific
-
-| Agent | What it does |
-|-------|-------------|
-| `monte-carlo-designer` | Design simulation studies — DGPs, sample sizes, replications, bias/RMSE/coverage metrics |
-| `dgp-architect` | Formalize data generating processes from structural models, verify equilibrium computation |
-| `equilibrium-analyst` | Verify equilibrium existence, uniqueness, stability, comparative statics |
-
-### Workflow — process and reproducibility
+### Workflow (5) — process, reproducibility, and coordination
 
 | Agent | What it does |
 |-------|-------------|
 | `pipeline-validator` | Validate reproducible pipelines — no manual steps, seeds set, versions pinned, relative paths |
 | `reproducibility-checker` | Pre-submission replication package verification |
 | `spec-flow-analyzer` | Analyze specification flow from model to estimator to code |
+| `research-coordinator` | Coordinate multi-agent research workflows, manage handoffs between estimation/simulation/identification phases |
+| `progress-tracker` | Track research progress, maintain running checklist of completed and pending research steps |
 
-## Skills (8)
+## Skills (10)
 
 Domain knowledge and methodology references.
 
@@ -118,6 +130,8 @@ Domain knowledge and methodology references.
 | `git-worktree` | Parallel branches for concurrent estimation runs and specification comparisons |
 | `orchestrating-swarms` | Multi-agent parallel orchestration patterns for `/slfg` |
 | `setup` | Configure `compound-science.local.md` for project-specific settings |
+| `journal-submission` | Pre-submission checklists, journal-specific formatting for 20+ journals, referee response strategy, revision management |
+| `applied-micro-toolkit` | Method selection decision tree, estimator comparison, diagnostics by method, power analysis, minimum reporting standards |
 
 ## Ambient Hooks (5)
 
@@ -126,10 +140,10 @@ The plugin detects research context automatically. Nothing to invoke.
 | Hook | When it fires | What it does |
 |------|--------------|-------------|
 | **SessionStart** | Session opens | Detects project type (empirical/paper), estimation language, data/pipeline presence |
-| **UserPromptSubmit** | Every prompt | Injects domain context when research terminology is detected (7 categories) |
-| **PostToolUse** | After Write/Edit | Suggests relevant agents after writing estimation, simulation, or proof code |
-| **Stop** | Session ends | Checks for missing critical steps (standard errors, seeds, regularity conditions) |
-| **PreCompact** | Context compaction | Preserves research state summary (identification progress, results, proof status) |
+| **UserPromptSubmit** | Every prompt | Injects domain context across 12 categories: identification, estimation, simulation, proof, equilibrium, pipeline, data, diagnostics, tables, replication, sensitivity, submission |
+| **PostToolUse** | After Write/Edit | Suggests relevant agents after writing estimation (Python/R/Stata/Julia), simulation, proof, pipeline, or manuscript code |
+| **Stop** | Session ends | Checks 8 completeness conditions (standard errors, seeds, regularity conditions, merge validation, sensitivity, replication) |
+| **PreCompact** | Context compaction | Preserves 8 categories of research state (identification, estimation, proof, pipeline, methodology, sensitivity, diagnostics, submission) |
 
 ## Configuration
 
@@ -151,43 +165,47 @@ This plugin is designed to work alongside:
 
 | Category | Count |
 |----------|-------|
-| Agents | 15 (5 review + 4 research + 3 methods + 3 workflow) |
-| Commands | 10 (5 workflow + 3 domain + 2 meta) |
-| Skills | 8 |
+| Agents | 20 (10 review + 5 research + 5 workflow) |
+| Commands | 15 (5 workflow + 2 chain + 3 domain + 5 utility) |
+| Skills | 10 |
 | Hooks | 5 |
-| **Total** | **38 components** |
+| **Total** | **50 components** |
 
 ## Layout
 
 ```
 .claude-plugin/ plugin.json (manifest — must be at repo root for install to work)
 agents/
-  review/       econometrician, mathematical-prover, numerical-auditor, identification-critic, referee
-  research/     literature-scout, methods-researcher, data-detective, learnings-researcher
-  methods/      monte-carlo-designer, dgp-architect, equilibrium-analyst
-  workflow/     pipeline-validator, reproducibility-checker, spec-flow-analyzer
+  review/       econometrician, mathematical-prover, numerical-auditor, identification-critic,
+                referee, monte-carlo-designer, dgp-architect, equilibrium-analyst,
+                calibration-reviewer, results-auditor
+  research/     literature-scout, methods-researcher, data-detective, learnings-researcher,
+                benchmark-researcher
+  workflow/     pipeline-validator, reproducibility-checker, spec-flow-analyzer,
+                research-coordinator, progress-tracker
 commands/
   workflows/    brainstorm, plan, work, review, compound
   estimate, simulate, identify, lfg, slfg
-skills/         8 domain knowledge bases with reference material
-hooks/          hooks.json (5 ambient hooks)
+  diagnose, tabulate, replicate, visualize, sensitivity
+skills/         10 domain knowledge bases with reference material
+hooks/          hooks.json (5 ambient hooks, 12 domain categories)
 scripts/        session-init.sh
-test/           233 tests across 8 groups (dev-only)
+tests/          200 tests across 10 groups (dev-only)
 ```
 
 ## Testing
 
 ```bash
-bash test/run-all.sh              # Run all 233 tests
-bash test/run-all.sh 07           # Run a specific test group
-bash test/run-all.sh --list       # List available test groups
+bash tests/run-all.sh              # Run all 200 tests
+bash tests/run-all.sh 07           # Run a specific test group
+bash tests/run-all.sh --list       # List available test groups
 ```
 
 ## Background
 
 This plugin grew out of [compound-engineering](https://github.com/EveryInc/compound-engineering-plugin) by Every Inc, which codified web development workflows for Claude Code. The core loop — plan, work, review, compound — maps well onto quantitative research, where the same convergence problems, identification pitfalls, and numerical issues recur across projects.
 
-The main adaptation was swapping web-focused agents for domain-specific ones: an econometrician instead of a frontend reviewer, a numerical auditor instead of a performance profiler. The research commands (`/estimate`, `/simulate`, `/identify`) and the ambient hooks (which watch for estimation packages, LaTeX files, and data directories) were added on top.
+The main adaptation was swapping web-focused agents for domain-specific ones: an econometrician instead of a frontend reviewer, a numerical auditor instead of a performance profiler. The research commands (`/estimate`, `/simulate`, `/identify`) and utility commands (`/diagnose`, `/tabulate`, `/replicate`, `/visualize`, `/sensitivity`) handle domain-specific workflows, and the ambient hooks watch for estimation packages, LaTeX files, and data directories.
 
 ## Domain Keywords
 
@@ -203,6 +221,7 @@ This plugin activates when your work involves these areas:
 | Data Science & Engineering | panel data, cross-section, merge validation, imputation, Data Engineering, Data Science, Empirical Microdata |
 | Reproducible Pipelines | Makefile, Snakemake, DVC, replication package, version pinning |
 | Applied Statistics & Research | MLE, bootstrap, clustering, standard errors, Applied Statistics, Business Analytics, Academic Writing, Economic Research |
+| Applied Micro & Research Design | method selection, power analysis, specification curve, research design, Applied Micro |
 
 ## License
 

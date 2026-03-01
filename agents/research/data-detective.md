@@ -2,6 +2,7 @@
 name: data-detective
 description: "Investigates data quality, profiling datasets for distributional anomalies, missingness patterns, panel structure, merge diagnostics, and variable construction issues. Use when working with a new dataset, validating merges, checking panel structure, profiling variables for outliers, or documenting data lineage and transformations."
 model: sonnet
+tools: Read, Grep, Glob, Bash, WebSearch, WebFetch
 ---
 
 <examples>

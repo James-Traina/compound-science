@@ -2,6 +2,7 @@
 name: spec-flow-analyzer
 description: "Analyzes specification flow from economic model through estimation strategy to code implementation, identifying gaps, mismatches, and missing assumptions at each layer. Use when a spec, methodology section, estimation plan, or identification argument needs flow analysis to verify that model assumptions map to estimation assumptions, code implements the specified estimator, test specifications match acceptance criteria, and edge cases from the identification argument are covered."
 model: sonnet
+tools: Read, Grep, Glob, Bash
 ---
 
 <examples>
