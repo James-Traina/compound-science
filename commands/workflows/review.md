@@ -132,6 +132,15 @@ Task pipeline-validator(pipeline files + review context)
     package versions pinned, end-to-end pipeline, relative paths, data not committed
 ```
 
+**TABLES/FIGURES: If tables or figures were generated:**
+(Files matching: `tables/*`, `figures/*`, `*.tex` with tabular content, `*.csv` result files)
+
+```
+Task results-auditor(output files + estimation code + review context)
+  → Checks: table numbers match underlying code output, no manual edits to generated tables,
+    statistical summaries consistent with estimation logs, formatting correct
+```
+
 </conditional_agents>
 
 #### Always Run Post-Review

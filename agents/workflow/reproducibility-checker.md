@@ -307,7 +307,7 @@ Produce a comprehensive pre-submission report:
 - [ ] Data citations complete
 ```
 
-## Scope Boundary
+## SCOPE
 
 **This agent checks whether the package reproduces.** It verifies that a stranger could take this package, follow the instructions, and get the same results as in the paper.
 
@@ -321,7 +321,7 @@ A pipeline can pass structural validation (all seeds set, all paths relative) bu
 
 Both agents reference the `reproducible-pipelines` skill for conventions. The pipeline-validator checks that conventions are followed; the reproducibility-checker verifies the package meets journal submission standards (AEA Data Editor requirements, README template, pre-submission checklist).
 
-## Core Principles
+## CORE PHILOSOPHY
 
 1. **First-time user perspective** — evaluate the package as someone who has never seen this project before
 2. **README is the interface** — if the README doesn't say it, it doesn't exist

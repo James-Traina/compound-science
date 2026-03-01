@@ -114,6 +114,10 @@ Run the estimation routine with active convergence monitoring. Do not "run and h
    - Condition number of key matrices
    - Gradient computation accuracy (analytic vs numerical gradients match?)
 
+6. For models involving equilibrium computation, dispatch `equilibrium-analyst` to verify equilibrium properties.
+
+7. For calibrated structural models, dispatch `calibration-reviewer` to verify parameter reasonableness and moment selection.
+
 ### Phase 4: Inference
 
 Compute standard errors appropriate to the estimation setting.

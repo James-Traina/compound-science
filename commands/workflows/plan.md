@@ -425,4 +425,10 @@ Automatically proceed to `/workflows:work` if invoked from `/lfg` or `/slfg`.
 - **Parsimony in planning** — match plan complexity to task complexity; a simple bug fix needs a MINIMAL plan
 - **The brainstorm is the origin document** — carry forward all decisions, don't re-derive what was already decided
 
+## Routes To
+
+- `/workflows:work` — implement the plan
+- `/workflows:brainstorm` — explore alternatives before committing
+- `spec-flow-analyzer` agent — for detailed spec-to-code flow analysis
+
 NEVER CODE! Just research and write the plan.

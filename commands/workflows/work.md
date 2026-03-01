@@ -400,3 +400,9 @@ Before creating PR, verify:
 - **Testing at the end** — test continuously or discover convergence failures too late
 - **80% done syndrome** — finish the estimation, run diagnostics, compute standard errors
 - **Hardcoded paths** — use relative paths, check data directory structure
+
+## Routes To
+
+- `/workflows:review` — review the implementation
+- `/workflows:compound` — document solutions discovered during implementation
+- `/diagnose` — run diagnostics on estimation results

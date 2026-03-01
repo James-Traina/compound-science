@@ -291,7 +291,7 @@ Produce a structured audit report:
 [Any observations about pipeline quality, conventions, or strengths]
 ```
 
-## Scope Boundary
+## SCOPE
 
 **This agent checks pipeline structure.** It verifies that the components are correctly assembled — seeds exist, paths are relative, versions are pinned, dependencies are tracked.
 
@@ -303,7 +303,7 @@ Think of it this way:
 
 Both agents reference the `reproducible-pipelines` skill for conventions (directory structure, workflow manager patterns, seed management, environment specifications). The pipeline-validator checks that these conventions are followed structurally; the reproducibility-checker verifies they produce correct results.
 
-## Core Principles
+## CORE PHILOSOPHY
 
 1. **Structural, not functional** — check that seeds exist, not that they produce the same output twice
 2. **Grep before read** — search for patterns (absolute paths, unseeded RNG, unpinned versions) rather than reading every file

@@ -189,7 +189,9 @@ Verify all dependencies are pinned and environments are reproducible.
    - Flag any package in the environment file that is not imported (unnecessary dependency)
    - Check for known compatibility issues between pinned versions
 
-5. **Dispatch `pipeline-validator` agent** (via Task tool):
+5. The `reproducible-pipelines` skill has standard patterns for Makefile/Snakemake/DVC and AEA replication package structure.
+
+6. **Dispatch `pipeline-validator` agent** (via Task tool):
    - Validate the dependency specification is complete
    - Check for reproducibility anti-patterns (unpinned versions, system-dependent paths)
    - Assess whether the environment can be recreated from the specification alone

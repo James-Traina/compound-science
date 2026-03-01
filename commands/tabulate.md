@@ -250,7 +250,9 @@ Write table files and provide formatted code blocks.
    - Stata: `esttab` or `outreg2` command
    - Include the exact command to regenerate the table from the estimation objects
 
-5. **Quality checks before output:**
+5. Before finalizing, consider dispatching `results-auditor` to verify that table numbers match the underlying code output.
+
+6. **Quality checks before output:**
 
    | Check | Requirement |
    |-------|------------|

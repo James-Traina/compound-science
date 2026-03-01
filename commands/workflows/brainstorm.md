@@ -170,4 +170,10 @@ Automatically proceed to `/workflows:plan` if invoked from `/lfg` or `/slfg`.
 - **Ground in real methods** — cite actual estimators (2SLS, GMM, MPEC), packages (statsmodels, fixest, PyBLP), and papers
 - **Keep outputs concise** — 200-300 words per section max
 
+## Routes To
+
+- `/workflows:plan` — proceed with the chosen approach
+- `literature-scout` agent — for deeper literature search on a specific method
+- `benchmark-researcher` agent — for calibration targets and empirical moments
+
 NEVER CODE! Just explore and document methodological decisions.

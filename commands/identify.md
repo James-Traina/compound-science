@@ -223,7 +223,9 @@ Link the identification result to a concrete estimator. An identification argume
 
 Dispatch `identification-critic` agent for a thorough adversarial review of the complete argument.
 
-1. **Dispatch `identification-critic` agent** (via Task tool) with the full identification document:
+1. For game-theoretic identification (entry games, auctions), dispatch `equilibrium-analyst` to verify equilibrium existence and uniqueness.
+
+2. **Dispatch `identification-critic` agent** (via Task tool) with the full identification document:
    - Challenge the exclusion restrictions: is there a plausible violation?
    - Test whether functional form is doing the identification work (would the result hold nonparametrically?)
    - Check for completeness: are there unstated assumptions?
@@ -240,17 +242,17 @@ Dispatch `identification-critic` agent for a thorough adversarial review of the 
      | Ignoring general equilibrium | Partial equilibrium argument in GE setting |
      | Weak identification | Formally identified but nearly unidentifiable in practice |
 
-2. **Dispatch `mathematical-prover` agent** (via Task tool) for final proof check:
+3. **Dispatch `mathematical-prover` agent** (via Task tool) for final proof check:
    - Verify all steps are valid
    - Check edge cases
    - Confirm quantifier ordering
 
-3. **Compile review findings:**
+4. **Compile review findings:**
    - List of concerns (critical / non-critical)
    - Suggested improvements
    - Assessment of overall argument strength
 
-4. **Address critical concerns:**
+5. **Address critical concerns:**
    - If the identification-critic flags a genuine gap: note it prominently and suggest how to address it
    - If concerns are about plausibility (not logic): document the concern and the economic argument for the assumption
    - Do not silently ignore critic findings
@@ -317,6 +319,10 @@ Adding A(K+1) would narrow the set to [θ_L', θ_U']
 - `/simulate` — Monte Carlo study of the estimator's properties under this DGP
 - `/workflows:review` — full multi-agent review of the identification argument
 - `/workflows:compound` — capture identification insights in knowledge base
+
+## Skills Used
+
+- `causal-inference` — methodology reference for IV/2SLS/GMM, DiD, RDD, synthetic control, matching
 
 ## Common Identification Strategies Reference
 

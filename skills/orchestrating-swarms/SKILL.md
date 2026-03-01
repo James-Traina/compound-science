@@ -1,6 +1,6 @@
 ---
 name: orchestrating-swarms
-description: This skill should be used when orchestrating multi-agent swarms using Claude Code's TeammateTool and Task system. It applies when coordinating multiple agents, running parallel code reviews, creating pipeline workflows with dependencies, building self-organizing task queues, or any task benefiting from divide-and-conquer patterns.
+description: "Reference for orchestrating multi-agent parallel execution in Claude Code — spawning teammates, managing task lists, coordinating agent handoffs, and synchronizing results. Use when running /slfg, dispatching multiple agents in parallel, coordinating review swarms, or building custom multi-agent workflows."
 disable-model-invocation: true
 ---
 

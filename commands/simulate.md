@@ -28,6 +28,8 @@ Define or load the data generating process. The DGP must be completely specified
    - Verify the DGP produces data consistent with the features being studied
    - Check that the DGP has sufficient variation for identification
 
+2. For calibration targets and empirical moments to validate DGP parameters, dispatch `benchmark-researcher`.
+
 2. **Document DGP in structured format:**
 
    | Component | Specification |
