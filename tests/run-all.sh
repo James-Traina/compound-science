@@ -53,6 +53,13 @@ else
   while IFS= read -r f; do tests+=("$f"); done < <(find "$QA_DIR/tests" -name "*.sh" | sort)
 fi
 
+# --- Validate match ---
+
+if [ ${#tests[@]} -eq 0 ]; then
+  echo "  Error: no test files matched. Use --list to see available groups."
+  exit 1
+fi
+
 # --- Run tests ---
 
 for test_file in "${tests[@]}"; do
