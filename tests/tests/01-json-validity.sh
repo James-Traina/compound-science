@@ -90,23 +90,40 @@ fi
 
 group "Hook Entry Validation"
 
-# 11-15: Each hook event has proper type and timeout
-python3 -c "
+# 11: All hook events have proper timeouts
+if python3 -c "
 import json, sys
 d = json.load(open('$PLUGIN_DIR/hooks/hooks.json'))
+missing = []
 for event, matchers in d['hooks'].items():
     for m in matchers:
         for h in m['hooks']:
-            t = h.get('timeout', 0)
-            if t > 0:
-                print(f'OK:{event}:{h[\"type\"]}:{t}')
-            else:
-                print(f'NOTIMEOUT:{event}:{h[\"type\"]}')
-" 2>/dev/null | while IFS=: read -r status event htype timeout; do
-  if [ "$status" = "OK" ]; then
-    pass "hook $event has timeout ($timeout)"
+            if h.get('timeout', 0) <= 0:
+                missing.append(event)
+assert not missing, f'missing timeouts: {missing}'
+" 2>/dev/null; then
+  pass "all hook events have timeouts"
+else
+  must_fix "all hook events have timeouts" "one or more hooks missing timeout"
+fi
+
+# 12-15: Spot-check specific hook timeouts
+for check_event in SessionStart Stop PreToolUse SubagentStop; do
+  if python3 -c "
+import json
+d = json.load(open('$PLUGIN_DIR/hooks/hooks.json'))
+t = d['hooks']['$check_event'][0]['hooks'][0].get('timeout', 0)
+assert t > 0, f'no timeout for $check_event'
+print(t)
+" 2>/dev/null; then
+    timeout_val=$(python3 -c "
+import json
+d = json.load(open('$PLUGIN_DIR/hooks/hooks.json'))
+print(d['hooks']['$check_event'][0]['hooks'][0]['timeout'])
+" 2>/dev/null)
+    pass "hook $check_event has timeout ($timeout_val)"
   else
-    must_fix "hook $event has timeout" "timeout missing"
+    must_fix "hook $check_event has timeout" "timeout missing"
   fi
 done
 

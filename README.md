@@ -133,7 +133,7 @@ Domain knowledge and methodology references.
 | `submission-guide` | Pre-submission checklists, journal-specific formatting for 20+ journals, referee response strategy, revision management |
 | `empirical-playbook` | Method selection decision tree, estimator comparison, diagnostics by method, power analysis, minimum reporting standards |
 
-## Ambient Hooks (5)
+## Ambient Hooks (7)
 
 The plugin detects research context automatically. Nothing to invoke.
 
@@ -144,6 +144,8 @@ The plugin detects research context automatically. Nothing to invoke.
 | **PostToolUse** | After Write/Edit | Suggests relevant agents after writing estimation (Python/R/Stata/Julia), simulation, proof, pipeline, or manuscript code |
 | **Stop** | Session ends | Checks 8 completeness conditions (standard errors, seeds, regularity conditions, merge validation, sensitivity, replication) |
 | **PreCompact** | Context compaction | Preserves 8 categories of research state (identification, estimation, proof, pipeline, methodology, sensitivity, diagnostics, submission) |
+| **PreToolUse** | Before Bash | Guards reproducibility: missing seeds, absolute paths, unversioned pip installs, uncaptured output |
+| **SubagentStop** | After agent completes | Suggests next steps: fixes for review findings, follow-ups for research results, commands for workflow gaps |
 
 ## Configuration
 
@@ -168,8 +170,8 @@ This plugin is designed to work alongside:
 | Agents | 20 (10 review + 5 research + 5 workflow) |
 | Commands | 15 (5 workflow + 2 chain + 3 domain + 5 utility) |
 | Skills | 10 |
-| Hooks | 5 |
-| **Total** | **50 components** |
+| Hooks | 7 |
+| **Total** | **52 components** |
 
 ## Layout
 
@@ -188,15 +190,15 @@ commands/
   estimate, simulate, identify, lfg, slfg
   diagnose, tabulate, replicate, visualize, stress-test
 skills/         10 domain knowledge bases with reference material
-hooks/          hooks.json (5 ambient hooks, 12 domain categories)
+hooks/          hooks.json (7 ambient hooks, 12 domain categories)
 scripts/        session-init.sh
-tests/          200 tests across 10 groups (dev-only)
+tests/          240 tests across 12 groups (dev-only)
 ```
 
 ## Testing
 
 ```bash
-bash tests/run-all.sh              # Run all 200 tests
+bash tests/run-all.sh              # Run all 240 tests
 bash tests/run-all.sh 07           # Run a specific test group
 bash tests/run-all.sh --list       # List available test groups
 ```

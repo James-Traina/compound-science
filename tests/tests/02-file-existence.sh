@@ -126,10 +126,10 @@ print(len(d['hooks']))
 assert_count "agents = 20" 20 "$actual_agents"
 assert_count "commands = 15" 15 "$actual_commands"
 assert_count "skills = 10" 10 "$actual_skills"
-assert_count "hooks = 5" 5 "$actual_hooks"
+assert_count "hooks = 7" 7 "$actual_hooks"
 
 total=$((actual_agents + actual_commands + actual_skills + actual_hooks))
-assert_count "total components = 50" 50 "$total"
+assert_count "total components = 52" 52 "$total"
 
 group "Agent Category Counts"
 

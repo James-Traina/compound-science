@@ -71,12 +71,14 @@ Use `/lfg` to chain all four steps automatically, or `/slfg` for parallel swarm 
 
 ## Ambient Hooks
 
-The plugin detects research context automatically through 5 hooks covering 12 domain categories:
+The plugin detects research context automatically through 7 hooks covering 12 domain categories:
 - **SessionStart** — Detects project type (empirical/paper), estimation language, data/pipeline presence
 - **UserPromptSubmit** — Injects domain context across 12 categories: identification, estimation, simulation, proof, equilibrium, pipeline, data, diagnostics, tables, replication, sensitivity, submission
 - **PostToolUse** — Suggests relevant agents after writing estimation (Python/R/Stata/Julia), simulation, proof, pipeline, or manuscript code
 - **Stop** — Checks for 8 completeness conditions: standard errors, convergence, seeds, merge validation, results saved, sensitivity, replication, diagnostics
 - **PreCompact** — Preserves 8 categories of research state before context compaction
+- **PreToolUse** — Guards bash commands for reproducibility: missing seeds, absolute paths, unversioned pip installs, uncaptured output
+- **SubagentStop** — Suggests next steps after agent completion: fixes for review findings, follow-ups for research results, commands for workflow gaps
 
 ## Integration
 
@@ -85,7 +87,7 @@ This plugin works alongside: pr-review-toolkit (generic code review), commit-com
 ## Development
 
 ### Testing
-- Run: `bash tests/run-all.sh` (199 tests across 10 groups)
+- Run: `bash tests/run-all.sh` (240 tests across 12 groups)
 - Selective: `bash tests/run-all.sh 07` runs a single group; `--list` shows all groups
 - Reports are gitignored at `tests/reports/`
 
