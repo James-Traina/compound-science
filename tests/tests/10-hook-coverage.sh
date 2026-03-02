@@ -20,7 +20,13 @@ done
 group "Hook Timeouts"
 
 # 8-14: All timeouts within limits (command <=60, prompt <=30)
-HOOKS_FILE="$HOOKS_FILE" python3 -c "
+while IFS=: read -r status event htype timing; do
+  if [ "$status" = "OK" ]; then
+    pass "timeout $event ($htype) = $timing"
+  else
+    must_fix "timeout $event ($htype)" "$timing exceeds limit"
+  fi
+done < <(python3 -c "
 import json, os, sys
 d = json.load(open(os.environ['HOOKS_FILE']))
 limits = {'command': 60, 'prompt': 30}
@@ -39,20 +45,14 @@ if ok:
     sys.exit(0)
 else:
     sys.exit(1)
-" 2>/dev/null | while IFS=: read -r status event htype timing; do
-  if [ "$status" = "OK" ]; then
-    pass "timeout $event ($htype) = $timing"
-  else
-    must_fix "timeout $event ($htype)" "$timing exceeds limit"
-  fi
-done
+" 2>/dev/null)
 
 group "UserPromptSubmit — Domain Categories"
 
 # 15: All 13 domain categories covered
 CATEGORIES=("IDENTIFICATION" "ESTIMATION" "SIMULATION" "PROOF" "EQUILIBRIUM" "PIPELINE" "DATA" "DIAGNOSTICS" "TABLES" "REPLICATION" "SENSITIVITY" "SUBMISSION" "CONVERGENCE")
 
-prompt_text=$(HOOKS_FILE="$HOOKS_FILE" python3 -c "
+prompt_text=$(python3 -c "
 import json, os
 d = json.load(open(os.environ['HOOKS_FILE']))
 for m in d['hooks']['UserPromptSubmit']:
@@ -73,7 +73,7 @@ if $all_cats; then pass "UserPromptSubmit covers all 13 categories"; fi
 group "PostToolUse — Content Coverage"
 
 # 16: PostToolUse covers all content types (languages + bibliography + pipeline)
-ptu_text=$(HOOKS_FILE="$HOOKS_FILE" python3 -c "
+ptu_text=$(python3 -c "
 import json, os
 d = json.load(open(os.environ['HOOKS_FILE']))
 for m in d['hooks']['PostToolUse']:
@@ -96,7 +96,7 @@ fi
 
 group "Stop Hook — Completeness Checks"
 
-stop_text=$(HOOKS_FILE="$HOOKS_FILE" python3 -c "
+stop_text=$(python3 -c "
 import json, os
 d = json.load(open(os.environ['HOOKS_FILE']))
 for m in d['hooks']['Stop']:
@@ -121,7 +121,7 @@ fi
 group "PreCompact — State Preservation"
 
 # 18: PreCompact preserves key research state
-precompact_text=$(HOOKS_FILE="$HOOKS_FILE" python3 -c "
+precompact_text=$(python3 -c "
 import json, os
 d = json.load(open(os.environ['HOOKS_FILE']))
 for m in d['hooks']['PreCompact']:

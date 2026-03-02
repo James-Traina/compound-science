@@ -1,5 +1,5 @@
 #!/bin/bash
-# Test Group 1: JSON configuration file validity and structure (20 tests)
+# Test Group 1: JSON configuration file validity and structure (16 tests)
 source "$(dirname "$0")/../lib/assert.sh"
 
 group "plugin.json Validity"
@@ -80,31 +80,9 @@ for event, matchers in d['hooks'].items():
 assert not missing, f'missing timeouts: {missing}'
 " "one or more hooks missing timeout"
 
-# 12-15: Spot-check specific hook timeouts
-for check_event in SessionStart Stop PreToolUse SubagentStop; do
-  timeout_val=$(PLUGIN_DIR="$PLUGIN_DIR" CHECK_EVENT="$check_event" python3 -c "
-import json, os
-d = json.load(open(os.environ['PLUGIN_DIR'] + '/hooks/hooks.json'))
-event = os.environ['CHECK_EVENT']
-t = d['hooks'][event][0]['hooks'][0].get('timeout', 0)
-assert t > 0, f'no timeout for {event}'
-print(t)
-" 2>/dev/null)
-  if [ -n "$timeout_val" ]; then
-    pass "hook $check_event has timeout ($timeout_val)"
-  else
-    must_fix "hook $check_event has timeout" "timeout missing"
-  fi
-done
-
 group "Hook JSON Integrity"
 
-# 16: No trailing commas (common JSON error)
-py_eval "hooks.json has no trailing commas" \
-  "import json, os; json.load(open(os.environ['PLUGIN_DIR'] + '/hooks/hooks.json'))" \
-  "JSON parse error"
-
-# 17: All matchers are non-empty strings
+# 12: All matchers are non-empty strings
 py_eval "all matchers are non-empty strings" "
 import json, os
 d = json.load(open(os.environ['PLUGIN_DIR'] + '/hooks/hooks.json'))
@@ -113,7 +91,7 @@ for event, matchers in d['hooks'].items():
         assert isinstance(m['matcher'], str) and len(m['matcher']) > 0, f'{event}: empty matcher'
 " "found empty or non-string matcher"
 
-# 18: All prompt hooks have non-trivial prompts (>100 chars)
+# 13: All prompt hooks have non-trivial prompts (>100 chars)
 py_eval "all prompt hooks have substantive content" "
 import json, os
 d = json.load(open(os.environ['PLUGIN_DIR'] + '/hooks/hooks.json'))
@@ -124,7 +102,7 @@ for event, matchers in d['hooks'].items():
                 assert len(h['prompt']) > 100, f'{event}: prompt too short ({len(h[\"prompt\"])} chars)'
 " "prompt too short"
 
-# 19: Hook types are only 'command' or 'prompt'
+# 14: Hook types are only 'command' or 'prompt'
 py_eval "all hook types are command or prompt" "
 import json, os
 d = json.load(open(os.environ['PLUGIN_DIR'] + '/hooks/hooks.json'))
@@ -134,9 +112,17 @@ for event, matchers in d['hooks'].items():
             assert h['type'] in ('command', 'prompt'), f'{event}: invalid type {h[\"type\"]}'
 " "invalid hook type found"
 
-# 20: plugin.json version is semver format
+# 15: plugin.json version is semver format
 py_eval "plugin.json version is semver" "
 import json, re, os
 d = json.load(open(os.environ['PLUGIN_DIR'] + '/.claude-plugin/plugin.json'))
 assert re.match(r'^\d+\.\d+\.\d+', d['version']), f'not semver: {d[\"version\"]}'
 " "version must be X.Y.Z format"
+
+# 16: plugin.json has keywords array
+py_eval "plugin.json has keywords array" "
+import json, os
+d = json.load(open(os.environ['PLUGIN_DIR'] + '/.claude-plugin/plugin.json'))
+assert isinstance(d.get('keywords'), list), 'keywords must be a list'
+assert len(d['keywords']) >= 5, f'too few keywords: {len(d[\"keywords\"])}'
+" "keywords array missing or too small"

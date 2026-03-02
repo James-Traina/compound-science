@@ -49,7 +49,7 @@ else
 fi
 
 # 8: No unquoted variable expansion
-unquoted=$(PLUGIN_DIR="$PLUGIN_DIR" python3 -c "
+unquoted=$(python3 -c "
 import re, os
 with open(os.environ['PLUGIN_DIR'] + '/scripts/session-init.sh') as f:
     for i, line in enumerate(f, 1):
