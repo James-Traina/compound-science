@@ -140,9 +140,9 @@ The plugin detects research context automatically. Nothing to invoke.
 | Hook | When it fires | What it does |
 |------|--------------|-------------|
 | **SessionStart** | Session opens | Detects project type (empirical/paper), estimation language, data/pipeline presence |
-| **UserPromptSubmit** | Every prompt | Injects domain context across 12 categories: identification, estimation, simulation, proof, equilibrium, pipeline, data, diagnostics, tables, replication, sensitivity, submission |
-| **PostToolUse** | After Write/Edit | Suggests relevant agents after writing estimation (Python/R/Stata/Julia), simulation, proof, pipeline, or manuscript code |
-| **Stop** | Session ends | Checks 8 completeness conditions (standard errors, seeds, regularity conditions, merge validation, sensitivity, replication) |
+| **UserPromptSubmit** | Every prompt | Injects domain context across 13 categories: identification, estimation, simulation, proof, equilibrium, pipeline, data, diagnostics, tables, replication, sensitivity, submission, convergence |
+| **PostToolUse** | After file write/edit | Suggests relevant agents after writing estimation (Python/R/Stata/Julia), simulation, proof, pipeline, or manuscript code |
+| **Stop** | Session ends | Checks 8 completeness conditions (standard errors, convergence, seeds, merge validation, results saved, sensitivity, replication, diagnostics) |
 | **PreCompact** | Context compaction | Preserves 8 categories of research state (identification, estimation, proof, pipeline, methodology, sensitivity, diagnostics, submission) |
 | **PreToolUse** | Before Bash | Guards reproducibility: missing seeds, absolute paths, unversioned pip installs, uncaptured output |
 | **SubagentStop** | After agent completes | Suggests next steps: fixes for review findings, follow-ups for research results, commands for workflow gaps |
@@ -190,7 +190,7 @@ commands/
   estimate, simulate, identify, lfg, slfg
   diagnose, tabulate, replicate, visualize, stress-test
 skills/         10 domain knowledge bases with reference material
-hooks/          hooks.json (7 ambient hooks, 12 domain categories)
+hooks/          hooks.json (7 ambient hooks, 13 domain categories)
 scripts/        session-init.sh
 tests/          240 tests across 12 groups (dev-only)
 ```

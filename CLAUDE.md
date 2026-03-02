@@ -71,9 +71,9 @@ Use `/lfg` to chain all four steps automatically, or `/slfg` for parallel swarm 
 
 ## Ambient Hooks
 
-The plugin detects research context automatically through 7 hooks covering 12 domain categories:
+The plugin detects research context automatically through 7 hooks covering 13 domain categories:
 - **SessionStart** — Detects project type (empirical/paper), estimation language, data/pipeline presence
-- **UserPromptSubmit** — Injects domain context across 12 categories: identification, estimation, simulation, proof, equilibrium, pipeline, data, diagnostics, tables, replication, sensitivity, submission
+- **UserPromptSubmit** — Injects domain context across 13 categories: identification, estimation, simulation, proof, equilibrium, pipeline, data, diagnostics, tables, replication, sensitivity, submission, convergence
 - **PostToolUse** — Suggests relevant agents after writing estimation (Python/R/Stata/Julia), simulation, proof, pipeline, or manuscript code
 - **Stop** — Checks for 8 completeness conditions: standard errors, convergence, seeds, merge validation, results saved, sensitivity, replication, diagnostics
 - **PreCompact** — Preserves 8 categories of research state before context compaction

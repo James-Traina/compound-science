@@ -52,8 +52,8 @@ done
 
 group "UserPromptSubmit — Domain Categories"
 
-# 15: All 12 domain categories covered
-CATEGORIES=("IDENTIFICATION" "ESTIMATION" "SIMULATION" "PROOF" "EQUILIBRIUM" "PIPELINE" "DATA" "DIAGNOSTICS" "TABLES" "REPLICATION" "SENSITIVITY" "SUBMISSION")
+# 15: All 13 domain categories covered
+CATEGORIES=("IDENTIFICATION" "ESTIMATION" "SIMULATION" "PROOF" "EQUILIBRIUM" "PIPELINE" "DATA" "DIAGNOSTICS" "TABLES" "REPLICATION" "SENSITIVITY" "SUBMISSION" "CONVERGENCE")
 
 prompt_text=$(python3 -c "
 import json
@@ -71,7 +71,7 @@ for cat in "${CATEGORIES[@]}"; do
     must_fix "UserPromptSubmit covers $cat" "category missing"
   fi
 done
-if $all_cats; then pass "UserPromptSubmit covers all 12 categories"; fi
+if $all_cats; then pass "UserPromptSubmit covers all 13 categories"; fi
 
 group "PostToolUse — Content Coverage"
 
