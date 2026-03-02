@@ -314,7 +314,7 @@ Evaluate overall model performance using metrics appropriate to the estimation m
 
 Compile all results into a structured report and dispatch agents for expert review.
 
-1. **Dispatch `econometrician` agent** (via Task tool) with the full diagnostic results:
+1. **Dispatch `econometric-reviewer` agent** (via Task tool) with the full diagnostic results:
    - Review whether the right tests were applied
    - Assess the severity of any flagged issues
    - Recommend corrective actions for failures
@@ -372,7 +372,7 @@ Compile all results into a structured report and dispatch agents for expert revi
 5. **Actionable recommendations:**
    - For each flag or failure: provide a specific corrective action
    - Prioritize recommendations by impact on results reliability
-   - Reference specific commands for follow-up: `/estimate` to re-run with corrections, `/sensitivity` for robustness
+   - Reference specific commands for follow-up: `/estimate` to re-run with corrections, `/stress-test` for robustness
 
 6. **Save diagnostic report** (if `docs/diagnostics/` directory exists or can be created):
    - Save to `docs/diagnostics/YYYY-MM-DD-<model-name>-diagnostics.md`
@@ -418,7 +418,7 @@ Compile all results into a structured report and dispatch agents for expert revi
 2. [Advisory] <action for any flags>
 
 ### Agent Reviews
-- econometrician: [key findings]
+- econometric-reviewer: [key findings]
 - numerical-auditor: [key findings, if dispatched]
 
 ### Files
@@ -446,7 +446,7 @@ Compile all results into a structured report and dispatch agents for expert revi
 ## Routes To
 
 - `/estimate` — re-run estimation with corrections from diagnostic findings
-- `/sensitivity` — run sensitivity analysis on flagged results
+- `/stress-test` — run sensitivity analysis on flagged results
 - `/workflows:review` — full multi-agent review incorporating diagnostics
 - `/workflows:compound` — capture diagnostic patterns in knowledge base
 

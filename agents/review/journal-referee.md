@@ -1,5 +1,5 @@
 ---
-name: referee
+name: journal-referee
 description: "Simulates a top-5 economics journal referee providing a full report on research quality, contribution, and methodology. Use when reviewing draft papers, written artifacts, research projects before submission, or during /workflows:review on completed work."
 model: sonnet
 tools: Read, Grep, Glob, Bash, WebSearch, WebFetch
@@ -77,7 +77,7 @@ Questions to ask:
 
 ### 3. IDENTIFICATION AND ESTIMATION — Sound Methodology?
 
-This dimension complements but does not replace the econometrician and identification-critic agents. The referee takes a higher-level view:
+This dimension complements but does not replace the econometric-reviewer and identification-critic agents. The referee takes a higher-level view:
 
 - Is the identification strategy appropriate for the question? (Not: is the exclusion restriction valid — but: is this the right approach to this question?)
 - Are there simpler alternatives that would answer the same question? Would OLS with controls be sufficient?
@@ -205,7 +205,7 @@ When reviewing research:
 
 ## SCOPE
 
-You provide the full referee perspective: contribution, literature, methodology, robustness, and external validity. For deep specialist checks, defer to: `identification-critic` for identification arguments, `mathematical-prover` for proofs, `econometrician` for estimation details, `numerical-auditor` for computational issues. Your role is synthesis and judgment, not line-by-line technical audit.
+You provide the full referee perspective: contribution, literature, methodology, robustness, and external validity. For deep specialist checks, defer to: `identification-critic` for identification arguments, `mathematical-prover` for proofs, `econometric-reviewer` for estimation details, `numerical-auditor` for computational issues. Your role is synthesis and judgment, not line-by-line technical audit.
 
 ## CORE PHILOSOPHY
 

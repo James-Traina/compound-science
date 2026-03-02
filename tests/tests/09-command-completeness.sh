@@ -19,7 +19,7 @@ assert_count "total commands = 15" 15 "$total_count"
 group "New Utility Commands Exist"
 
 # 4-8: Each new command exists and has content
-for cmd in diagnose tabulate replicate visualize sensitivity; do
+for cmd in diagnose tabulate replicate visualize stress-test; do
   file="$PLUGIN_DIR/commands/$cmd.md"
   if [ -f "$file" ]; then
     lines=$(wc -l < "$file" | tr -d ' ')
@@ -37,7 +37,7 @@ group "Command Structure"
 
 # 9: All domain/utility commands have Input Document section
 all_input=true
-for cmd in estimate simulate identify diagnose tabulate replicate visualize sensitivity; do
+for cmd in estimate simulate identify diagnose tabulate replicate visualize stress-test; do
   file="$PLUGIN_DIR/commands/$cmd.md"
   if [ -f "$file" ] && ! grep -qi 'Input Document\|input\|If no input' "$file"; then
     all_input=false
@@ -48,7 +48,7 @@ if $all_input; then pass "all domain/utility commands handle input"; fi
 
 # 10: All domain/utility commands have multiple phases
 all_phases=true
-for cmd in estimate simulate identify diagnose tabulate replicate visualize sensitivity; do
+for cmd in estimate simulate identify diagnose tabulate replicate visualize stress-test; do
   file="$PLUGIN_DIR/commands/$cmd.md"
   phase_count=$(grep -cE '### Phase|## Phase' "$file" 2>/dev/null) || phase_count=0
   if [ "$phase_count" -lt 3 ]; then
@@ -71,18 +71,18 @@ done
 
 group "Command Agent References"
 
-# 13: /estimate references econometrician
-if grep -q 'econometrician' "$PLUGIN_DIR/commands/estimate.md" 2>/dev/null; then
-  pass "/estimate references econometrician"
+# 13: /estimate references econometric-reviewer
+if grep -q 'econometric-reviewer' "$PLUGIN_DIR/commands/estimate.md" 2>/dev/null; then
+  pass "/estimate references econometric-reviewer"
 else
-  must_fix "/estimate references econometrician" "missing"
+  must_fix "/estimate references econometric-reviewer" "missing"
 fi
 
-# 14: /simulate references monte-carlo-designer
-if grep -q 'monte-carlo-designer' "$PLUGIN_DIR/commands/simulate.md" 2>/dev/null; then
-  pass "/simulate references monte-carlo-designer"
+# 14: /simulate references simulation-designer
+if grep -q 'simulation-designer' "$PLUGIN_DIR/commands/simulate.md" 2>/dev/null; then
+  pass "/simulate references simulation-designer"
 else
-  must_fix "/simulate references monte-carlo-designer" "missing"
+  must_fix "/simulate references simulation-designer" "missing"
 fi
 
 # 15: /identify references identification-critic
@@ -92,11 +92,11 @@ else
   must_fix "/identify references identification-critic" "missing"
 fi
 
-# 16: /diagnose references econometrician or numerical-auditor
-if grep -qE 'econometrician|numerical-auditor' "$PLUGIN_DIR/commands/diagnose.md" 2>/dev/null; then
+# 16: /diagnose references econometric-reviewer or numerical-auditor
+if grep -qE 'econometric-reviewer|numerical-auditor' "$PLUGIN_DIR/commands/diagnose.md" 2>/dev/null; then
   pass "/diagnose references review agents"
 else
-  must_fix "/diagnose references review agents" "should reference econometrician or numerical-auditor"
+  must_fix "/diagnose references review agents" "should reference econometric-reviewer or numerical-auditor"
 fi
 
 # 17: /replicate references pipeline-validator or reproducibility-checker
@@ -106,11 +106,11 @@ else
   must_fix "/replicate references workflow agents" "should reference pipeline-validator or reproducibility-checker"
 fi
 
-# 18: /sensitivity references identification-critic
-if grep -qE 'identification-critic|econometrician' "$PLUGIN_DIR/commands/sensitivity.md" 2>/dev/null; then
-  pass "/sensitivity references review agents"
+# 18: /stress-test references identification-critic
+if grep -qE 'identification-critic|econometric-reviewer' "$PLUGIN_DIR/commands/stress-test.md" 2>/dev/null; then
+  pass "/stress-test references review agents"
 else
-  must_fix "/sensitivity references review agents" "should reference identification-critic or econometrician"
+  must_fix "/stress-test references review agents" "should reference identification-critic or econometric-reviewer"
 fi
 
 group "Command Naming"

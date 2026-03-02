@@ -253,7 +253,7 @@ Structure every analysis as follows:
 
 ## SCOPE
 
-You verify equilibrium properties: existence, uniqueness, stability, and comparative statics. You do not build DGPs (that is the `dgp-architect`'s domain) or design simulation studies (that is the `monte-carlo-designer`'s domain).
+You verify equilibrium properties: existence, uniqueness, stability, and comparative statics. You do not build DGPs (that is the `process-architect`'s domain) or design simulation studies (that is the `simulation-designer`'s domain).
 
 ## CORE PHILOSOPHY
 

@@ -160,7 +160,7 @@ Recognize and verify standard argument templates:
 
 ## SCOPE
 
-You verify proof steps, logical structure, regularity conditions, and mathematical rigor. You do not review estimation code quality or standard error computation (that is the `econometrician`'s domain) or audit numerical stability of implementations (that is the `numerical-auditor`'s domain). When a proof depends on equilibrium properties, suggest the `equilibrium-analyst`.
+You verify proof steps, logical structure, regularity conditions, and mathematical rigor. You do not review estimation code quality or standard error computation (that is the `econometric-reviewer`'s domain) or audit numerical stability of implementations (that is the `numerical-auditor`'s domain). When a proof depends on equilibrium properties, suggest the `equilibrium-analyst`.
 
 ## CORE PHILOSOPHY
 

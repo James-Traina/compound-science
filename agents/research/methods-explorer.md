@@ -1,5 +1,5 @@
 ---
-name: methods-researcher
+name: methods-explorer
 description: "Conducts deep analysis of specific econometric and statistical methods, comparing estimator properties, software implementations, and computational tradeoffs. Use when choosing between estimation approaches, evaluating an estimator's properties, finding software packages for a method, or understanding computational considerations for structural estimation."
 model: sonnet
 tools: Read, Grep, Glob, Bash, WebSearch, WebFetch
@@ -9,25 +9,25 @@ tools: Read, Grep, Glob, Bash, WebSearch, WebFetch
 <example>
 Context: The user is deciding between GMM and MLE for estimating a structural demand model.
 user: "Should I use GMM or MLE to estimate my BLP demand model? What are the tradeoffs?"
-assistant: "I'll use the methods-researcher agent to do a thorough comparison of GMM vs MLE for BLP estimation — covering statistical properties, computational tradeoffs, and available implementations."
+assistant: "I'll use the methods-explorer agent to do a thorough comparison of GMM vs MLE for BLP estimation — covering statistical properties, computational tradeoffs, and available implementations."
 <commentary>
-The user needs a detailed methods comparison to make an informed estimation choice. The methods-researcher will analyze bias/efficiency tradeoffs, computational costs (NFXP vs MPEC), available packages (PyBLP, BLPestimatoR), and Monte Carlo evidence on finite-sample performance.
+The user needs a detailed methods comparison to make an informed estimation choice. The methods-explorer will analyze bias/efficiency tradeoffs, computational costs (NFXP vs MPEC), available packages (PyBLP, BLPestimatoR), and Monte Carlo evidence on finite-sample performance.
 </commentary>
 </example>
 <example>
 Context: The user needs to find R packages for implementing a staggered difference-in-differences design.
 user: "What R packages implement the new staggered DiD estimators? I need something production-ready"
-assistant: "I'll use the methods-researcher agent to catalog the available R packages for staggered DiD, comparing their features, computational performance, and which estimators each implements."
+assistant: "I'll use the methods-explorer agent to catalog the available R packages for staggered DiD, comparing their features, computational performance, and which estimators each implements."
 <commentary>
-The user needs a software implementation survey. The methods-researcher will catalog packages (did, fixest, did2s, didimputation, DIDmultiplegt, staggered, HonestDiD) with feature comparisons, noting which papers each implements and computational considerations.
+The user needs a software implementation survey. The methods-explorer will catalog packages (did, fixest, did2s, didimputation, DIDmultiplegt, staggered, HonestDiD) with feature comparisons, noting which papers each implements and computational considerations.
 </commentary>
 </example>
 <example>
 Context: The user is worried about the computational cost of their nested fixed-point estimation.
 user: "My NFXP estimation is taking 12 hours per specification. Are there faster alternatives?"
-assistant: "I'll use the methods-researcher agent to analyze the computational tradeoffs between NFXP and alternative approaches like MPEC, and identify potential speed improvements."
+assistant: "I'll use the methods-explorer agent to analyze the computational tradeoffs between NFXP and alternative approaches like MPEC, and identify potential speed improvements."
 <commentary>
-The user needs computational analysis of estimation approaches. The methods-researcher will compare NFXP (Rust 1987) vs MPEC (Su and Judd 2012) and other approaches, discussing convergence properties, parallelization options, and practical speedup strategies.
+The user needs computational analysis of estimation approaches. The methods-explorer will compare NFXP (Rust 1987) vs MPEC (Su and Judd 2012) and other approaches, discussing convergence properties, parallelization options, and practical speedup strategies.
 </commentary>
 </example>
 </examples>

@@ -1,5 +1,5 @@
 ---
-name: orchestrating-swarms
+name: swarm-orchestration
 description: "Reference for orchestrating multi-agent parallel execution in Claude Code — spawning teammates, managing task lists, coordinating agent handoffs, and synchronizing results. Use when running /slfg, dispatching multiple agents in parallel, coordinating review swarms, or building custom multi-agent workflows."
 disable-model-invocation: true
 ---
@@ -206,7 +206,7 @@ Teammate({ operation: "spawnTeam", team_name: "my-project" })
 Task({
   team_name: "my-project",        // Required: which team to join
   name: "econometrics-reviewer",   // Required: teammate's name
-  subagent_type: "compound-science:review:econometrician",
+  subagent_type: "compound-science:review:econometric-reviewer",
   prompt: "Review all estimation code for methodological issues. Send findings to team-lead via Teammate write.",
   run_in_background: true         // Teammates usually run in background
 })
@@ -318,7 +318,7 @@ From the `compound-science` plugin (examples):
 ```javascript
 // Econometrics review
 Task({
-  subagent_type: "compound-science:review:econometrician",
+  subagent_type: "compound-science:review:econometric-reviewer",
   description: "Econometrics review",
   prompt: "Review this estimation code for methodological correctness and standard error handling"
 })
@@ -346,18 +346,18 @@ Task({
 
 // Referee review
 Task({
-  subagent_type: "compound-science:review:referee",
+  subagent_type: "compound-science:review:journal-referee",
   description: "Referee report",
   prompt: "Provide a referee-style assessment of this empirical analysis"
 })
 ```
 
 **All review agents from compound-science:**
-- `econometrician` - Estimation methodology and standard errors
+- `econometric-reviewer` - Estimation methodology and standard errors
 - `mathematical-prover` - Identification proofs and mathematical derivations
 - `numerical-auditor` - Numerical stability, convergence, and computational accuracy
 - `identification-critic` - Identification strategy and threats to validity
-- `referee` - Journal referee-style assessment
+- `journal-referee` - Journal referee-style assessment
 
 ### Research Agents
 ```javascript
@@ -370,7 +370,7 @@ Task({
 
 // Methods research
 Task({
-  subagent_type: "compound-science:research:methods-researcher",
+  subagent_type: "compound-science:research:methods-explorer",
   description: "Research DiD methods",
   prompt: "Gather documentation on staggered difference-in-differences estimators and their assumptions"
 })
@@ -385,9 +385,9 @@ Task({
 
 **All research agents:**
 - `literature-scout` - Academic literature and methodological references
-- `methods-researcher` - Econometric methods and estimation techniques
+- `methods-explorer` - Econometric methods and estimation techniques
 - `data-detective` - Data provenance and pipeline archaeology
-- `learnings-researcher` - Search docs/solutions/
+- `solutions-archivist` - Search docs/solutions/
 
 ### Workflow Agents
 ```javascript
@@ -778,8 +778,8 @@ Teammate({ operation: "spawnTeam", team_name: "code-review" })
 // 2. Spawn specialists in parallel (single message, multiple Task calls)
 Task({
   team_name: "code-review",
-  name: "econometrician",
-  subagent_type: "compound-science:review:econometrician",
+  name: "econometric-reviewer",
+  subagent_type: "compound-science:review:econometric-reviewer",
   prompt: "Review the estimation code for methodological correctness. Focus on: standard errors, endogeneity, functional form. Send findings to team-lead.",
   run_in_background: true
 })
@@ -804,7 +804,7 @@ Task({
 // cat ~/.claude/teams/code-review/inboxes/team-lead.json
 
 // 4. Synthesize findings and cleanup
-Teammate({ operation: "requestShutdown", target_agent_id: "econometrician" })
+Teammate({ operation: "requestShutdown", target_agent_id: "econometric-reviewer" })
 Teammate({ operation: "requestShutdown", target_agent_id: "numerical-auditor" })
 Teammate({ operation: "requestShutdown", target_agent_id: "identification-critic" })
 // Wait for approvals...
@@ -912,7 +912,7 @@ Research first, then implement:
 ```javascript
 // 1. Research phase (synchronous, returns results)
 const research = await Task({
-  subagent_type: "compound-science:research:methods-researcher",
+  subagent_type: "compound-science:research:methods-explorer",
   description: "Research estimation methods",
   prompt: "Research best practices for implementing panel data estimators. Include: fixed effects vs random effects, clustered standard errors, Hausman test implementation."
 })
@@ -1411,8 +1411,8 @@ Teammate({ operation: "spawnTeam", team_name: "pr-review-123", description: "Rev
 // (Send all these in a single message for parallel execution)
 Task({
   team_name: "pr-review-123",
-  name: "econometrician",
-  subagent_type: "compound-science:review:econometrician",
+  name: "econometric-reviewer",
+  subagent_type: "compound-science:review:econometric-reviewer",
   prompt: `Review PR #123 for estimation methodology issues.
 
   Focus on:
@@ -1466,7 +1466,7 @@ Task({
 // Combine all reviewer findings into a cohesive report
 
 // === STEP 5: Cleanup ===
-Teammate({ operation: "requestShutdown", target_agent_id: "econometrician" })
+Teammate({ operation: "requestShutdown", target_agent_id: "econometric-reviewer" })
 Teammate({ operation: "requestShutdown", target_agent_id: "numerical-auditor" })
 Teammate({ operation: "requestShutdown", target_agent_id: "identification-critic" })
 // Wait for approvals...

@@ -1,5 +1,5 @@
 ---
-name: spec-flow-analyzer
+name: specification-analyzer
 description: "Analyzes specification flow from economic model through estimation strategy to code implementation, identifying gaps, mismatches, and missing assumptions at each layer. Use when a spec, methodology section, estimation plan, or identification argument needs flow analysis to verify that model assumptions map to estimation assumptions, code implements the specified estimator, test specifications match acceptance criteria, and edge cases from the identification argument are covered."
 model: sonnet
 tools: Read, Grep, Glob, Bash
@@ -9,25 +9,25 @@ tools: Read, Grep, Glob, Bash
 <example>
 Context: A researcher has written a BLP demand estimation specification and wants to verify the full chain from model to code.
 user: "Here's the specification for our BLP demand estimation — random coefficients, market-level data, supply-side moments. Can you check if anything is missing between the model and the code?"
-assistant: "I'll use the spec-flow-analyzer agent to trace the full specification flow — from the economic model assumptions through the GMM estimation strategy to the PyBLP implementation — and identify any gaps or mismatches between layers."
+assistant: "I'll use the specification-analyzer agent to trace the full specification flow — from the economic model assumptions through the GMM estimation strategy to the PyBLP implementation — and identify any gaps or mismatches between layers."
 <commentary>
-The spec-flow-analyzer traces the chain: utility specification → demand inversion → moment conditions → GMM objective → numerical optimization → code implementation. It checks that every model assumption (e.g., Type I extreme value errors, independence of unobserved preferences) has a corresponding estimation assumption, and that the code actually implements what the methodology claims (e.g., BLP contraction mapping, not just logit inversion).
+The specification-analyzer traces the chain: utility specification → demand inversion → moment conditions → GMM objective → numerical optimization → code implementation. It checks that every model assumption (e.g., Type I extreme value errors, independence of unobserved preferences) has a corresponding estimation assumption, and that the code actually implements what the methodology claims (e.g., BLP contraction mapping, not just logit inversion).
 </commentary>
 </example>
 <example>
 Context: A researcher is implementing a difference-in-differences event study and wants to verify the specification is internally consistent.
 user: "I've written up the DiD event study design — staggered treatment, Sun and Abraham estimator, pre-trend tests. Can you review the spec for consistency?"
-assistant: "I'll use the spec-flow-analyzer agent to analyze the specification flow from the parallel trends assumption through the estimator choice to the implementation, checking that the staggered adoption design is properly handled at every layer."
+assistant: "I'll use the specification-analyzer agent to analyze the specification flow from the parallel trends assumption through the estimator choice to the implementation, checking that the staggered adoption design is properly handled at every layer."
 <commentary>
-The spec-flow-analyzer will verify that the parallel trends assumption is correctly operationalized in the estimator (Sun and Abraham handles heterogeneous treatment effects, unlike TWFE), that the code uses the correct interaction-weighted estimator rather than a standard TWFE regression, and that the pre-trend tests actually test what the identification argument requires.
+The specification-analyzer will verify that the parallel trends assumption is correctly operationalized in the estimator (Sun and Abraham handles heterogeneous treatment effects, unlike TWFE), that the code uses the correct interaction-weighted estimator rather than a standard TWFE regression, and that the pre-trend tests actually test what the identification argument requires.
 </commentary>
 </example>
 <example>
 Context: A researcher has a panel data estimation pipeline and wants to verify the specification chain before running Monte Carlo simulations.
 user: "Before I run the Monte Carlo, can you check that my panel estimation spec is internally consistent — from the structural model through the fixed-effects estimator to the simulation code?"
-assistant: "I'll use the spec-flow-analyzer agent to trace the specification flow from the structural model through the within-estimator to the simulation design, checking for assumption mismatches at each layer."
+assistant: "I'll use the specification-analyzer agent to trace the specification flow from the structural model through the within-estimator to the simulation design, checking for assumption mismatches at each layer."
 <commentary>
-The spec-flow-analyzer will check whether the structural model's assumptions (e.g., strict exogeneity, time-invariant unobservables) are consistent with the chosen fixed-effects estimator, whether the code actually implements within-transformation or uses a dummy variable approach (and whether that matters for the application), and whether the Monte Carlo DGP generates data consistent with the assumptions required for the estimator to work.
+The specification-analyzer will check whether the structural model's assumptions (e.g., strict exogeneity, time-invariant unobservables) are consistent with the chosen fixed-effects estimator, whether the code actually implements within-transformation or uses a dummy variable approach (and whether that matters for the application), and whether the Monte Carlo DGP generates data consistent with the assumptions required for the estimator to work.
 </commentary>
 </example>
 </examples>

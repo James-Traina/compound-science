@@ -362,7 +362,7 @@ Write code files, generate figures, and provide LaTeX integration.
 
 - `/tabulate` — generate companion tables for the figures
 - `/estimate` — run estimation to generate plottable results
-- `/sensitivity` — generate specification curve visualization
+- `/stress-test` — generate specification curve visualization
 - `/workflows:compound` — capture visualization templates in knowledge base
 
 ## Common Plot Types Reference

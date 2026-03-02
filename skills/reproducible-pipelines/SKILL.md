@@ -20,7 +20,7 @@ Use when the user is:
 Skip when:
 - The task is about estimation methodology (use `causal-inference` or `structural-modeling` skill)
 - The task is git workflow management (use `git-worktree` skill)
-- The task is about orchestrating Claude agents (use `orchestrating-swarms` skill)
+- The task is about orchestrating Claude agents (use `swarm-orchestration` skill)
 
 ## Project Directory Structure
 

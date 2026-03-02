@@ -173,9 +173,9 @@ Based on the problem category, optionally invoke a specialized agent to review t
 
 | Problem Category | Agent | Review Focus |
 |-----------------|-------|-------------|
-| `estimation-issues/` | `econometrician` | Solution correctness, estimation theory |
+| `estimation-issues/` | `econometric-reviewer` | Solution correctness, estimation theory |
 | `numerical-issues/` | `numerical-auditor` | Numerical accuracy, stability claims |
-| `methodology-issues/` | `methods-researcher` | Methodological completeness, alternatives |
+| `methodology-issues/` | `methods-explorer` | Methodological completeness, alternatives |
 | `derivation-issues/` | `mathematical-prover` | Proof correctness, regularity conditions |
 | `data-issues/` | `data-detective` | Data handling best practices |
 | `replication-issues/` | `reproducibility-checker` | Reproducibility completeness |
@@ -186,10 +186,10 @@ Launch the matching agent(s) to verify the documented solution is correct and co
 
 ### Phase 4: Knowledge Capture
 
-Use the `compound-docs` skill to ensure the solution is properly indexed and cross-referenced:
+Use the `compound-catalog` skill to ensure the solution is properly indexed and cross-referenced:
 
 ```
-Load skill: compound-docs
+Load skill: compound-catalog
 ```
 
 The skill handles:
@@ -249,7 +249,7 @@ Specialized Review:
   numerical-auditor: Verified solution correctness, confirmed condition number improvement
 
 Knowledge Capture:
-  compound-docs: Indexed and cross-referenced
+  compound-catalog: Indexed and cross-referenced
 
 File created:
   docs/solutions/numerical-issues/blp-inner-loop-hessian-conditioning.md
@@ -269,7 +269,7 @@ This creates a compounding knowledge system for research methodology:
 
 1. First time you solve "ill-conditioned Hessian in BLP" → Research and debug (2 hours)
 2. Document the solution → `docs/solutions/numerical-issues/blp-hessian.md` (5 min)
-3. Next time similar issue occurs → Quick lookup via `learnings-researcher` (2 min)
+3. Next time similar issue occurs → Quick lookup via `solutions-archivist` (2 min)
 4. Knowledge compounds → Research team gets faster at diagnosing and fixing estimation problems
 
 The feedback loop:
@@ -296,8 +296,8 @@ Or invoke directly: `/workflows:compound [brief context]`
 
 ## Routes To
 
-- `compound-docs` skill — knowledge capture and indexing
-- `learnings-researcher` agent — searches docs/solutions/ for past patterns
+- `compound-catalog` skill — knowledge capture and indexing
+- `solutions-archivist` agent — searches docs/solutions/ for past patterns
 - `/workflows:review` — review code changes after fixing an issue
 
 ## Applicable Specialized Agents
@@ -305,8 +305,8 @@ Or invoke directly: `/workflows:compound [brief context]`
 Based on problem category, these agents enhance and verify documentation:
 
 ### Estimation & Methodology
-- **econometrician**: Reviews estimation-issue solutions for theoretical correctness
-- **methods-researcher**: Enriches with alternative approaches and literature references
+- **econometric-reviewer**: Reviews estimation-issue solutions for theoretical correctness
+- **methods-explorer**: Enriches with alternative approaches and literature references
 - **identification-critic**: Verifies identification-related solutions are complete
 
 ### Numerical & Data
@@ -318,4 +318,4 @@ Based on problem category, these agents enhance and verify documentation:
 - **reproducibility-checker**: Validates replication-issue solutions
 
 ### Configuration
-Customize which review agents run by editing `compound-science.local.md` or invoking the `setup` skill.
+Customize which review agents run by editing `compound-science.local.md` or invoking the `project-setup` skill.

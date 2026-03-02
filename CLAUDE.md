@@ -6,10 +6,10 @@ AI-powered research tools for quantitative social science: structural econometri
 
 **Plan → Work → Review → Compound → Repeat**
 
-1. `/workflows:brainstorm` — Explore research approaches with methods-researcher and literature-scout agents
+1. `/workflows:brainstorm` — Explore research approaches with methods-explorer and literature-scout agents
 2. `/workflows:plan` — Create detailed implementation plans (auto-selects MINIMAL / MORE / A LOT detail)
 3. `/workflows:work` — Execute the plan with quality gates and convergence monitoring
-4. `/workflows:review` — Multi-agent parallel review (econometrician, numerical-auditor, identification-critic, referee)
+4. `/workflows:review` — Multi-agent parallel review (econometric-reviewer, numerical-auditor, identification-critic, journal-referee)
 5. `/workflows:compound` — Extract reusable solutions into docs/solutions/ by category
 
 Use `/lfg` to chain all four steps automatically, or `/slfg` for parallel swarm execution.
@@ -26,33 +26,33 @@ Use `/lfg` to chain all four steps automatically, or `/slfg` for parallel swarm 
 - `/tabulate` — Generate publication-ready tables: regression results, summary statistics, Monte Carlo output
 - `/replicate` — Build and verify AEA-compliant replication packages with dependency audit and pipeline verification
 - `/visualize` — Generate publication-quality research visualization code: event studies, RD plots, coefficient plots, power curves
-- `/sensitivity` — Run sensitivity analysis on causal estimates: Oster bounds, specification curve, breakdown frontier
+- `/stress-test` — Run sensitivity analysis on causal estimates: Oster bounds, specification curve, breakdown frontier
 
 ## Agents
 
 ### Review (10) — domain-specific code review and methodology verification
-- `econometrician` — Reviews identification strategy, endogeneity, standard errors, asymptotic properties
+- `econometric-reviewer` — Reviews identification strategy, endogeneity, standard errors, asymptotic properties
 - `mathematical-prover` — Verifies proof steps, completeness, regularity conditions, fixed-point arguments
 - `numerical-auditor` — Checks floating-point stability, convergence, RNG seeding, matrix conditioning
 - `identification-critic` — Evaluates identification argument completeness, exclusion restrictions, support conditions
-- `referee` — Adversarial journal referee simulation (contribution, literature, robustness, external validity)
-- `monte-carlo-designer` — Design simulation studies: DGPs, sample sizes, replications, metrics
-- `dgp-architect` — Formalize data generating processes from structural models
+- `journal-referee` — Adversarial journal referee simulation (contribution, literature, robustness, external validity)
+- `simulation-designer` — Design simulation studies: DGPs, sample sizes, replications, metrics
+- `process-architect` — Formalize data generating processes from structural models
 - `equilibrium-analyst` — Verify equilibrium existence, uniqueness, stability, comparative statics
-- `calibration-reviewer` — Reviews calibration/moment-matching strategy, parameter identification, sensitivity to targets
-- `results-auditor` — Audits reported results against code output: tables, figures, text consistency
+- `calibration-assessor` — Reviews calibration/moment-matching strategy, parameter identification, sensitivity to targets
+- `results-verifier` — Audits reported results against code output: tables, figures, text consistency
 
 ### Research (5) — literature and data investigation
 - `literature-scout` — Systematic search for related methods, seminal papers, prior applications
-- `methods-researcher` — Deep dive into estimator properties, computational considerations, software implementations
+- `methods-explorer` — Deep dive into estimator properties, computational considerations, software implementations
 - `data-detective` — Data quality investigation: distributions, missingness, duplicates, panel structure
-- `learnings-researcher` — Search docs/solutions/ for past methodological solutions
+- `solutions-archivist` — Search docs/solutions/ for past methodological solutions
 - `benchmark-researcher` — Researches calibration targets, stylized facts, reference parameter values from the literature
 
 ### Workflow (5) — process, reproducibility, and coordination
 - `pipeline-validator` — Validate reproducible pipelines: no manual steps, seeds set, versions pinned
 - `reproducibility-checker` — Pre-submission replication package verification
-- `spec-flow-analyzer` — Analyze specification flow from model → estimator → code
+- `specification-analyzer` — Analyze specification flow from model → estimator → code
 - `research-coordinator` — Coordinate multi-agent research workflows, manage handoffs between phases
 - `progress-tracker` — Track research progress, maintain running checklist of completed/pending steps
 
@@ -61,13 +61,13 @@ Use `/lfg` to chain all four steps automatically, or `/slfg` for parallel swarm 
 - `structural-modeling` — NFXP, MPEC, BLP, dynamic discrete choice, auction models
 - `causal-inference` — IV/2SLS/GMM, DiD, RDD, synthetic control, matching
 - `reproducible-pipelines` — Makefile/Snakemake/DVC, environment management, replication standards
-- `brainstorming` — Structured research brainstorming techniques
-- `compound-docs` — Solution documentation by category (estimation, data, numerical, methodology)
+- `strategy-brainstorm` — Structured research brainstorming techniques
+- `compound-catalog` — Solution documentation by category (estimation, data, numerical, methodology)
 - `git-worktree` — Parallel branches for concurrent estimation runs
-- `orchestrating-swarms` — Multi-agent parallel orchestration patterns
-- `setup` — Configure compound-science.local.md for project-specific settings
-- `journal-submission` — Pre-submission checklists, journal-specific formatting for 20+ journals, referee response strategy
-- `applied-micro-toolkit` — Method selection decision tree, diagnostics by method, power analysis, reporting standards
+- `swarm-orchestration` — Multi-agent parallel orchestration patterns
+- `project-setup` — Configure compound-science.local.md for project-specific settings
+- `submission-guide` — Pre-submission checklists, journal-specific formatting for 20+ journals, referee response strategy
+- `empirical-playbook` — Method selection decision tree, diagnostics by method, power analysis, reporting standards
 
 ## Ambient Hooks
 

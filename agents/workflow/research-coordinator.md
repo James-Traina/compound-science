@@ -11,7 +11,7 @@ Context: The user has completed an estimation and wants a full review cycle befo
 user: "I've finished the baseline IV estimation. What should I run next?"
 assistant: "I'll use the research-coordinator agent to determine the optimal next steps based on your current estimation state and what review and robustness work remains."
 <commentary>
-The research-coordinator sequences the workflow — determining whether to run identification-critic first (to verify the IV strategy), then econometrician (for code review), then sensitivity analysis (for robustness), rather than running them in a suboptimal order.
+The research-coordinator sequences the workflow — determining whether to run identification-critic first (to verify the IV strategy), then econometric-reviewer (for code review), then sensitivity analysis (for robustness), rather than running them in a suboptimal order.
 </commentary>
 </example>
 <example>
@@ -19,12 +19,12 @@ Context: A complex structural estimation project needs multiple phases coordinat
 user: "I need to estimate a BLP model, validate identification, run Monte Carlo to check finite-sample properties, then prepare a replication package"
 assistant: "I'll use the research-coordinator agent to plan the sequencing of these tasks and identify which agents should handle each phase."
 <commentary>
-The research-coordinator maps out the dependency graph: BLP estimation (econometrician, numerical-auditor) → identification validation (identification-critic) → Monte Carlo (monte-carlo-designer, dgp-architect) → replication (pipeline-validator, reproducibility-checker), managing handoffs between phases.
+The research-coordinator maps out the dependency graph: BLP estimation (econometric-reviewer, numerical-auditor) → identification validation (identification-critic) → Monte Carlo (simulation-designer, process-architect) → replication (pipeline-validator, reproducibility-checker), managing handoffs between phases.
 </commentary>
 </example>
 <example>
 Context: Multiple review agents have returned findings and the user needs help prioritizing fixes.
-user: "The econometrician flagged clustering issues, the numerical-auditor found conditioning problems, and the referee wants more robustness. What should I fix first?"
+user: "The econometric-reviewer flagged clustering issues, the numerical-auditor found conditioning problems, and the journal-referee wants more robustness. What should I fix first?"
 assistant: "I'll use the research-coordinator agent to triage the findings and determine the optimal order for addressing them."
 <commentary>
 The research-coordinator prioritizes: conditioning problems first (they can produce wrong answers), then clustering (affects inference), then robustness (presentation). It sequences fixes so earlier ones don't get undone by later changes.
@@ -41,8 +41,8 @@ Research tasks have natural dependencies. You maintain a mental model of these:
 ```
 Data cleaning → Estimation → Inference → Robustness → Documentation
      ↓              ↓            ↓            ↓
-data-detective  econometrician  [SE method]  identification-critic
-                numerical-auditor            referee
+data-detective  econometric-reviewer  [SE method]  identification-critic
+                numerical-auditor            journal-referee
 ```
 
 **Key dependency rules:**
@@ -59,11 +59,11 @@ When multiple agents are needed, determine the optimal order:
 
 | Phase | Agents (sequential) | Agents (parallelizable) |
 |-------|-------------------|----------------------|
-| **Pre-estimation** | data-detective, identification-critic | literature-scout, methods-researcher |
-| **Estimation** | econometrician (first), numerical-auditor | — |
-| **Post-estimation** | identification-critic | referee, monte-carlo-designer |
-| **Robustness** | econometrician | pipeline-validator |
-| **Submission** | reproducibility-checker, referee | — |
+| **Pre-estimation** | data-detective, identification-critic | literature-scout, methods-explorer |
+| **Estimation** | econometric-reviewer (first), numerical-auditor | — |
+| **Post-estimation** | identification-critic | journal-referee, simulation-designer |
+| **Robustness** | econometric-reviewer | pipeline-validator |
+| **Submission** | reproducibility-checker, journal-referee | — |
 
 ## 3. TRIAGE AND PRIORITIZATION
 
@@ -88,17 +88,17 @@ When transitioning between phases:
 
 ### Pattern: Full Estimation Cycle
 ```
-/estimate → econometrician review → fix issues → /diagnose → /sensitivity → /tabulate → /replicate
+/estimate → econometric-reviewer review → fix issues → /diagnose → /stress-test → /tabulate → /replicate
 ```
 
 ### Pattern: Monte Carlo Validation
 ```
-/identify → dgp-architect → monte-carlo-designer → /simulate → econometrician review → iterate
+/identify → process-architect → simulation-designer → /simulate → econometric-reviewer review → iterate
 ```
 
 ### Pattern: Submission Preparation
 ```
-/tabulate → /visualize → /replicate → referee review → address concerns → resubmit
+/tabulate → /visualize → /replicate → journal-referee review → address concerns → resubmit
 ```
 
 ## SCOPE

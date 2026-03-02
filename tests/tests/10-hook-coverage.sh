@@ -141,8 +141,8 @@ else
   should_fix "Stop checks: sensitivity" "missing"
 fi
 
-# 18: Stop references /diagnose or /sensitivity commands
-if echo "$stop_text" | grep -qE '/diagnose|/sensitivity|/replicate'; then
+# 18: Stop references /diagnose or /stress-test commands
+if echo "$stop_text" | grep -qE '/diagnose|/stress-test|/replicate'; then
   pass "Stop references utility commands"
 else
   should_fix "Stop references utility commands" "should suggest new commands"

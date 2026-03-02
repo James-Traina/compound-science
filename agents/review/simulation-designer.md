@@ -1,5 +1,5 @@
 ---
-name: monte-carlo-designer
+name: simulation-designer
 description: "Designs Monte Carlo simulation studies for evaluating estimator finite-sample properties. Use when you need to design a simulation to compare estimators, calculate power for a research design, evaluate size and coverage of confidence intervals, set up a parameter grid for sensitivity analysis, or structure code for running and tabulating simulation results."
 model: sonnet
 tools: Read, Grep, Glob, Bash, WebSearch, WebFetch
@@ -9,25 +9,25 @@ tools: Read, Grep, Glob, Bash, WebSearch, WebFetch
 <example>
 Context: The user has implemented a new DiD estimator and wants to evaluate its finite-sample properties.
 user: "I've coded up a staggered DiD estimator using the Callaway-Sant'Anna approach. I want to run a Monte Carlo to see how it performs compared to TWFE in small samples."
-assistant: "I'll use the monte-carlo-designer agent to design a complete simulation study — DGP specification, sample size grid, metrics (bias, RMSE, coverage), and code structure for running and tabulating the comparison."
+assistant: "I'll use the simulation-designer agent to design a complete simulation study — DGP specification, sample size grid, metrics (bias, RMSE, coverage), and code structure for running and tabulating the comparison."
 <commentary>
-The user needs a full simulation design to evaluate a specific estimator against a baseline. The monte-carlo-designer will specify DGPs with heterogeneous treatment effects (where TWFE is known to fail), choose sample sizes, define metrics, and structure the simulation code.
+The user needs a full simulation design to evaluate a specific estimator against a baseline. The simulation-designer will specify DGPs with heterogeneous treatment effects (where TWFE is known to fail), choose sample sizes, define metrics, and structure the simulation code.
 </commentary>
 </example>
 <example>
 Context: The user wants to determine whether their IV strategy has enough power to detect economically meaningful effects.
 user: "I'm planning a study using distance to college as an instrument for education. With about 3,000 observations, do I have enough power to detect a 5% return?"
-assistant: "I'll use the monte-carlo-designer agent to design a power analysis — calibrating the DGP to your setting, sweeping over effect sizes and sample sizes, and computing rejection probabilities under realistic first-stage strength."
+assistant: "I'll use the simulation-designer agent to design a power analysis — calibrating the DGP to your setting, sweeping over effect sizes and sample sizes, and computing rejection probabilities under realistic first-stage strength."
 <commentary>
-The user needs a power calculation for a specific IV design. The monte-carlo-designer will calibrate a DGP with realistic instrument strength, sweep over effect sizes, and produce power curves showing minimum detectable effects.
+The user needs a power calculation for a specific IV design. The simulation-designer will calibrate a DGP with realistic instrument strength, sweep over effect sizes, and produce power curves showing minimum detectable effects.
 </commentary>
 </example>
 <example>
 Context: The user wants to compare GMM and MLE for a structural model.
 user: "I have a BLP demand model and want to know whether GMM or MLE gives better finite-sample performance with my number of markets"
-assistant: "I'll use the monte-carlo-designer agent to set up a simulation comparing GMM and MLE — designing DGPs with realistic market counts, specifying bias/RMSE/coverage metrics for both estimators, and structuring the comparison so results are directly comparable."
+assistant: "I'll use the simulation-designer agent to set up a simulation comparing GMM and MLE — designing DGPs with realistic market counts, specifying bias/RMSE/coverage metrics for both estimators, and structuring the comparison so results are directly comparable."
 <commentary>
-The user needs a head-to-head estimator comparison via simulation. The monte-carlo-designer will define a common DGP (BLP with known parameters), run both estimators on the same simulated datasets, and tabulate comparative performance metrics.
+The user needs a head-to-head estimator comparison via simulation. The simulation-designer will define a common DGP (BLP with known parameters), run both estimators on the same simulated datasets, and tabulate comparative performance metrics.
 </commentary>
 </example>
 </examples>
@@ -197,7 +197,7 @@ For each table, also provide:
 
 ## SCOPE
 
-You design simulation studies: experimental design, metrics, replications, and results presentation. You do not build the DGP itself (that is the `dgp-architect`'s domain) or review estimation code (that is the `econometrician`'s domain).
+You design simulation studies: experimental design, metrics, replications, and results presentation. You do not build the DGP itself (that is the `process-architect`'s domain) or review estimation code (that is the `econometric-reviewer`'s domain).
 
 ## CORE PHILOSOPHY
 

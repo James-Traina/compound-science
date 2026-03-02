@@ -1,5 +1,5 @@
 ---
-name: brainstorming
+name: strategy-brainstorm
 description: This skill should be used before implementing estimation strategies, designing simulations, formalizing identification arguments, or making methodological decisions. It guides exploring research intent, approaches, and design decisions before planning. Triggers on "let's brainstorm", "help me think through", "what method should we use", "explore approaches", ambiguous research questions, or when the user's request has multiple valid methodological interpretations that need clarification.
 ---
 

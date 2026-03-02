@@ -1,9 +1,9 @@
 ---
-name: compound-docs
+name: compound-catalog
 description: Capture solved research problems as categorized documentation with YAML frontmatter for fast lookup. Use when a methodological, estimation, or data problem has been solved and should be documented for future reference. Triggers on "that worked", "it's fixed", "problem solved", "estimation converges now", "proof is complete", "pipeline runs", or when /workflows:compound invokes solution documentation. Also triggered by "document this solution", "save this fix", "log this resolution".
 ---
 
-# compound-docs Skill
+# compound-catalog Skill
 
 **Purpose:** Automatically document solved research problems to build searchable institutional knowledge with category-based organization. Each problem is filed under a research domain category and linked to the specialist agent best equipped to handle similar issues in the future.
 
@@ -21,10 +21,10 @@ Six categories cover the research domain. Each maps to a specialist agent for ro
 
 | Category Directory | Problem Types | Specialist Agent |
 |---|---|---|
-| `estimation-issues/` | Convergence failures, identification failures, wrong standard errors, numerical instability in optimization | `econometrician` |
+| `estimation-issues/` | Convergence failures, identification failures, wrong standard errors, numerical instability in optimization | `econometric-reviewer` |
 | `data-issues/` | Cleaning problems, merge errors, missing data patterns, panel structure issues, variable construction errors | `data-detective` |
 | `numerical-issues/` | Floating-point precision, matrix conditioning, gradient accuracy, overflow/underflow, quadrature errors | `numerical-auditor` |
-| `methodology-issues/` | Specification errors, robustness failures, wrong estimator choice, misapplied methods, invalid assumptions | `methods-researcher` |
+| `methodology-issues/` | Specification errors, robustness failures, wrong estimator choice, misapplied methods, invalid assumptions | `methods-explorer` |
 | `derivation-issues/` | Proof gaps, incorrect regularity conditions, wrong limiting distributions, missing edge cases in arguments | `mathematical-prover` |
 | `replication-issues/` | Reproducibility failures, missing dependencies, broken pipelines, seed mismatches, environment drift | `pipeline-validator` |
 
@@ -140,7 +140,7 @@ packages:                                   # Optional: packages involved
   - pyblp
   - numpy
 tags: [convergence, blp, starting-values, demand-estimation]
-specialist_agent: econometrician            # Which agent handles this category
+specialist_agent: econometric-reviewer            # Which agent handles this category
 related_docs: []                            # Cross-references (populated in Step 7)
 ---
 ```
@@ -342,14 +342,14 @@ Solution documented:
 **Invoked by:**
 - `/workflows:compound` command (primary interface)
 - Auto-detection of confirmation phrases in conversation
-- `learnings-researcher` agent references this skill's output for searching past solutions
+- `solutions-archivist` agent references this skill's output for searching past solutions
 
 **Agent routing:**
-When a new problem is encountered, `learnings-researcher` searches `docs/solutions/` by category. The `specialist_agent` field in frontmatter tells the system which agent to consult for similar problems:
-- `estimation-issues/` → `econometrician`
+When a new problem is encountered, `solutions-archivist` searches `docs/solutions/` by category. The `specialist_agent` field in frontmatter tells the system which agent to consult for similar problems:
+- `estimation-issues/` → `econometric-reviewer`
 - `data-issues/` → `data-detective`
 - `numerical-issues/` → `numerical-auditor`
-- `methodology-issues/` → `methods-researcher`
+- `methodology-issues/` → `methods-explorer`
 - `derivation-issues/` → `mathematical-prover`
 - `replication-issues/` → `pipeline-validator`
 
@@ -380,7 +380,7 @@ grep -r "tags:.*weak-instruments" docs/solutions/
 grep -r "severity: critical" docs/solutions/
 
 # By specialist agent
-grep -r "specialist_agent: econometrician" docs/solutions/
+grep -r "specialist_agent: econometric-reviewer" docs/solutions/
 ```
 
 ---
@@ -415,7 +415,7 @@ grep -r "specialist_agent: econometrician" docs/solutions/
    language: python
    packages: [pyblp, numpy]
    tags: [convergence, blp, starting-values, demand-estimation, random-coefficients]
-   specialist_agent: econometrician
+   specialist_agent: econometric-reviewer
    related_docs: []
    ```
 6. **Create documentation:** `docs/solutions/estimation-issues/blp-convergence-cereal-demand-20250225.md`
@@ -425,7 +425,7 @@ grep -r "specialist_agent: econometrician" docs/solutions/
 ```
 Solution documented:
   docs/solutions/estimation-issues/blp-convergence-cereal-demand-20250225.md
-  Category:  estimation-issues → Agent: econometrician
+  Category:  estimation-issues → Agent: econometric-reviewer
   Severity:  high
 ```
 

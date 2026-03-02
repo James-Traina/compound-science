@@ -5,24 +5,24 @@ source "$(dirname "$0")/../lib/assert.sh"
 group "File Existence — Agents"
 
 AGENTS=(
-  "review/econometrician"
+  "review/econometric-reviewer"
   "review/mathematical-prover"
   "review/numerical-auditor"
   "review/identification-critic"
-  "review/referee"
-  "review/monte-carlo-designer"
-  "review/dgp-architect"
+  "review/journal-referee"
+  "review/simulation-designer"
+  "review/process-architect"
   "review/equilibrium-analyst"
-  "review/calibration-reviewer"
-  "review/results-auditor"
+  "review/calibration-assessor"
+  "review/results-verifier"
   "research/literature-scout"
-  "research/methods-researcher"
+  "research/methods-explorer"
   "research/data-detective"
-  "research/learnings-researcher"
+  "research/solutions-archivist"
   "research/benchmark-researcher"
   "workflow/pipeline-validator"
   "workflow/reproducibility-checker"
-  "workflow/spec-flow-analyzer"
+  "workflow/specification-analyzer"
   "workflow/research-coordinator"
   "workflow/progress-tracker"
 )
@@ -56,7 +56,7 @@ COMMANDS=(
   "tabulate"
   "replicate"
   "visualize"
-  "sensitivity"
+  "stress-test"
 )
 
 # 2: all 15 commands exist
@@ -74,16 +74,16 @@ fi
 group "File Existence — Skills"
 
 SKILLS=(
-  "brainstorming"
+  "strategy-brainstorm"
   "causal-inference"
-  "compound-docs"
+  "compound-catalog"
   "git-worktree"
-  "orchestrating-swarms"
+  "swarm-orchestration"
   "reproducible-pipelines"
-  "setup"
+  "project-setup"
   "structural-modeling"
-  "journal-submission"
-  "applied-micro-toolkit"
+  "submission-guide"
+  "empirical-playbook"
 )
 
 # 3-4: all 10 skills exist (dir + SKILL.md)

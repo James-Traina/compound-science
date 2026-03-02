@@ -1,5 +1,5 @@
 ---
-name: journal-submission
+name: submission-guide
 description: Guide for academic journal submission, referee responses, and revision management. Use when the user is preparing a manuscript for submission, formatting for a specific journal, responding to referees, or managing revisions. Triggers on "submit", "referee", "revision", "R&R", "response letter", "journal", "formatting", "submission", "resubmit", "cover letter", "referee report", "revise and resubmit".
 ---
 
@@ -18,7 +18,7 @@ Use when the user is:
 - Writing a cover letter to the editor
 
 Skip when:
-- The task is choosing an empirical method (use `causal-inference` or `applied-micro-toolkit` skill)
+- The task is choosing an empirical method (use `causal-inference` or `empirical-playbook` skill)
 - The task is structural estimation implementation (use `structural-modeling` skill)
 - The task is setting up a replication package (use `reproducible-pipelines` skill)
 

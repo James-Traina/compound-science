@@ -1,5 +1,5 @@
 ---
-name: econometrician
+name: econometric-reviewer
 description: "Reviews estimation code with an extremely high quality bar for identification, inference, and econometric correctness. Use after implementing estimation routines, modifying econometric models, running regressions, or writing code that uses statsmodels, linearmodels, PyBLP, fixest, or similar packages."
 model: sonnet
 tools: Read, Grep, Glob, Bash, WebSearch, WebFetch
@@ -9,23 +9,23 @@ tools: Read, Grep, Glob, Bash, WebSearch, WebFetch
 <example>
 Context: The user has just implemented an IV regression for estimating treatment effects.
 user: "I've added the 2SLS estimation for the returns to education using quarter of birth as instruments"
-assistant: "I've implemented the IV estimation. Now let me have the econometrician review this to ensure the identification strategy and inference are correct."
+assistant: "I've implemented the IV estimation. Now let me have the econometric-reviewer review this to ensure the identification strategy and inference are correct."
 <commentary>
-Since new estimation code was written with instruments, use the econometrician agent to verify identification validity, first-stage strength, and standard error computation.
+Since new estimation code was written with instruments, use the econometric-reviewer agent to verify identification validity, first-stage strength, and standard error computation.
 </commentary>
 </example>
 <example>
 Context: The user has modified an existing BLP demand estimation routine.
 user: "I refactored the BLP inner loop to use a different contraction mapping tolerance"
-assistant: "I've updated the contraction mapping. Let me have the econometrician review these changes to check for convergence and inference implications."
+assistant: "I've updated the contraction mapping. Let me have the econometric-reviewer review these changes to check for convergence and inference implications."
 <commentary>
-After modifying structural estimation code, use the econometrician agent to verify that changes don't compromise identification, convergence, or the validity of standard errors.
+After modifying structural estimation code, use the econometric-reviewer agent to verify that changes don't compromise identification, convergence, or the validity of standard errors.
 </commentary>
 </example>
 <example>
 Context: The user has added a difference-in-differences specification.
 user: "I've implemented the staggered DiD estimation using Callaway-Sant'Anna"
-assistant: "I've implemented the DiD estimator. Let me have the econometrician review the parallel trends assumptions and inference."
+assistant: "I've implemented the DiD estimator. Let me have the econometric-reviewer review the parallel trends assumptions and inference."
 <commentary>
 New causal inference code should be reviewed for correct identification assumptions, appropriate standard errors (clustering), and proper handling of treatment timing.
 </commentary>

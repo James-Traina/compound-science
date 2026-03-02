@@ -1,5 +1,5 @@
 ---
-name: setup
+name: project-setup
 description: Configure which review agents run for your project. Auto-detects research stack and writes compound-science.local.md. Use when setting up compound-science for a new project, reconfiguring agents, changing estimation language, or adjusting project settings. Triggers on "setup compound", "configure agents", "set up project", "change review agents", "switch to R", "set estimation language", or when /workflows:work reads project configuration.
 ---
 
@@ -85,12 +85,12 @@ Based on detected project type, auto-select the review agents:
 **Empirical paper** (default — most common):
 ```yaml
 review_agents:
-  - econometrician
+  - econometric-reviewer
   - numerical-auditor
   - identification-critic
   - pipeline-validator
 plan_review_agents:
-  - econometrician
+  - econometric-reviewer
   - identification-critic
 ```
 
@@ -99,7 +99,7 @@ plan_review_agents:
 review_agents:
   - mathematical-prover
   - identification-critic
-  - referee
+  - journal-referee
   - numerical-auditor
 plan_review_agents:
   - mathematical-prover
@@ -109,18 +109,18 @@ plan_review_agents:
 **Empirical (data analysis without paper):**
 ```yaml
 review_agents:
-  - econometrician
+  - econometric-reviewer
   - numerical-auditor
   - data-detective
 plan_review_agents:
-  - econometrician
+  - econometric-reviewer
 ```
 
 **Software package** (estimation library, simulation toolkit):
 ```yaml
 review_agents:
   - numerical-auditor
-  - econometrician
+  - econometric-reviewer
 plan_review_agents:
   - numerical-auditor
 ```
@@ -128,10 +128,10 @@ plan_review_agents:
 **General** (fallback):
 ```yaml
 review_agents:
-  - econometrician
+  - econometric-reviewer
   - numerical-auditor
 plan_review_agents:
-  - econometrician
+  - econometric-reviewer
 ```
 
 ### Step 4: Write Config File
@@ -145,14 +145,14 @@ Write `compound-science.local.md` with the detected settings:
 
 # Review agents run during /workflows:review
 review_agents:
-  - econometrician
+  - econometric-reviewer
   - numerical-auditor
   - identification-critic
   - pipeline-validator
 
 # Agents for /workflows:plan review phase
 plan_review_agents:
-  - econometrician
+  - econometric-reviewer
   - identification-critic
 
 # Estimation language (auto-detected)
@@ -166,7 +166,7 @@ data_sensitivity: public
 
 # Additional agents to include in /workflows:review (beyond defaults)
 # extra_review_agents:
-#   - referee
+#   - journal-referee
 #   - mathematical-prover
 
 # Agents to exclude from default review set
@@ -196,12 +196,12 @@ Project type:     empirical-paper
 Est. language:    python
 Data sensitivity: public
 Review agents:    4 configured
-                  econometrician
+                  econometric-reviewer
                   numerical-auditor
                   identification-critic
                   pipeline-validator
 Plan agents:      2 configured
-                  econometrician
+                  econometric-reviewer
                   identification-critic
 
 Tip: Edit the "Research Context" section to add project-specific
@@ -231,19 +231,19 @@ All agents that can be configured in `review_agents` or `plan_review_agents`:
 **Review agents:**
 | Agent | Role | Best for |
 |---|---|---|
-| `econometrician` | Checks identification, endogeneity, standard errors, instrument validity | Empirical estimation code |
+| `econometric-reviewer` | Checks identification, endogeneity, standard errors, instrument validity | Empirical estimation code |
 | `mathematical-prover` | Verifies proof steps, regularity conditions, existence/uniqueness | Theoretical derivations |
 | `numerical-auditor` | Checks floating-point stability, convergence, matrix conditioning | Numerical computation |
 | `identification-critic` | Evaluates completeness of identification arguments | Identification strategies |
-| `referee` | Adversarial journal referee simulation | Written artifacts, papers |
+| `journal-referee` | Adversarial journal referee simulation | Written artifacts, papers |
 
 **Research agents:**
 | Agent | Role | Best for |
 |---|---|---|
 | `literature-scout` | Finds related methods, papers, prior applications | Literature review |
-| `methods-researcher` | Deep-dives into specific methods, compares alternatives | Method selection |
+| `methods-explorer` | Deep-dives into specific methods, compares alternatives | Method selection |
 | `data-detective` | Profiles data, checks quality, validates merges | Data preparation |
-| `learnings-researcher` | Searches past solutions in `docs/solutions/` | Recurring problems |
+| `solutions-archivist` | Searches past solutions in `docs/solutions/` | Recurring problems |
 
 **Workflow agents:**
 | Agent | Role | Best for |
@@ -263,7 +263,7 @@ Each project type adjusts default behavior across all workflow commands:
 **methodology-paper:**
 - Review emphasizes proof correctness and mathematical rigor
 - Stop hook checks for: regularity conditions, proof completeness
-- Referee agent included by default (evaluates contribution and exposition)
+- Journal-referee agent included by default (evaluates contribution and exposition)
 
 **empirical:**
 - Review emphasizes data quality and estimation correctness
@@ -294,20 +294,20 @@ Override agents for specific commands by adding command-specific sections:
 ```yaml
 ---
 review_agents:
-  - econometrician
+  - econometric-reviewer
   - numerical-auditor
 
 # Override for /workflows:review only
 review_override:
-  - econometrician
+  - econometric-reviewer
   - numerical-auditor
   - identification-critic
-  - referee
+  - journal-referee
   - pipeline-validator
 
 # Override for /estimate only
 estimate_override:
-  - econometrician
+  - econometric-reviewer
   - numerical-auditor
 ---
 ```
@@ -319,11 +319,11 @@ Add agents that only run when certain conditions are met:
 ```yaml
 ---
 review_agents:
-  - econometrician
+  - econometric-reviewer
   - numerical-auditor
 
 conditional_agents:
-  referee:
+  journal-referee:
     when: "*.tex files exist or docs/paper/ directory exists"
   pipeline-validator:
     when: "Makefile or Snakefile or dvc.yaml exists"
@@ -368,7 +368,7 @@ If no `compound-science.local.md` exists, commands use defaults for `empirical-p
 ## Anti-Patterns
 
 - **Over-configuring** — the defaults work for most projects; only customize if you have specific needs
-- **Excluding core agents** — removing `econometrician` from an empirical project means estimation code gets no domain review
+- **Excluding core agents** — removing `econometric-reviewer` from an empirical project means estimation code gets no domain review
 - **Wrong project type** — if you have data AND a paper, use `empirical-paper`, not just `empirical`
 - **Forgetting Research Context** — the free-text section is where project-specific guidance goes; agents read it during review
 - **Manual agent lists in commands** — don't hardcode agent names in workflow commands; always read from config so changes propagate

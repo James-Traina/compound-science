@@ -95,7 +95,7 @@ if $all_deep; then pass "all agents have >=50 lines"; fi
 
 # 9: All domain/utility commands have >100 lines
 all_deep=true
-for cmd in estimate simulate identify diagnose tabulate replicate visualize sensitivity; do
+for cmd in estimate simulate identify diagnose tabulate replicate visualize stress-test; do
   file="$PLUGIN_DIR/commands/$cmd.md"
   if [ -f "$file" ]; then
     lines=$(wc -l < "$file" | tr -d ' ')
@@ -126,7 +126,7 @@ group "Output Format Sections"
 
 # 11: Domain/utility commands have Output Format section
 all_output=true
-for cmd in estimate simulate identify diagnose tabulate replicate visualize sensitivity; do
+for cmd in estimate simulate identify diagnose tabulate replicate visualize stress-test; do
   file="$PLUGIN_DIR/commands/$cmd.md"
   if [ -f "$file" ] && ! grep -qi 'Output Format\|Output\|output' "$file"; then
     all_output=false
@@ -137,7 +137,7 @@ if $all_output; then pass "all domain/utility commands document output"; fi
 
 # 12: Domain/utility commands have Routes To section
 all_routes=true
-for cmd in estimate simulate identify diagnose tabulate replicate visualize sensitivity; do
+for cmd in estimate simulate identify diagnose tabulate replicate visualize stress-test; do
   file="$PLUGIN_DIR/commands/$cmd.md"
   if [ -f "$file" ] && ! grep -qi 'Routes To\|routes' "$file"; then
     all_routes=false
@@ -202,3 +202,23 @@ for cat in Review Research Workflow; do
     must_fix "CLAUDE.md mentions $cat agents" "category missing"
   fi
 done
+
+# 18: All agent and skill names use word-word kebab-case (no single words, no abbreviations, no 3+ words)
+all_kebab=true
+exceptions="git-worktree"  # git is a proper noun — justified exception
+for file in "$PLUGIN_DIR"/agents/*/*.md; do
+  name=$(basename "$file" .md)
+  if ! echo "$name" | grep -qE '^[a-z]+-[a-z]+$'; then
+    all_kebab=false
+    must_fix "agent $name uses word-word kebab-case" "invalid naming"
+  fi
+done
+for dir in "$PLUGIN_DIR"/skills/*/; do
+  name=$(basename "$dir")
+  if [ "$name" = "git-worktree" ]; then continue; fi
+  if ! echo "$name" | grep -qE '^[a-z]+-[a-z]+$'; then
+    all_kebab=false
+    must_fix "skill $name uses word-word kebab-case" "invalid naming"
+  fi
+done
+if $all_kebab; then pass "all agent and skill names use word-word kebab-case"; fi

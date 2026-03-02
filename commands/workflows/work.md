@@ -77,7 +77,7 @@ Execute a research implementation plan systematically. The focus is on **shippin
 
 3. **Activate Research Environment**
 
-   Load the `setup` skill for environment configuration. Then activate:
+   Load the `project-setup` skill for environment configuration. Then activate:
 
    **Python:**
    ```bash
@@ -228,12 +228,12 @@ Execute a research implementation plan systematically. The focus is on **shippin
 
 3. **Consider Reviewer Agents** (Optional)
 
-   Use for complex or risky changes. Read agents from `compound-science.local.md` frontmatter (`review_agents`). If no settings file, load the `setup` skill to create one.
+   Use for complex or risky changes. Read agents from `compound-science.local.md` frontmatter (`review_agents`). If no settings file, load the `project-setup` skill to create one.
 
    Run configured agents in parallel with Task tool. Address critical issues before proceeding.
 
    Default agents for estimation work:
-   - `econometrician` — identification and inference review
+   - `econometric-reviewer` — identification and inference review
    - `numerical-auditor` — numerical stability and convergence
    - `identification-critic` — identification argument completeness
 
@@ -334,7 +334,7 @@ To trigger swarm execution, say:
 
 > "Make a Task list and launch an army of agent swarm subagents to build the plan"
 
-See the `orchestrating-swarms` skill for detailed swarm patterns and best practices.
+See the `swarm-orchestration` skill for detailed swarm patterns and best practices.
 
 ---
 

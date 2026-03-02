@@ -19,7 +19,7 @@ Use when the user is:
 Skip when:
 - The task is structural estimation (use `structural-modeling` skill)
 - The task is pure prediction/ML (no causal question)
-- The user needs simulation design (use `monte-carlo-designer` agent)
+- The user needs simulation design (use `simulation-designer` agent)
 
 ## Frameworks
 

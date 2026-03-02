@@ -20,7 +20,7 @@ Use when the user is:
 
 Skip when:
 - The task is reduced-form causal inference (use `causal-inference` skill)
-- The task is pure simulation design (use `monte-carlo-designer` agent)
+- The task is pure simulation design (use `simulation-designer` agent)
 - The user just needs standard regression (statsmodels/linearmodels suffice)
 
 ## The Structural Estimation Workflow

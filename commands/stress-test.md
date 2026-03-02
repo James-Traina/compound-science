@@ -1,5 +1,5 @@
 ---
-name: sensitivity
+name: stress-test
 description: "Run sensitivity analysis on causal estimates: Oster bounds, exclusion restriction tests, breakdown frontier, specification curve"
 argument-hint: "<estimation results, baseline specification, or causal claim to stress-test>"
 ---
@@ -289,7 +289,7 @@ Compile all results into a structured assessment and dispatch agents for review.
    - Suggest additional analyses if important dimensions were missed
    - Overall judgment: is the causal claim robust?
 
-2. **Dispatch `econometrician` agent** (via Task tool) with the sensitivity analysis code:
+2. **Dispatch `econometric-reviewer` agent** (via Task tool) with the sensitivity analysis code:
    - Review computation correctness (Oster formula, Conley bounds implementation)
    - Check specification curve is comprehensive but not adversarial
    - Verify statistical procedures (bootstrap, permutation tests)
@@ -335,8 +335,8 @@ Compile all results into a structured assessment and dispatch agents for review.
    - Suggest additional data or instruments that could improve robustness
    - Note which sensitivity results should be reported in the paper (and where: main text vs appendix)
 
-6. **Save sensitivity report** (if `docs/sensitivity/` directory exists or can be created):
-   - Save to `docs/sensitivity/YYYY-MM-DD-<model-name>-sensitivity.md`
+6. **Save sensitivity report** (if `docs/stress-test/` directory exists or can be created):
+   - Save to `docs/stress-test/YYYY-MM-DD-<model-name>-sensitivity.md`
    - Include all tables, specification curve data, and agent reviews
    - Cross-reference the estimation code and baseline results
 
@@ -373,11 +373,11 @@ Compile all results into a structured assessment and dispatch agents for review.
 
 ### Agent Reviews
 - identification-critic: [key findings]
-- econometrician: [key findings]
+- econometric-reviewer: [key findings]
 
 ### Files
-- Report: docs/sensitivity/YYYY-MM-DD-<model>-sensitivity.md
-- Spec curve data: docs/sensitivity/YYYY-MM-DD-<model>-speccurve.csv
+- Report: docs/stress-test/YYYY-MM-DD-<model>-sensitivity.md
+- Spec curve data: docs/stress-test/YYYY-MM-DD-<model>-speccurve.csv
 - Code: <sensitivity analysis code file(s)>
 ```
 

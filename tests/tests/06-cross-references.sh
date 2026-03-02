@@ -83,7 +83,7 @@ group "Cross-References — README Commands"
 quickstart_cmds=$(python3 -c "
 import re
 text = open('$PLUGIN_DIR/README.md').read()
-cmds = set(re.findall(r'(?<!\w)/((?:workflows:)?(?:brainstorm|plan|work|review|compound|estimate|simulate|identify|lfg|slfg|diagnose|tabulate|replicate|visualize|sensitivity))\b', text))
+cmds = set(re.findall(r'(?<!\w)/((?:workflows:)?(?:brainstorm|plan|work|review|compound|estimate|simulate|identify|lfg|slfg|diagnose|tabulate|replicate|visualize|stress-test))\b', text))
 for c in sorted(cmds):
     print('/' + c)
 " 2>/dev/null)
@@ -185,7 +185,7 @@ d = json.load(open('$PLUGIN_DIR/hooks/hooks.json'))
 for m in d['hooks']['UserPromptSubmit']:
     for h in m['hooks']:
         if h['type'] == 'prompt':
-            cmds = set(re.findall(r'/(estimate|simulate|identify|diagnose|tabulate|replicate|visualize|sensitivity)', h['prompt']))
+            cmds = set(re.findall(r'/(estimate|simulate|identify|diagnose|tabulate|replicate|visualize|stress-test)', h['prompt']))
             print(len(cmds))
 " 2>/dev/null || echo "0")
 if [ "$ups_cmds" -ge 3 ]; then
@@ -197,7 +197,7 @@ fi
 group "Cross-References — New Commands"
 
 # 13-14: New commands reference existing agents
-for cmd in diagnose sensitivity; do
+for cmd in diagnose stress-test; do
   file="$PLUGIN_DIR/commands/$cmd.md"
   if [ -f "$file" ]; then
     agent_refs=$(grep -oE '`[a-z]+-[a-z-]+`' "$file" 2>/dev/null | tr -d '`' | sort -u || true)
@@ -249,7 +249,7 @@ done
 
 # 20: README mentions all new commands
 all_new=true
-for cmd in diagnose tabulate replicate visualize sensitivity; do
+for cmd in diagnose tabulate replicate visualize stress-test; do
   if ! grep -q "$cmd" "$PLUGIN_DIR/README.md"; then
     all_new=false
     must_fix "README mentions $cmd" "new command not documented"

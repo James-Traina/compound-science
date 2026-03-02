@@ -74,7 +74,7 @@ if $all_desc; then pass "all commands have description"; fi
 
 # 7: Domain and utility commands have argument-hint
 all_hints=true
-for cmd in estimate simulate identify diagnose tabulate replicate visualize sensitivity; do
+for cmd in estimate simulate identify diagnose tabulate replicate visualize stress-test; do
   file="$PLUGIN_DIR/commands/$cmd.md"
   if [ -f "$file" ] && ! grep -q '^argument-hint:' "$file"; then
     all_hints=false
@@ -162,7 +162,7 @@ group "Frontmatter — Content Depth"
 
 # 15: Domain/utility commands have Pipeline mode statement
 all_pipeline=true
-for cmd in estimate simulate identify diagnose tabulate replicate visualize sensitivity; do
+for cmd in estimate simulate identify diagnose tabulate replicate visualize stress-test; do
   file="$PLUGIN_DIR/commands/$cmd.md"
   if [ -f "$file" ] && ! grep -q 'Pipeline mode' "$file"; then
     all_pipeline=false
@@ -173,7 +173,7 @@ if $all_pipeline; then pass "all domain/utility commands have Pipeline mode"; fi
 
 # 16: Domain/utility commands have phases (Phase/### Phase)
 all_phases=true
-for cmd in estimate simulate identify diagnose tabulate replicate visualize sensitivity; do
+for cmd in estimate simulate identify diagnose tabulate replicate visualize stress-test; do
   file="$PLUGIN_DIR/commands/$cmd.md"
   phase_count=$(grep -c '### Phase\|## Phase\|Phase [0-9]' "$file" 2>/dev/null) || phase_count=0
   if [ "$phase_count" -lt 3 ]; then
@@ -195,7 +195,7 @@ done
 if $all_examples; then pass "all agents have examples section"; fi
 
 # 18: New skills have sufficient depth (>100 lines)
-for skill in journal-submission applied-micro-toolkit; do
+for skill in submission-guide empirical-playbook; do
   file="$PLUGIN_DIR/skills/$skill/SKILL.md"
   if [ -f "$file" ]; then
     lines=$(wc -l < "$file" | tr -d ' ')
