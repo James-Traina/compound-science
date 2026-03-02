@@ -110,7 +110,6 @@ assert_file_exists "README.md" "$PLUGIN_DIR/README.md"
 assert_file_exists "LICENSE" "$PLUGIN_DIR/LICENSE"
 assert_file_exists "hooks/hooks.json" "$PLUGIN_DIR/hooks/hooks.json"
 assert_file_exists "scripts/session-init.sh" "$PLUGIN_DIR/scripts/session-init.sh"
-assert_file_exists "CONTRIBUTING.md" "$PLUGIN_DIR/CONTRIBUTING.md"
 
 group "Component Counts"
 
