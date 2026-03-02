@@ -65,7 +65,36 @@ When multiple agents are needed, determine the optimal order:
 | **Robustness** | econometric-reviewer | pipeline-validator |
 | **Submission** | reproducibility-checker, journal-referee | — |
 
-## 3. TRIAGE AND PRIORITIZATION
+## 3. DISPATCH ALGORITHM
+
+When asked "what should I do next?" or when coordinating a multi-step workflow, follow this procedure:
+
+**Step 1 — Assess current phase.** Determine what has been completed:
+- Has estimation converged? → post-estimation phase
+- Has identification been checked? → ready for robustness
+- Have reviews been run? → ready for fixes or submission
+- Nothing started? → pre-estimation phase
+
+**Step 2 — Check prerequisites.** From the dependency rules in Section 1, verify that all required predecessor steps are complete. If any prerequisite is missing, dispatch that first.
+
+**Step 3 — Select agents.** From the dispatch table in Section 2, identify the agents for the current phase. Prefer parallelizable agents when multiple are available.
+
+**Step 4 — Determine execution mode:**
+- If agents can run in parallel (same phase, no data dependencies) → dispatch simultaneously
+- If agents must be sequential (one's output feeds another's input) → dispatch in order
+- If uncertain → run sequentially to be safe
+
+**Step 5 — Compose handoff state.** Before dispatching, summarize:
+```
+Phase: [current phase]
+Completed: [what has been done and key results]
+Open issues: [any flagged concerns from previous agents]
+Next agent: [who runs next and what they should focus on]
+```
+
+**Step 6 — After agent completes.** Re-assess the phase — the agent's findings may change the plan (e.g., a FAIL from identification-critic means estimation results are invalid → re-estimate before proceeding to robustness).
+
+## 4. TRIAGE AND PRIORITIZATION
 
 When multiple issues are flagged by different agents, prioritize:
 
@@ -75,7 +104,7 @@ When multiple issues are flagged by different agents, prioritize:
 4. **Presentation** — table formatting, figure quality, writing clarity
 5. **Documentation** — replication package completeness, code comments
 
-## 4. HANDOFF MANAGEMENT
+## 5. HANDOFF MANAGEMENT
 
 When transitioning between phases:
 
@@ -84,7 +113,7 @@ When transitioning between phases:
 - **Flag concerns** — if a previous phase raised warnings, ensure the next phase addresses them
 - **Track decisions** — record which specification choices were made and why
 
-## 5. WORKFLOW PATTERNS
+## 6. WORKFLOW PATTERNS
 
 ### Pattern: Full Estimation Cycle
 ```

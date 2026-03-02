@@ -169,11 +169,12 @@ AGENT_NAMES=("econometric-reviewer" "mathematical-prover" "numerical-auditor" "i
 # Check each prompt hook references at least one agent
 all_ref=true
 for event in SessionStart UserPromptSubmit PostToolUse Stop PreCompact PreToolUse SubagentStop; do
-  event_prompt=$(python3 -c "
-import json
-d = json.load(open('$HOOKS_FILE'))
-if '$event' in d['hooks']:
-    for m in d['hooks']['$event']:
+  event_prompt=$(HOOKS_FILE="$HOOKS_FILE" EVENT="$event" python3 -c "
+import json, os
+d = json.load(open(os.environ['HOOKS_FILE']))
+event = os.environ['EVENT']
+if event in d['hooks']:
+    for m in d['hooks'][event]:
         for h in m['hooks']:
             if h['type'] == 'prompt':
                 print(h['prompt'])

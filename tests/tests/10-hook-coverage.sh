@@ -85,16 +85,16 @@ for m in d['hooks']['PostToolUse']:
             print(h['prompt'])
 " 2>/dev/null || echo "")
 
-ptu_ok=true
+ptu_missing=""
 for term in "Python" "R estimation" "Stata" "Julia" "bib" "Makefile"; do
   if ! echo "$ptu_text" | grep -qi "$term"; then
-    ptu_ok=false
+    ptu_missing="$ptu_missing $term"
   fi
 done
-if $ptu_ok; then
+if [ -z "$ptu_missing" ]; then
   pass "PostToolUse covers all content types (languages + bibliography + pipeline)"
 else
-  must_fix "PostToolUse covers all content types" "missing language or content type coverage"
+  must_fix "PostToolUse covers all content types" "missing:$ptu_missing"
 fi
 
 group "Stop Hook — Completeness Checks"
@@ -109,16 +109,16 @@ for m in d['hooks']['Stop']:
 " 2>/dev/null || echo "")
 
 # 17: Stop checks critical completeness conditions (SE, seeds, sensitivity, commands)
-stop_ok=true
+stop_missing=""
 for term in "standard error" "seed" "sensitiv" "/diagnose"; do
   if ! echo "$stop_text" | grep -qi "$term"; then
-    stop_ok=false
+    stop_missing="$stop_missing $term"
   fi
 done
-if $stop_ok; then
+if [ -z "$stop_missing" ]; then
   pass "Stop checks critical conditions (SE, seeds, sensitivity, commands)"
 else
-  must_fix "Stop checks critical conditions" "missing SE, seed, sensitivity, or command references"
+  must_fix "Stop checks critical conditions" "missing:$stop_missing"
 fi
 
 group "PreCompact — State Preservation"
@@ -133,16 +133,16 @@ for m in d['hooks']['PreCompact']:
             print(h['prompt'])
 " 2>/dev/null || echo "")
 
-pc_ok=true
+pc_missing=""
 for term in "identification" "result" "proof" "workflow" "diagnostic"; do
   if ! echo "$precompact_text" | grep -qi "$term"; then
-    pc_ok=false
+    pc_missing="$pc_missing $term"
   fi
 done
-if $pc_ok; then
+if [ -z "$pc_missing" ]; then
   pass "PreCompact preserves key research state"
 else
-  must_fix "PreCompact preserves key state" "missing state category"
+  must_fix "PreCompact preserves key state" "missing:$pc_missing"
 fi
 
 group "New Hooks — PreToolUse & SubagentStop"

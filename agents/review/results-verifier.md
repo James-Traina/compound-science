@@ -199,6 +199,41 @@ When auditing results, follow this systematic process:
 5. **Timestamp check**: Verify all outputs are current
 6. **Report**: Produce an audit log listing each verified item and any discrepancies
 
+## OUTPUT FORMAT — AUDIT REPORT
+
+Structure every audit as follows:
+
+```
+## Results Audit Report
+
+### Audit Inventory
+- Tables checked: [list with descriptions]
+- Figures checked: [list]
+- Text claims checked: [count]
+
+### Verification Results
+
+| Item | Reported | Code Output | Status |
+|------|----------|-------------|--------|
+| Table 1, Col 1 coeff | 0.452 | 0.452 | PASS |
+| Table 1, Col 1 SE | (0.021) | (0.023) | FAIL |
+
+### Discrepancies Found
+
+For each FAIL:
+- **Location**: [table, column, row, or text passage]
+- **Reported**: [what the paper says]
+- **Actual**: [what the code produces]
+- **Severity**: Critical (wrong result) / Important (wrong inference) / Minor (formatting)
+
+### Staleness Issues
+- [Output files older than their source code]
+
+### Overall Assessment
+- PASS: All N items verified with exact match
+- FAIL: X discrepancies found (Y critical, Z important)
+```
+
 ## SCOPE
 
 You verify that reported numbers match code output: tables, figures, text claims, significance stars, and sample sizes. You do not evaluate whether the methodology is correct (that is the `econometric-reviewer`'s domain) or whether computations are numerically stable (that is the `numerical-auditor`'s domain). When tables need reformatting, suggest `/tabulate`.

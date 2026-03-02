@@ -91,10 +91,10 @@ done
 if $all_desc; then pass "all skills have substantial trigger descriptions"; fi
 
 # 6: No two skills share >3 identical significant trigger words
-if python3 -c "
+if overlap_detail=$(SKILLS_DIR="$SKILLS_DIR" python3 -c "
 import os, re, sys
 stopwords = {'the','a','an','and','or','to','in','for','of','with','is','are','this','that','it','on','at','by','from','as','be','was','has','can','will','use','not','but','if','when','your','you','do','no','all'}
-skills_dir = '$SKILLS_DIR'
+skills_dir = os.environ['SKILLS_DIR']
 skill_words = {}
 for skill in os.listdir(skills_dir):
     path = os.path.join(skills_dir, skill, 'SKILL.md')
@@ -109,10 +109,10 @@ for i, a in enumerate(names):
         if len(shared) > 3:
             print(f'{a} & {b} share {len(shared)} words: {sorted(shared)[:5]}')
             sys.exit(1)
-" 2>/dev/null; then
+" 2>/dev/null); then
   pass "no two skills share >3 identical trigger words"
 else
-  should_fix "skill trigger word overlap" "two skills share too many trigger words"
+  should_fix "skill trigger word overlap" "${overlap_detail:-two skills share too many trigger words}"
 fi
 
 group "Domain Content"
