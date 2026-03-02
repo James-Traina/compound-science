@@ -2,22 +2,19 @@
 # Test Group 10: Hook prompt coverage and integration (20 tests)
 source "$(dirname "$0")/../lib/assert.sh"
 
-HOOKS_FILE="$PLUGIN_DIR/hooks/hooks.json"
+export HOOKS_FILE="$PLUGIN_DIR/hooks/hooks.json"
 
 group "Hook Event Coverage"
 
 # 1-7: All 7 expected events present
 EXPECTED_EVENTS=("SessionStart" "UserPromptSubmit" "PostToolUse" "Stop" "PreCompact" "PreToolUse" "SubagentStop")
 for event in "${EXPECTED_EVENTS[@]}"; do
-  if HOOKS_FILE="$HOOKS_FILE" EVENT="$event" python3 -c "
+  export EVENT="$event"
+  py_eval "event $event present" "
 import json, os
 d = json.load(open(os.environ['HOOKS_FILE']))
 assert os.environ['EVENT'] in d['hooks'], os.environ['EVENT'] + ' missing'
-" 2>/dev/null; then
-    pass "event $event present"
-  else
-    must_fix "event $event present" "missing from hooks.json"
-  fi
+" "missing from hooks.json"
 done
 
 group "Hook Timeouts"
@@ -148,23 +145,15 @@ fi
 group "New Hooks — PreToolUse & SubagentStop"
 
 # 19: PreToolUse matcher is "Bash"
-if HOOKS_FILE="$HOOKS_FILE" python3 -c "
+py_eval "PreToolUse matcher is Bash" "
 import json, os
 d = json.load(open(os.environ['HOOKS_FILE']))
 assert d['hooks']['PreToolUse'][0]['matcher'] == 'Bash'
-" 2>/dev/null; then
-  pass "PreToolUse matcher is Bash"
-else
-  must_fix "PreToolUse matcher is Bash" "expected matcher 'Bash'"
-fi
+" "expected matcher 'Bash'"
 
 # 20: SubagentStop matcher is "*"
-if HOOKS_FILE="$HOOKS_FILE" python3 -c "
+py_eval "SubagentStop matcher is *" "
 import json, os
 d = json.load(open(os.environ['HOOKS_FILE']))
 assert d['hooks']['SubagentStop'][0]['matcher'] == '*'
-" 2>/dev/null; then
-  pass "SubagentStop matcher is *"
-else
-  must_fix "SubagentStop matcher is *" "expected matcher '*'"
-fi
+" "expected matcher '*'"

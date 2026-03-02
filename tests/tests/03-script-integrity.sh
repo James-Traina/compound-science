@@ -99,15 +99,11 @@ else
 fi
 
 # 12: No absolute paths in hooks.json
-if ! PLUGIN_DIR="$PLUGIN_DIR" python3 -c "
+py_eval "hooks.json has no absolute paths" "
 import json, os
 text = open(os.environ['PLUGIN_DIR'] + '/hooks/hooks.json').read()
 assert '/Users/' not in text and '/home/' not in text, 'absolute paths found'
-" 2>/dev/null; then
-  must_fix "hooks.json has no absolute paths" "found /Users/ or /home/"
-else
-  pass "hooks.json has no absolute paths"
-fi
+" "found /Users/ or /home/"
 
 group "Test Infrastructure"
 

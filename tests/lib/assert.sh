@@ -13,7 +13,7 @@ _QA_GROUP=""
 
 # --- Paths ---
 REPO_DIR="${REPO_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)}"
-PLUGIN_DIR="${PLUGIN_DIR:-$REPO_DIR}"
+export PLUGIN_DIR="${PLUGIN_DIR:-$REPO_DIR}"
 QA_DIR="${QA_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 REPORT_DIR="$QA_DIR/reports"
 mkdir -p "$REPORT_DIR"

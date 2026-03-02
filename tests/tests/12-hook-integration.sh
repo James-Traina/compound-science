@@ -2,12 +2,12 @@
 # Test Group 12: Hook integration and cross-component wiring (20 tests)
 source "$(dirname "$0")/../lib/assert.sh"
 
-HOOKS_FILE="$PLUGIN_DIR/hooks/hooks.json"
+export HOOKS_FILE="$PLUGIN_DIR/hooks/hooks.json"
 
 group "Hook Count"
 
 # 1: Total hook events = 7
-event_count=$(HOOKS_FILE="$HOOKS_FILE" python3 -c "
+event_count=$(python3 -c "
 import json, os
 d = json.load(open(os.environ['HOOKS_FILE']))
 print(len(d['hooks']))
@@ -15,23 +15,16 @@ print(len(d['hooks']))
 assert_count "total hook events = 7" 7 "$event_count"
 
 # 2: All 7 events are valid Claude Code hook events
-VALID_EVENTS=("SessionStart" "SessionEnd" "UserPromptSubmit" "PreToolUse" "PostToolUse" "Stop" "SubagentStop" "PreCompact" "Notification")
-if HOOKS_FILE="$HOOKS_FILE" python3 -c "
-import json, os, sys
+py_eval "all events are valid Claude Code hook events" "
+import json, os
 d = json.load(open(os.environ['HOOKS_FILE']))
 valid = {'SessionStart','SessionEnd','UserPromptSubmit','PreToolUse','PostToolUse','Stop','SubagentStop','PreCompact','Notification'}
 for event in d['hooks']:
-    if event not in valid:
-        print(f'invalid: {event}')
-        sys.exit(1)
-" 2>/dev/null; then
-  pass "all events are valid Claude Code hook events"
-else
-  must_fix "all events are valid hook events" "found invalid event name"
-fi
+    assert event in valid, f'invalid: {event}'
+" "found invalid event name"
 
 # 3: No duplicate event keys
-dup_count=$(HOOKS_FILE="$HOOKS_FILE" python3 -c "
+dup_count=$(python3 -c "
 import json, os, re
 text = open(os.environ['HOOKS_FILE']).read()
 # JSON object keys are unique by spec, but check the raw text
@@ -42,23 +35,19 @@ assert_count "no duplicate event keys" 0 "$dup_count"
 
 group "PreToolUse Specifics"
 
-ptu_matcher=$(HOOKS_FILE="$HOOKS_FILE" python3 -c "
+# Extract all PreToolUse fields in one call
+ptu_data=$(python3 -c "
 import json, os
 d = json.load(open(os.environ['HOOKS_FILE']))
-print(d['hooks']['PreToolUse'][0]['matcher'])
+ptu = d['hooks']['PreToolUse'][0]
+h = ptu['hooks'][0]
+print(ptu['matcher'])
+print(h['type'])
+print(h['prompt'])
 " 2>/dev/null || echo "")
-
-ptu_type=$(HOOKS_FILE="$HOOKS_FILE" python3 -c "
-import json, os
-d = json.load(open(os.environ['HOOKS_FILE']))
-print(d['hooks']['PreToolUse'][0]['hooks'][0]['type'])
-" 2>/dev/null || echo "")
-
-ptu_prompt=$(HOOKS_FILE="$HOOKS_FILE" python3 -c "
-import json, os
-d = json.load(open(os.environ['HOOKS_FILE']))
-print(d['hooks']['PreToolUse'][0]['hooks'][0]['prompt'])
-" 2>/dev/null || echo "")
+ptu_matcher=$(echo "$ptu_data" | head -1)
+ptu_type=$(echo "$ptu_data" | sed -n '2p')
+ptu_prompt=$(echo "$ptu_data" | tail -n +3)
 
 # 4: PreToolUse matcher is exactly "Bash"
 if [ "$ptu_matcher" = "Bash" ]; then
@@ -97,23 +86,19 @@ fi
 
 group "SubagentStop Specifics"
 
-sas_matcher=$(HOOKS_FILE="$HOOKS_FILE" python3 -c "
+# Extract all SubagentStop fields in one call
+sas_data=$(python3 -c "
 import json, os
 d = json.load(open(os.environ['HOOKS_FILE']))
-print(d['hooks']['SubagentStop'][0]['matcher'])
+sas = d['hooks']['SubagentStop'][0]
+h = sas['hooks'][0]
+print(sas['matcher'])
+print(h['type'])
+print(h['prompt'])
 " 2>/dev/null || echo "")
-
-sas_type=$(HOOKS_FILE="$HOOKS_FILE" python3 -c "
-import json, os
-d = json.load(open(os.environ['HOOKS_FILE']))
-print(d['hooks']['SubagentStop'][0]['hooks'][0]['type'])
-" 2>/dev/null || echo "")
-
-sas_prompt=$(HOOKS_FILE="$HOOKS_FILE" python3 -c "
-import json, os
-d = json.load(open(os.environ['HOOKS_FILE']))
-print(d['hooks']['SubagentStop'][0]['hooks'][0]['prompt'])
-" 2>/dev/null || echo "")
+sas_matcher=$(echo "$sas_data" | head -1)
+sas_type=$(echo "$sas_data" | sed -n '2p')
+sas_prompt=$(echo "$sas_data" | tail -n +3)
 
 # 9: SubagentStop matcher is exactly "*"
 if [ "$sas_matcher" = "*" ]; then
@@ -152,23 +137,14 @@ fi
 
 group "Cross-Component Wiring"
 
-all_prompts=$(HOOKS_FILE="$HOOKS_FILE" python3 -c "
-import json, os
-d = json.load(open(os.environ['HOOKS_FILE']))
-for event, matchers in d['hooks'].items():
-    for m in matchers:
-        for h in m['hooks']:
-            if h['type'] == 'prompt':
-                print(h['prompt'])
-" 2>/dev/null || echo "")
-
 # 14: All prompt hooks reference >=1 agent name that exists in agents/
 AGENT_NAMES=("econometric-reviewer" "mathematical-prover" "numerical-auditor" "identification-critic" "journal-referee" "simulation-designer" "process-architect" "equilibrium-analyst" "calibration-assessor" "results-verifier" "literature-scout" "methods-explorer" "data-detective" "solutions-archivist" "benchmark-researcher" "pipeline-validator" "reproducibility-checker" "specification-analyzer" "research-coordinator" "progress-tracker")
 
 # Check each prompt hook references at least one agent
 all_ref=true
 for event in SessionStart UserPromptSubmit PostToolUse Stop PreCompact PreToolUse SubagentStop; do
-  event_prompt=$(HOOKS_FILE="$HOOKS_FILE" EVENT="$event" python3 -c "
+  export EVENT="$event"
+  event_prompt=$(python3 -c "
 import json, os
 d = json.load(open(os.environ['HOOKS_FILE']))
 event = os.environ['EVENT']
@@ -194,7 +170,7 @@ done
 if $all_ref; then pass "all prompt hooks reference existing agents"; fi
 
 # 15: UserPromptSubmit mentions all 5 utility commands
-ups_prompt=$(HOOKS_FILE="$HOOKS_FILE" python3 -c "
+ups_prompt=$(python3 -c "
 import json, os
 d = json.load(open(os.environ['HOOKS_FILE']))
 for m in d['hooks']['UserPromptSubmit']:
@@ -216,7 +192,7 @@ else
 fi
 
 # 16: PostToolUse mentions >=3 distinct agent names
-agent_count=$(HOOKS_FILE="$HOOKS_FILE" python3 -c "
+agent_count=$(python3 -c "
 import json, os
 d = json.load(open(os.environ['HOOKS_FILE']))
 agents = ['econometric-reviewer','mathematical-prover','numerical-auditor','identification-critic','journal-referee','simulation-designer','process-architect','equilibrium-analyst','calibration-assessor','results-verifier','literature-scout','methods-explorer','data-detective','solutions-archivist','benchmark-researcher','pipeline-validator','reproducibility-checker','specification-analyzer','research-coordinator','progress-tracker']
@@ -236,7 +212,7 @@ else
 fi
 
 # 17: Stop prompt mentions >=2 command names
-cmd_count=$(HOOKS_FILE="$HOOKS_FILE" python3 -c "
+cmd_count=$(python3 -c "
 import json, os
 d = json.load(open(os.environ['HOOKS_FILE']))
 cmds = ['/estimate','/simulate','/identify','/diagnose','/tabulate','/replicate','/visualize','/stress-test','/workflows:']
@@ -258,38 +234,29 @@ fi
 group "Structural Integrity"
 
 # 18: Every hook entry has an explicit timeout field
-if HOOKS_FILE="$HOOKS_FILE" python3 -c "
-import json, os, sys
+py_eval "every hook entry has explicit timeout" "
+import json, os
 d = json.load(open(os.environ['HOOKS_FILE']))
 for event, matchers in d['hooks'].items():
     for m in matchers:
         for h in m['hooks']:
-            if 'timeout' not in h:
-                print(f'missing timeout: {event}')
-                sys.exit(1)
-" 2>/dev/null; then
-  pass "every hook entry has explicit timeout"
-else
-  must_fix "every hook has timeout" "missing timeout field"
-fi
+            assert 'timeout' in h, f'missing timeout: {event}'
+" "missing timeout field"
 
 # 19: SessionStart command path includes session-init.sh
-if HOOKS_FILE="$HOOKS_FILE" python3 -c "
-import json, os, sys
+py_eval "SessionStart references session-init.sh" "
+import json, os
 d = json.load(open(os.environ['HOOKS_FILE']))
-for m in d['hooks']['SessionStart']:
-    for h in m['hooks']:
-        if 'command' in h and 'session-init.sh' in h['command']:
-            sys.exit(0)
-sys.exit(1)
-" 2>/dev/null; then
-  pass "SessionStart references session-init.sh"
-else
-  must_fix "SessionStart references session-init.sh" "missing"
-fi
+found = any(
+    'command' in h and 'session-init.sh' in h['command']
+    for m in d['hooks']['SessionStart']
+    for h in m['hooks']
+)
+assert found, 'session-init.sh not referenced'
+" "missing"
 
 # 20: No hook prompt exceeds 5000 characters (bloat guard)
-if HOOKS_FILE="$HOOKS_FILE" python3 -c "
+if python3 -c "
 import json, os, sys
 d = json.load(open(os.environ['HOOKS_FILE']))
 for event, matchers in d['hooks'].items():

@@ -145,17 +145,14 @@ assert_count "workflow agents = 5" 5 "$workflow_count"
 group "README Cross-check"
 
 # 18: README component counts match filesystem
-if PLUGIN_DIR="$PLUGIN_DIR" ACTUAL_AGENTS="$actual_agents" ACTUAL_COMMANDS="$actual_commands" ACTUAL_SKILLS="$actual_skills" ACTUAL_HOOKS="$actual_hooks" ACTUAL_TOTAL="$total" python3 -c "
+export ACTUAL_AGENTS="$actual_agents" ACTUAL_COMMANDS="$actual_commands" ACTUAL_SKILLS="$actual_skills" ACTUAL_HOOKS="$actual_hooks" ACTUAL_TOTAL="$total"
+py_eval "README counts match filesystem" "
 import re, os
 text = open(os.environ['PLUGIN_DIR'] + '/README.md').read()
 counts = {m.group(1): m.group(2) for m in re.finditer(r'(Agents|Commands|Skills|Hooks|Total)\D+?(\d+)', text)}
 actual = {'Agents': os.environ['ACTUAL_AGENTS'], 'Commands': os.environ['ACTUAL_COMMANDS'], 'Skills': os.environ['ACTUAL_SKILLS'], 'Hooks': os.environ['ACTUAL_HOOKS'], 'Total': os.environ['ACTUAL_TOTAL']}
 assert all(counts.get(k) == v for k, v in actual.items()), f'mismatch: {counts} vs {actual}'
-" 2>/dev/null; then
-  pass "README counts match filesystem"
-else
-  must_fix "README counts match filesystem" "Component Counts table is stale"
-fi
+" "Component Counts table is stale"
 
 # 19: Only 3 agent subdirectories exist
 agent_dirs=$(find "$PLUGIN_DIR/agents" -mindepth 1 -maxdepth 1 -type d | wc -l | tr -d ' ')
