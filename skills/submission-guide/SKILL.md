@@ -41,6 +41,7 @@ Complete every item before submitting. Missing any one of these is a common reas
 - [ ] **Anonymization**: Remove all author-identifying information. Check PDF metadata, acknowledgments, file paths in code, dataset names that reveal institution.
 - [ ] **Page/word count**: Within journal limits. Many journals have strict limits (e.g., AER Papers & Proceedings: 5 pages).
 - [ ] **Spell check and grammar**: Run a final pass. Typos in the abstract signal carelessness.
+- [ ] **Agent review**: Run the `journal-referee` agent for an adversarial review and the `results-verifier` agent to audit tables against code output.
 
 ### Tables
 

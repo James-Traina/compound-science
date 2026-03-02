@@ -22,6 +22,8 @@ Skip when:
 - The task is structural estimation (use `structural-modeling` skill)
 - The task is manuscript preparation or journal logistics (use `submission-guide` skill)
 
+After selecting a method, the `econometric-reviewer` agent can review the implementation and the `identification-critic` agent can evaluate the identification argument.
+
 ## Method Selection Decision Tree
 
 Start with the fundamental question: **What source of variation identifies the causal effect?**

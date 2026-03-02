@@ -188,3 +188,5 @@ Planning answers **HOW** to implement it:
 - Testing strategy and robustness checks
 
 When brainstorm output exists, `/workflows:plan` should detect it and use it as input, skipping its own idea refinement phase.
+
+During brainstorming, the `methods-explorer` agent can provide detailed estimator comparisons and the `literature-scout` agent can survey related work to inform the choice of approach.

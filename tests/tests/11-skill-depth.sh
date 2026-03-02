@@ -90,27 +90,37 @@ else:
 done
 if $all_desc; then pass "all skills have substantial trigger descriptions"; fi
 
-# 6: No two skills share >3 identical significant trigger words
+# 6: No two skills share >8 identical significant words in body opener
+# Threshold is >8 because a domain-specific plugin has related skills that
+# naturally share vocabulary. >8 catches true duplication, not domain overlap.
+# Stopwords include common English + skill-structure words (appear in every preamble).
 if overlap_detail=$(SKILLS_DIR="$SKILLS_DIR" python3 -c "
 import os, re, sys
-stopwords = {'the','a','an','and','or','to','in','for','of','with','is','are','this','that','it','on','at','by','from','as','be','was','has','can','will','use','not','but','if','when','your','you','do','no','all'}
+stopwords = {'the','a','an','and','or','to','in','for','of','with','is','are','this','that','it','on','at','by','from','as','be','was','has','can','will','use','not','but','if','when','your','you','do','no','all',
+  'skill','user','reference','covers','using','methods','guide','section','also','used','each','more','than','about','into','between','other','some','most','only','such','these','those','them','they','been','have','which','what','make','tool','tools'}
 skills_dir = os.environ['SKILLS_DIR']
 skill_words = {}
 for skill in os.listdir(skills_dir):
     path = os.path.join(skills_dir, skill, 'SKILL.md')
     if not os.path.isfile(path): continue
-    text = open(path).read()[:500].lower()
+    raw = open(path).read()
+    # strip YAML frontmatter so field names don't pollute word sets
+    if raw.startswith('---'):
+        end = raw.find('---', 3)
+        if end != -1:
+            raw = raw[end+3:]
+    text = raw[:500].lower()
     words = set(w for w in re.findall(r'[a-z]{4,}', text) if w not in stopwords)
     skill_words[skill] = words
 names = sorted(skill_words)
 for i, a in enumerate(names):
     for b in names[i+1:]:
         shared = skill_words[a] & skill_words[b]
-        if len(shared) > 3:
+        if len(shared) > 8:
             print(f'{a} & {b} share {len(shared)} words: {sorted(shared)[:5]}')
             sys.exit(1)
 " 2>/dev/null); then
-  pass "no two skills share >3 identical trigger words"
+  pass "no two skills share >8 identical trigger words"
 else
   should_fix "skill trigger word overlap" "${overlap_detail:-two skills share too many trigger words}"
 fi

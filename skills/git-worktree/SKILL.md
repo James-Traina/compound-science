@@ -217,6 +217,8 @@ Instead of always creating a worktree:
    - no → proceed with PR diff on current branch
 ```
 
+The `research-coordinator` agent can help decide when parallel worktrees are appropriate versus sequential work on a single branch.
+
 ### `/workflows:work`
 
 Always offer choice:

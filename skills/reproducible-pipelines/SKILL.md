@@ -561,3 +561,5 @@ Run this before submitting the replication package:
 | "It works on my laptop" | Different OS, library versions, locale settings | Test in Docker or CI; provide `environment.yml` |
 | Results tables copy-pasted into paper | Tables get stale when estimates change | Generate LaTeX tables directly from estimation code |
 | Pipeline only tested by the author | Missing implicit dependencies | Have a co-author or RA run from scratch; or use CI |
+
+The `pipeline-validator` agent can audit pipelines for these anti-patterns automatically, and the `reproducibility-checker` agent can verify replication packages before submission.
