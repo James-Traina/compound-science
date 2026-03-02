@@ -68,9 +68,9 @@ group "Trigger Quality"
 # 5: All skill descriptions have trigger keywords (>=50 chars in first non-frontmatter paragraph)
 all_desc=true
 for skill in "${SKILLS[@]}"; do
-  desc_len=$(python3 -c "
-import sys
-text = open('$SKILLS_DIR/$skill/SKILL.md').read()
+  desc_len=$(SKILL_PATH="$SKILLS_DIR/$skill/SKILL.md" python3 -c "
+import sys, os
+text = open(os.environ['SKILL_PATH']).read()
 # Skip frontmatter
 if text.startswith('---'):
     text = text.split('---', 2)[2] if text.count('---') >= 2 else text

@@ -49,9 +49,9 @@ else
 fi
 
 # 8: No unquoted variable expansion
-unquoted=$(python3 -c "
-import re
-with open('$PLUGIN_DIR/scripts/session-init.sh') as f:
+unquoted=$(PLUGIN_DIR="$PLUGIN_DIR" python3 -c "
+import re, os
+with open(os.environ['PLUGIN_DIR'] + '/scripts/session-init.sh') as f:
     for i, line in enumerate(f, 1):
         line = line.strip()
         if line.startswith('#') or not line:
@@ -99,9 +99,9 @@ else
 fi
 
 # 12: No absolute paths in hooks.json
-if ! python3 -c "
-import json
-text = open('$PLUGIN_DIR/hooks/hooks.json').read()
+if ! PLUGIN_DIR="$PLUGIN_DIR" python3 -c "
+import json, os
+text = open(os.environ['PLUGIN_DIR'] + '/hooks/hooks.json').read()
 assert '/Users/' not in text and '/home/' not in text, 'absolute paths found'
 " 2>/dev/null; then
   must_fix "hooks.json has no absolute paths" "found /Users/ or /home/"

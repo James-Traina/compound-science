@@ -177,15 +177,14 @@ fi
 group "Markdown Quality"
 
 # 16: No broken markdown links in README
-broken_links=$(python3 -c "
-import re
-text = open('$PLUGIN_DIR/README.md').read()
+broken_links=$(PLUGIN_DIR="$PLUGIN_DIR" python3 -c "
+import re, os
+text = open(os.environ['PLUGIN_DIR'] + '/README.md').read()
 links = re.findall(r'\[([^\]]+)\]\(([^\)]+)\)', text)
 for label, url in links:
     if url.startswith('#') or url.startswith('http'):
         continue
-    import os
-    if not os.path.exists(os.path.join('$PLUGIN_DIR', url)):
+    if not os.path.exists(os.path.join(os.environ['PLUGIN_DIR'], url)):
         print(f'{label} -> {url}')
 " 2>/dev/null || true)
 if [ -z "$broken_links" ]; then

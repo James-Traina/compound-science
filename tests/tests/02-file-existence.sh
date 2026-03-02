@@ -116,9 +116,9 @@ group "Component Counts"
 actual_agents=$(find "$PLUGIN_DIR/agents" -name "*.md" | wc -l | tr -d ' ')
 actual_commands=$(find "$PLUGIN_DIR/commands" -name "*.md" | wc -l | tr -d ' ')
 actual_skills=$(find "$PLUGIN_DIR/skills" -name "SKILL.md" | wc -l | tr -d ' ')
-actual_hooks=$(python3 -c "
-import json
-d = json.load(open('$PLUGIN_DIR/hooks/hooks.json'))
+actual_hooks=$(PLUGIN_DIR="$PLUGIN_DIR" python3 -c "
+import json, os
+d = json.load(open(os.environ['PLUGIN_DIR'] + '/hooks/hooks.json'))
 print(len(d['hooks']))
 " 2>/dev/null || echo "0")
 
@@ -145,11 +145,11 @@ assert_count "workflow agents = 5" 5 "$workflow_count"
 group "README Cross-check"
 
 # 18: README component counts match filesystem
-if python3 -c "
-import re
-text = open('$PLUGIN_DIR/README.md').read()
+if PLUGIN_DIR="$PLUGIN_DIR" ACTUAL_AGENTS="$actual_agents" ACTUAL_COMMANDS="$actual_commands" ACTUAL_SKILLS="$actual_skills" ACTUAL_HOOKS="$actual_hooks" ACTUAL_TOTAL="$total" python3 -c "
+import re, os
+text = open(os.environ['PLUGIN_DIR'] + '/README.md').read()
 counts = {m.group(1): m.group(2) for m in re.finditer(r'(Agents|Commands|Skills|Hooks|Total)\D+?(\d+)', text)}
-actual = {'Agents': '$actual_agents', 'Commands': '$actual_commands', 'Skills': '$actual_skills', 'Hooks': '$actual_hooks', 'Total': '$total'}
+actual = {'Agents': os.environ['ACTUAL_AGENTS'], 'Commands': os.environ['ACTUAL_COMMANDS'], 'Skills': os.environ['ACTUAL_SKILLS'], 'Hooks': os.environ['ACTUAL_HOOKS'], 'Total': os.environ['ACTUAL_TOTAL']}
 assert all(counts.get(k) == v for k, v in actual.items()), f'mismatch: {counts} vs {actual}'
 " 2>/dev/null; then
   pass "README counts match filesystem"

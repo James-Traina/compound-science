@@ -80,9 +80,9 @@ if $all_mentioned; then pass "all skills mentioned in CLAUDE.md"; fi
 group "Cross-References — README Commands"
 
 # 6: Slash commands in README exist as files
-quickstart_cmds=$(python3 -c "
-import re
-text = open('$PLUGIN_DIR/README.md').read()
+quickstart_cmds=$(PLUGIN_DIR="$PLUGIN_DIR" python3 -c "
+import re, os
+text = open(os.environ['PLUGIN_DIR'] + '/README.md').read()
 cmds = set(re.findall(r'(?<!\w)/((?:workflows:)?(?:brainstorm|plan|work|review|compound|estimate|simulate|identify|lfg|slfg|diagnose|tabulate|replicate|visualize|stress-test))\b', text))
 for c in sorted(cmds):
     print('/' + c)
@@ -113,9 +113,9 @@ group "Cross-References — Hook Integrity"
 
 # 8: Hook event types are valid Claude Code events
 valid_events="SessionStart|SessionEnd|PreToolUse|PostToolUse|Stop|SubagentStop|UserPromptSubmit|PreCompact|Notification"
-hook_events=$(python3 -c "
-import json
-d = json.load(open('$PLUGIN_DIR/hooks/hooks.json'))
+hook_events=$(PLUGIN_DIR="$PLUGIN_DIR" python3 -c "
+import json, os
+d = json.load(open(os.environ['PLUGIN_DIR'] + '/hooks/hooks.json'))
 for e in d['hooks'].keys():
     print(e)
 " 2>/dev/null)
@@ -130,9 +130,9 @@ done
 if $all_valid; then pass "all hook events are valid Claude Code events"; fi
 
 # 9: SessionStart script path resolves
-session_cmd=$(python3 -c "
-import json
-d = json.load(open('$PLUGIN_DIR/hooks/hooks.json'))
+session_cmd=$(PLUGIN_DIR="$PLUGIN_DIR" python3 -c "
+import json, os
+d = json.load(open(os.environ['PLUGIN_DIR'] + '/hooks/hooks.json'))
 for h in d['hooks']['SessionStart'][0]['hooks']:
     if h['type'] == 'command':
         print(h['command'])
@@ -147,9 +147,9 @@ fi
 group "Cross-References — Hook Content"
 
 # 10: UserPromptSubmit references at least 5 agents
-ups_agents=$(python3 -c "
-import json, re
-d = json.load(open('$PLUGIN_DIR/hooks/hooks.json'))
+ups_agents=$(PLUGIN_DIR="$PLUGIN_DIR" python3 -c "
+import json, re, os
+d = json.load(open(os.environ['PLUGIN_DIR'] + '/hooks/hooks.json'))
 for m in d['hooks']['UserPromptSubmit']:
     for h in m['hooks']:
         if h['type'] == 'prompt':
@@ -163,9 +163,9 @@ else
 fi
 
 # 11: PostToolUse references at least 3 agents
-ptu_agents=$(python3 -c "
-import json, re
-d = json.load(open('$PLUGIN_DIR/hooks/hooks.json'))
+ptu_agents=$(PLUGIN_DIR="$PLUGIN_DIR" python3 -c "
+import json, re, os
+d = json.load(open(os.environ['PLUGIN_DIR'] + '/hooks/hooks.json'))
 for m in d['hooks']['PostToolUse']:
     for h in m['hooks']:
         if h['type'] == 'prompt':
@@ -179,9 +179,9 @@ else
 fi
 
 # 12: UserPromptSubmit references at least 3 commands
-ups_cmds=$(python3 -c "
-import json, re
-d = json.load(open('$PLUGIN_DIR/hooks/hooks.json'))
+ups_cmds=$(PLUGIN_DIR="$PLUGIN_DIR" python3 -c "
+import json, re, os
+d = json.load(open(os.environ['PLUGIN_DIR'] + '/hooks/hooks.json'))
 for m in d['hooks']['UserPromptSubmit']:
     for h in m['hooks']:
         if h['type'] == 'prompt':

@@ -5,7 +5,7 @@ source "$(dirname "$0")/../lib/assert.sh"
 group "plugin.json Validity"
 
 # 1
-if python3 -c "import json; json.load(open('$PLUGIN_DIR/.claude-plugin/plugin.json'))" 2>/dev/null; then
+if PLUGIN_DIR="$PLUGIN_DIR" python3 -c "import json, os; json.load(open(os.environ['PLUGIN_DIR'] + '/.claude-plugin/plugin.json'))" 2>/dev/null; then
   pass "plugin.json parses"
 else
   must_fix "plugin.json parses" "invalid JSON"
@@ -13,10 +13,10 @@ fi
 
 # 2-5: Required fields
 for field in name version description license; do
-  if python3 -c "
-import json
-d = json.load(open('$PLUGIN_DIR/.claude-plugin/plugin.json'))
-assert '$field' in d, 'missing $field'
+  if PLUGIN_DIR="$PLUGIN_DIR" FIELD="$field" python3 -c "
+import json, os
+d = json.load(open(os.environ['PLUGIN_DIR'] + '/.claude-plugin/plugin.json'))
+assert os.environ['FIELD'] in d, 'missing ' + os.environ['FIELD']
 " 2>/dev/null; then
     pass "plugin.json has '$field'"
   else
@@ -25,9 +25,9 @@ assert '$field' in d, 'missing $field'
 done
 
 # 6
-if python3 -c "
-import json
-d = json.load(open('$PLUGIN_DIR/.claude-plugin/plugin.json'))
+if PLUGIN_DIR="$PLUGIN_DIR" python3 -c "
+import json, os
+d = json.load(open(os.environ['PLUGIN_DIR'] + '/.claude-plugin/plugin.json'))
 assert isinstance(d.get('author'), dict), 'author must be object'
 assert 'name' in d['author'], 'author.name missing'
 " 2>/dev/null; then
@@ -39,16 +39,16 @@ fi
 group "hooks.json Validity"
 
 # 7
-if python3 -c "import json; json.load(open('$PLUGIN_DIR/hooks/hooks.json'))" 2>/dev/null; then
+if PLUGIN_DIR="$PLUGIN_DIR" python3 -c "import json, os; json.load(open(os.environ['PLUGIN_DIR'] + '/hooks/hooks.json'))" 2>/dev/null; then
   pass "hooks.json parses"
 else
   must_fix "hooks.json parses" "invalid JSON"
 fi
 
 # 8
-if python3 -c "
-import json
-d = json.load(open('$PLUGIN_DIR/hooks/hooks.json'))
+if PLUGIN_DIR="$PLUGIN_DIR" python3 -c "
+import json, os
+d = json.load(open(os.environ['PLUGIN_DIR'] + '/hooks/hooks.json'))
 assert 'hooks' in d, 'missing hooks wrapper'
 assert isinstance(d['hooks'], dict), 'hooks must be object'
 " 2>/dev/null; then
@@ -58,9 +58,9 @@ else
 fi
 
 # 9
-if python3 -c "
-import json
-d = json.load(open('$PLUGIN_DIR/hooks/hooks.json'))
+if PLUGIN_DIR="$PLUGIN_DIR" python3 -c "
+import json, os
+d = json.load(open(os.environ['PLUGIN_DIR'] + '/hooks/hooks.json'))
 assert 'description' in d, 'missing description'
 " 2>/dev/null; then
   pass "hooks.json has description"
@@ -69,9 +69,9 @@ else
 fi
 
 # 10
-if python3 -c "
-import json, sys
-d = json.load(open('$PLUGIN_DIR/hooks/hooks.json'))
+if PLUGIN_DIR="$PLUGIN_DIR" python3 -c "
+import json, os, sys
+d = json.load(open(os.environ['PLUGIN_DIR'] + '/hooks/hooks.json'))
 for event, matchers in d['hooks'].items():
     for m in matchers:
         assert 'matcher' in m, f'{event}: missing matcher'
@@ -91,9 +91,9 @@ fi
 group "Hook Entry Validation"
 
 # 11: All hook events have proper timeouts
-if python3 -c "
-import json, sys
-d = json.load(open('$PLUGIN_DIR/hooks/hooks.json'))
+if PLUGIN_DIR="$PLUGIN_DIR" python3 -c "
+import json, os, sys
+d = json.load(open(os.environ['PLUGIN_DIR'] + '/hooks/hooks.json'))
 missing = []
 for event, matchers in d['hooks'].items():
     for m in matchers:
@@ -109,11 +109,12 @@ fi
 
 # 12-15: Spot-check specific hook timeouts
 for check_event in SessionStart Stop PreToolUse SubagentStop; do
-  timeout_val=$(python3 -c "
-import json
-d = json.load(open('$PLUGIN_DIR/hooks/hooks.json'))
-t = d['hooks']['$check_event'][0]['hooks'][0].get('timeout', 0)
-assert t > 0, f'no timeout for $check_event'
+  timeout_val=$(PLUGIN_DIR="$PLUGIN_DIR" CHECK_EVENT="$check_event" python3 -c "
+import json, os
+d = json.load(open(os.environ['PLUGIN_DIR'] + '/hooks/hooks.json'))
+event = os.environ['CHECK_EVENT']
+t = d['hooks'][event][0]['hooks'][0].get('timeout', 0)
+assert t > 0, f'no timeout for {event}'
 print(t)
 " 2>/dev/null)
   if [ -n "$timeout_val" ]; then
@@ -126,9 +127,9 @@ done
 group "Hook JSON Integrity"
 
 # 16: No trailing commas (common JSON error)
-if python3 -c "
-import json
-json.load(open('$PLUGIN_DIR/hooks/hooks.json'))
+if PLUGIN_DIR="$PLUGIN_DIR" python3 -c "
+import json, os
+json.load(open(os.environ['PLUGIN_DIR'] + '/hooks/hooks.json'))
 " 2>/dev/null; then
   pass "hooks.json has no trailing commas"
 else
@@ -136,9 +137,9 @@ else
 fi
 
 # 17: All matchers are non-empty strings
-if python3 -c "
-import json
-d = json.load(open('$PLUGIN_DIR/hooks/hooks.json'))
+if PLUGIN_DIR="$PLUGIN_DIR" python3 -c "
+import json, os
+d = json.load(open(os.environ['PLUGIN_DIR'] + '/hooks/hooks.json'))
 for event, matchers in d['hooks'].items():
     for m in matchers:
         assert isinstance(m['matcher'], str) and len(m['matcher']) > 0, f'{event}: empty matcher'
@@ -149,9 +150,9 @@ else
 fi
 
 # 18: All prompt hooks have non-trivial prompts (>100 chars)
-if python3 -c "
-import json
-d = json.load(open('$PLUGIN_DIR/hooks/hooks.json'))
+if PLUGIN_DIR="$PLUGIN_DIR" python3 -c "
+import json, os
+d = json.load(open(os.environ['PLUGIN_DIR'] + '/hooks/hooks.json'))
 for event, matchers in d['hooks'].items():
     for m in matchers:
         for h in m['hooks']:
@@ -164,9 +165,9 @@ else
 fi
 
 # 19: Hook types are only 'command' or 'prompt'
-if python3 -c "
-import json
-d = json.load(open('$PLUGIN_DIR/hooks/hooks.json'))
+if PLUGIN_DIR="$PLUGIN_DIR" python3 -c "
+import json, os
+d = json.load(open(os.environ['PLUGIN_DIR'] + '/hooks/hooks.json'))
 for event, matchers in d['hooks'].items():
     for m in matchers:
         for h in m['hooks']:
@@ -178,9 +179,9 @@ else
 fi
 
 # 20: plugin.json version is semver format
-if python3 -c "
-import json, re
-d = json.load(open('$PLUGIN_DIR/.claude-plugin/plugin.json'))
+if PLUGIN_DIR="$PLUGIN_DIR" python3 -c "
+import json, re, os
+d = json.load(open(os.environ['PLUGIN_DIR'] + '/.claude-plugin/plugin.json'))
 assert re.match(r'^\d+\.\d+\.\d+', d['version']), f'not semver: {d[\"version\"]}'
 " 2>/dev/null; then
   pass "plugin.json version is semver"
