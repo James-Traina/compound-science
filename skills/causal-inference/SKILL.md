@@ -21,6 +21,11 @@ Skip when:
 - The task is pure prediction/ML (no causal question)
 - The user needs simulation design (use `simulation-designer` agent)
 
+## Where to Start
+- **Choosing a method?** Jump to [Method Selection Guide](#method-selection-guide) at the end
+- **Implementing a specific method?** Go directly to that method's section below
+- **Running diagnostics?** Each method section includes its own diagnostic checklist
+
 ## Frameworks
 
 Two complementary frameworks underpin all causal inference:

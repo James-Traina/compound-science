@@ -139,7 +139,7 @@ echo "  Report: $SHARED_REPORT"
 echo ""
 
 # When running the full suite, verify total test count to catch silently-crashed scripts
-EXPECTED_TOTAL=240
+EXPECTED_TOTAL=229
 if [ $# -eq 0 ] && [ "$total_all" -ne "$EXPECTED_TOTAL" ]; then
   echo "  ✗ TOTAL MISMATCH: expected $EXPECTED_TOTAL tests, got $total_all"
   echo "    A test script may have crashed mid-run. Check each group individually."

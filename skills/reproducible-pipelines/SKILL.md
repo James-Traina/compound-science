@@ -22,6 +22,11 @@ Skip when:
 - The task is git workflow management (use `git-worktree` skill)
 - The task is about orchestrating Claude agents (use `swarm-orchestration` skill)
 
+## Where to Start
+- **New project?** Start with Directory Structure below
+- **Adding a workflow manager?** Jump to [Workflow Managers](#workflow-managers) (Make / Snakemake / DVC)
+- **Preparing for submission?** Jump to [Pre-Submission Checklist](#pre-submission-checklist)
+
 ## Project Directory Structure
 
 Use a standardized layout from the start. This is the structure expected by most replication reviewers:

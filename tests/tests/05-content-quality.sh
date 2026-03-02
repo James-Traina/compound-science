@@ -177,7 +177,7 @@ fi
 group "Markdown Quality"
 
 # 16: No broken markdown links in README
-broken_links=$(PLUGIN_DIR="$PLUGIN_DIR" python3 -c "
+broken_links=$(python3 -c "
 import re, os
 text = open(os.environ['PLUGIN_DIR'] + '/README.md').read()
 links = re.findall(r'\[([^\]]+)\]\(([^\)]+)\)', text)
@@ -204,7 +204,6 @@ done
 
 # 18: All agent and skill names use word-word kebab-case (no single words, no abbreviations, no 3+ words)
 all_kebab=true
-exceptions="git-worktree"  # git is a proper noun — justified exception
 for file in "$PLUGIN_DIR"/agents/*/*.md; do
   name=$(basename "$file" .md)
   if ! echo "$name" | grep -qE '^[a-z]+-[a-z]+$'; then

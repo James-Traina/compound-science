@@ -1,5 +1,5 @@
 #!/bin/bash
-# Test Group 6: Cross-reference integrity between components (20 tests)
+# Test Group 6: Cross-reference integrity between components (22 tests)
 source "$(dirname "$0")/../lib/assert.sh"
 
 group "Cross-References — Agents in Commands"
@@ -41,19 +41,23 @@ fi
 
 group "Cross-References — CLAUDE.md Agents"
 
-# 3: Every agent name in CLAUDE.md exists as a file
-all_valid=true
-claude_agents=$(grep -oE '`[a-z]+-[a-z-]+`' "$PLUGIN_DIR/CLAUDE.md" | tr -d '`' | sort -u)
-for name in $claude_agents; do
+# 3: CLAUDE.md backtick names resolve to agents, skills, or commands
+claude_names=$(grep -oE '`[a-z]+-[a-z-]+`' "$PLUGIN_DIR/CLAUDE.md" | tr -d '`' | sort -u)
+resolved=0
+for name in $claude_names; do
   if find "$PLUGIN_DIR/agents" -name "$name.md" 2>/dev/null | grep -q .; then
-    : # valid agent
+    resolved=$((resolved + 1))
   elif [ -d "$PLUGIN_DIR/skills/$name" ]; then
-    : # valid skill
-  else
-    : # might be a command name or other reference — skip
+    resolved=$((resolved + 1))
+  elif [ -f "$PLUGIN_DIR/commands/$name.md" ] || [ -f "$PLUGIN_DIR/commands/workflows/$name.md" ]; then
+    resolved=$((resolved + 1))
   fi
 done
-pass "CLAUDE.md agent/skill references checked"
+if [ "$resolved" -ge 30 ]; then
+  pass "CLAUDE.md references $resolved resolvable component names"
+else
+  must_fix "CLAUDE.md references >=30 components" "found only $resolved"
+fi
 
 # 4: Every agent file is mentioned in CLAUDE.md
 all_mentioned=true
@@ -80,7 +84,7 @@ if $all_mentioned; then pass "all skills mentioned in CLAUDE.md"; fi
 group "Cross-References — README Commands"
 
 # 6: Slash commands in README exist as files
-quickstart_cmds=$(PLUGIN_DIR="$PLUGIN_DIR" python3 -c "
+quickstart_cmds=$(python3 -c "
 import re, os
 text = open(os.environ['PLUGIN_DIR'] + '/README.md').read()
 cmds = set(re.findall(r'(?<!\w)/((?:workflows:)?(?:brainstorm|plan|work|review|compound|estimate|simulate|identify|lfg|slfg|diagnose|tabulate|replicate|visualize|stress-test))\b', text))
@@ -113,7 +117,7 @@ group "Cross-References — Hook Integrity"
 
 # 8: Hook event types are valid Claude Code events
 valid_events="SessionStart|SessionEnd|PreToolUse|PostToolUse|Stop|SubagentStop|UserPromptSubmit|PreCompact|Notification"
-hook_events=$(PLUGIN_DIR="$PLUGIN_DIR" python3 -c "
+hook_events=$(python3 -c "
 import json, os
 d = json.load(open(os.environ['PLUGIN_DIR'] + '/hooks/hooks.json'))
 for e in d['hooks'].keys():
@@ -130,7 +134,7 @@ done
 if $all_valid; then pass "all hook events are valid Claude Code events"; fi
 
 # 9: SessionStart script path resolves
-session_cmd=$(PLUGIN_DIR="$PLUGIN_DIR" python3 -c "
+session_cmd=$(python3 -c "
 import json, os
 d = json.load(open(os.environ['PLUGIN_DIR'] + '/hooks/hooks.json'))
 for h in d['hooks']['SessionStart'][0]['hooks']:
@@ -147,7 +151,7 @@ fi
 group "Cross-References — Hook Content"
 
 # 10: UserPromptSubmit references at least 5 agents
-ups_agents=$(PLUGIN_DIR="$PLUGIN_DIR" python3 -c "
+ups_agents=$(python3 -c "
 import json, re, os
 d = json.load(open(os.environ['PLUGIN_DIR'] + '/hooks/hooks.json'))
 for m in d['hooks']['UserPromptSubmit']:
@@ -163,7 +167,7 @@ else
 fi
 
 # 11: PostToolUse references at least 3 agents
-ptu_agents=$(PLUGIN_DIR="$PLUGIN_DIR" python3 -c "
+ptu_agents=$(python3 -c "
 import json, re, os
 d = json.load(open(os.environ['PLUGIN_DIR'] + '/hooks/hooks.json'))
 for m in d['hooks']['PostToolUse']:
@@ -179,7 +183,7 @@ else
 fi
 
 # 12: UserPromptSubmit references at least 3 commands
-ups_cmds=$(PLUGIN_DIR="$PLUGIN_DIR" python3 -c "
+ups_cmds=$(python3 -c "
 import json, re, os
 d = json.load(open(os.environ['PLUGIN_DIR'] + '/hooks/hooks.json'))
 for m in d['hooks']['UserPromptSubmit']:
@@ -231,7 +235,7 @@ for cmd in replicate visualize; do
     if $found; then
       pass "command $cmd references valid skills"
     else
-      pass "command $cmd has no skill refs (ok for utility)"
+      should_fix "command $cmd references skills" "no skill references found"
     fi
   fi
 done
@@ -256,3 +260,25 @@ for cmd in diagnose tabulate replicate visualize stress-test; do
   fi
 done
 if $all_new; then pass "README mentions all new commands"; fi
+
+group "Cross-References — Chain Commands"
+
+# 21-22: Chain commands delegate to workflow commands (plan, work, review, compound)
+for chain_cmd in lfg slfg; do
+  file="$PLUGIN_DIR/commands/$chain_cmd.md"
+  if [ -f "$file" ]; then
+    delegates_ok=true
+    for target in plan work review compound; do
+      if ! grep -q "$target" "$file"; then
+        delegates_ok=false
+      fi
+    done
+    if $delegates_ok; then
+      pass "/$chain_cmd delegates to all 4 workflow commands"
+    else
+      must_fix "/$chain_cmd delegates to workflows" "missing delegation targets"
+    fi
+  else
+    must_fix "/$chain_cmd exists" "file not found"
+  fi
+done

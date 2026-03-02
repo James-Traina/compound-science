@@ -140,71 +140,7 @@ Is the selection-on-observables assumption plausible?
 | Used alongside quasi-experimental methods as a complement | Used as the sole identification strategy when quasi-experimental alternatives exist |
 | Augmented with doubly robust estimation (AIPW) | Propensity scores are extreme (near 0 or 1), indicating poor overlap |
 
-## Standard Diagnostics by Method
-
-### Instrumental Variables Diagnostics
-
-| Diagnostic | What It Tests | Implementation | Decision Rule |
-|-----------|---------------|----------------|---------------|
-| First-stage F-statistic | Instrument relevance | Regress endogenous variable on instruments + controls; report F on excluded instruments | F > 10 (Stock-Yogo); better: Olea-Pflueger effective F |
-| Kleibergen-Paap rk Wald F | Relevance with multiple endogenous regressors and heteroskedasticity | `estat firststage` (Stata), `ivreg2` | Compare to Stock-Yogo critical values |
-| Anderson-Rubin test | Joint significance of endogenous regressors (robust to weak IV) | `ivregress` postestimation (Stata), `linearmodels` (Python) | Reject null = endogenous regressors jointly significant |
-| Sargan-Hansen J-test | Overidentification (at least one instrument invalid if rejected) | `estat overid` (Stata), `result.wooldridge_overid` (Python) | Fail to reject = instruments consistent (but low power) |
-| Hausman test | Compare OLS and 2SLS — if same, endogeneity may not be a problem | `hausman` (Stata), manual in Python | Reject null = OLS is inconsistent, 2SLS preferred |
-| Reduced form | Direct effect of instrument on outcome (should be significant) | Regress Y on Z + controls | Significant = instrument affects outcome through some channel |
-| LIML vs 2SLS comparison | Sensitivity to weak instruments | Estimate with LIML; compare to 2SLS | Large discrepancy = weak instrument concern |
-| Conley et al. (2012) bounds | Sensitivity to exclusion restriction violations | `plausexog` (Stata) | Bounds include zero = fragile identification |
-
-### Difference-in-Differences Diagnostics
-
-| Diagnostic | What It Tests | Implementation | Decision Rule |
-|-----------|---------------|----------------|---------------|
-| Event study plot | Pre-trends + dynamic treatment effects | Regression with leads/lags of treatment; plot coefficients | Pre-treatment coefficients indistinguishable from zero |
-| Formal pre-trend test | Joint significance of pre-treatment leads | F-test on pre-treatment event-time coefficients | Fail to reject = consistent with parallel trends (but low power) |
-| Rambachan-Roth (2023) | Sensitivity of post-treatment results to violations of parallel trends | `HonestDiD` (R) | Report bounds for range of M values |
-| Bacon decomposition | Which 2x2 comparisons drive the TWFE estimate | `bacondecomp` (R/Stata) | Large weight on problematic comparisons = use modern DiD |
-| Placebo treatment timing | Whether fake treatment dates show effects | Re-run DiD with treatment shifted to pre-treatment dates | No significant effect at placebo dates |
-| Placebo treatment groups | Whether untreated groups show "effects" | Run DiD on known-untreated groups | No significant effect |
-| Covariate balance (pre-treatment) | Whether treated and control are comparable | Compare means and distributions pre-treatment | Balanced on key characteristics |
-| Differential attrition test | Whether sample composition changes differentially | Compare attrition rates and characteristics of exiters | No differential attrition |
-
-### Regression Discontinuity Diagnostics
-
-| Diagnostic | What It Tests | Implementation | Decision Rule |
-|-----------|---------------|----------------|---------------|
-| McCrary (Cattaneo-Jansson-Ma) density test | Manipulation of running variable at cutoff | `rddensity` (R/Python/Stata) | Fail to reject = no evidence of manipulation |
-| Covariate balance at cutoff | Predetermined covariates are smooth through cutoff | Run RD regression with each covariate as "outcome" | No significant discontinuity in pre-determined variables |
-| Bandwidth sensitivity | Stability of results across bandwidth choices | Estimate at 0.5x, 0.75x, 1x, 1.5x, 2x optimal BW | Results qualitatively stable across bandwidths |
-| Polynomial sensitivity | Sensitivity to functional form | Compare local linear (p=1) vs local quadratic (p=2) | Results stable; prefer p=1 (Gelman-Imbens 2019) |
-| Placebo cutoffs | Whether effects appear at fake cutoffs | Run RD at cutoffs where no effect should exist | No significant effects at placebo cutoffs |
-| Donut-hole test | Whether results driven by observations exactly at cutoff | Drop observations within small window of cutoff | Results survive dropping near-cutoff observations |
-| RD plot | Visual discontinuity in outcome at cutoff | `rdplot` (R/Python/Stata) with binned means | Visible jump at the cutoff |
-| Effective sample size | Whether enough observations fall in the bandwidth | Report N left and N right of cutoff within bandwidth | Sufficient N on both sides for inference |
-
-### Synthetic Control Diagnostics
-
-| Diagnostic | What It Tests | Implementation | Decision Rule |
-|-----------|---------------|----------------|---------------|
-| Pre-treatment RMSPE | Quality of pre-treatment fit | Compute RMSE of treated vs synthetic in pre-period | Low RMSPE relative to outcome variation |
-| Placebo (permutation) tests | Statistical significance via placebo distribution | Run SC for each donor unit; compare RMSPE ratios | Treated unit's post/pre RMSPE ratio is extreme in distribution |
-| Leave-one-out | Sensitivity to individual donor units | Drop each positively-weighted donor; re-estimate | Results stable across donor exclusions |
-| Weight examination | Whether synthetic control relies on few donors | Inspect weight vector | Sparse but not degenerate (one unit with weight 1.0 is concerning) |
-| Predictor balance | Whether synthetic matches treated on covariates | Compare covariate means for treated vs synthetic | Close match on key predictors |
-| Time placebo | Whether fake earlier treatment dates show effects | Set treatment date earlier (in pre-period); estimate | No "effect" at placebo treatment dates |
-| Cross-validation | Out-of-sample fit quality | Hold out part of pre-treatment period; predict held-out values | Good prediction of held-out periods |
-
-### Matching / Selection on Observables Diagnostics
-
-| Diagnostic | What It Tests | Implementation | Decision Rule |
-|-----------|---------------|----------------|---------------|
-| Standardized mean differences (SMD) | Covariate balance after matching/weighting | `cobalt` (R), manual in Python | SMD < 0.1 on all covariates |
-| Love plot | Visual summary of balance improvement | `cobalt::love.plot` (R) | All points should shift toward zero after matching |
-| Propensity score overlap | Common support between treated and control | Density plot of propensity scores by treatment status | Substantial overlap; no large gaps |
-| Oster (2019) delta | Sensitivity to unobserved confounders | `psacalc` (Stata), manual implementation | delta > 1 suggests robustness (unobservables would need to be more important than observables to explain the result) |
-| Rosenbaum bounds | How large an unobserved confounder would need to be to invalidate results | `rbounds` (R), `mhbounds` (Stata) | Large Gamma = robust to substantial unmeasured confounding |
-| Altonji-Elder-Taber (2005) ratio | Ratio of selection on observables to selection on unobservables needed to explain result | Compare coefficient stability as controls are added | High ratio = robust |
-| Variance ratio | Whether matching/weighting inflates variance | Compare effective sample size to nominal sample size | Effective sample size not dramatically smaller |
-| Propensity score model specification | Whether PS model is adequate | Compare results across logit, probit, random forest | Results stable across specifications |
+For method-specific diagnostics (IV, DiD, RDD, Synthetic Control, Matching), see the `causal-inference` skill, which contains implementation details and diagnostic checklists for each method.
 
 ## Design-Based vs Model-Based Inference
 

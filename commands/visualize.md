@@ -364,6 +364,7 @@ Write code files, generate figures, and provide LaTeX integration.
 - `/estimate` — run estimation to generate plottable results
 - `/stress-test` — generate specification curve visualization
 - `/workflows:compound` — capture visualization templates in knowledge base
+- `empirical-playbook` skill — method-specific visualization and reporting standards
 
 ## Common Plot Types Reference
 
