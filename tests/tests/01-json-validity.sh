@@ -109,18 +109,14 @@ fi
 
 # 12-15: Spot-check specific hook timeouts
 for check_event in SessionStart Stop PreToolUse SubagentStop; do
-  if python3 -c "
+  timeout_val=$(python3 -c "
 import json
 d = json.load(open('$PLUGIN_DIR/hooks/hooks.json'))
 t = d['hooks']['$check_event'][0]['hooks'][0].get('timeout', 0)
 assert t > 0, f'no timeout for $check_event'
 print(t)
-" 2>/dev/null; then
-    timeout_val=$(python3 -c "
-import json
-d = json.load(open('$PLUGIN_DIR/hooks/hooks.json'))
-print(d['hooks']['$check_event'][0]['hooks'][0]['timeout'])
 " 2>/dev/null)
+  if [ -n "$timeout_val" ]; then
     pass "hook $check_event has timeout ($timeout_val)"
   else
     must_fix "hook $check_event has timeout" "timeout missing"

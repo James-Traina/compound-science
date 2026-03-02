@@ -216,18 +216,15 @@ else
 fi
 
 # 16: PostToolUse mentions >=3 distinct agent names
-posttool_prompt=$(python3 -c "
+agent_count=$(python3 -c "
 import json
 d = json.load(open('$HOOKS_FILE'))
+agents = ['econometric-reviewer','mathematical-prover','numerical-auditor','identification-critic','journal-referee','simulation-designer','process-architect','equilibrium-analyst','calibration-assessor','results-verifier','literature-scout','methods-explorer','data-detective','solutions-archivist','benchmark-researcher','pipeline-validator','reproducibility-checker','specification-analyzer','research-coordinator','progress-tracker']
+text = ''
 for m in d['hooks']['PostToolUse']:
     for h in m['hooks']:
         if h['type'] == 'prompt':
-            print(h['prompt'])
-" 2>/dev/null || echo "")
-
-agent_count=$(python3 -c "
-agents = ['econometric-reviewer','mathematical-prover','numerical-auditor','identification-critic','journal-referee','simulation-designer','process-architect','equilibrium-analyst','calibration-assessor','results-verifier','literature-scout','methods-explorer','data-detective','solutions-archivist','benchmark-researcher','pipeline-validator','reproducibility-checker','specification-analyzer','research-coordinator','progress-tracker']
-text = '''$posttool_prompt'''
+            text += h['prompt']
 found = sum(1 for a in agents if a in text)
 print(found)
 " 2>/dev/null || echo "0")
@@ -239,19 +236,15 @@ else
 fi
 
 # 17: Stop prompt mentions >=2 command names
-stop_prompt=$(python3 -c "
+cmd_count=$(python3 -c "
 import json
 d = json.load(open('$HOOKS_FILE'))
+cmds = ['/estimate','/simulate','/identify','/diagnose','/tabulate','/replicate','/visualize','/stress-test','/workflows:']
+text = ''
 for m in d['hooks']['Stop']:
     for h in m['hooks']:
         if h['type'] == 'prompt':
-            print(h['prompt'])
-" 2>/dev/null || echo "")
-
-cmd_count=$(python3 -c "
-import re
-text = '''$stop_prompt'''
-cmds = ['/estimate','/simulate','/identify','/diagnose','/tabulate','/replicate','/visualize','/stress-test','/workflows:']
+            text += h['prompt']
 found = sum(1 for c in cmds if c in text)
 print(found)
 " 2>/dev/null || echo "0")

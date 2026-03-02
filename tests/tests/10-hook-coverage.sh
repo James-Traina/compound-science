@@ -86,7 +86,7 @@ for m in d['hooks']['PostToolUse']:
 " 2>/dev/null || echo "")
 
 ptu_ok=true
-for term in "Python" "Stata" "Julia" "bib" "Makefile"; do
+for term in "Python" "R estimation" "Stata" "Julia" "bib" "Makefile"; do
   if ! echo "$ptu_text" | grep -qi "$term"; then
     ptu_ok=false
   fi
