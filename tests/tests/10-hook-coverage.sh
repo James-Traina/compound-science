@@ -9,10 +9,10 @@ group "Hook Event Coverage"
 # 1-7: All 7 expected events present
 EXPECTED_EVENTS=("SessionStart" "UserPromptSubmit" "PostToolUse" "Stop" "PreCompact" "PreToolUse" "SubagentStop")
 for event in "${EXPECTED_EVENTS[@]}"; do
-  if python3 -c "
-import json
-d = json.load(open('$HOOKS_FILE'))
-assert '$event' in d['hooks'], '$event missing'
+  if HOOKS_FILE="$HOOKS_FILE" EVENT="$event" python3 -c "
+import json, os
+d = json.load(open(os.environ['HOOKS_FILE']))
+assert os.environ['EVENT'] in d['hooks'], os.environ['EVENT'] + ' missing'
 " 2>/dev/null; then
     pass "event $event present"
   else
@@ -23,9 +23,9 @@ done
 group "Hook Timeouts"
 
 # 8-14: All timeouts within limits (command <=60, prompt <=30)
-python3 -c "
-import json, sys
-d = json.load(open('$HOOKS_FILE'))
+HOOKS_FILE="$HOOKS_FILE" python3 -c "
+import json, os, sys
+d = json.load(open(os.environ['HOOKS_FILE']))
 limits = {'command': 60, 'prompt': 30}
 ok = True
 for event, matchers in d['hooks'].items():
@@ -55,9 +55,9 @@ group "UserPromptSubmit — Domain Categories"
 # 15: All 13 domain categories covered
 CATEGORIES=("IDENTIFICATION" "ESTIMATION" "SIMULATION" "PROOF" "EQUILIBRIUM" "PIPELINE" "DATA" "DIAGNOSTICS" "TABLES" "REPLICATION" "SENSITIVITY" "SUBMISSION" "CONVERGENCE")
 
-prompt_text=$(python3 -c "
-import json
-d = json.load(open('$HOOKS_FILE'))
+prompt_text=$(HOOKS_FILE="$HOOKS_FILE" python3 -c "
+import json, os
+d = json.load(open(os.environ['HOOKS_FILE']))
 for m in d['hooks']['UserPromptSubmit']:
     for h in m['hooks']:
         if h['type'] == 'prompt':
@@ -76,9 +76,9 @@ if $all_cats; then pass "UserPromptSubmit covers all 13 categories"; fi
 group "PostToolUse — Content Coverage"
 
 # 16: PostToolUse covers all content types (languages + bibliography + pipeline)
-ptu_text=$(python3 -c "
-import json
-d = json.load(open('$HOOKS_FILE'))
+ptu_text=$(HOOKS_FILE="$HOOKS_FILE" python3 -c "
+import json, os
+d = json.load(open(os.environ['HOOKS_FILE']))
 for m in d['hooks']['PostToolUse']:
     for h in m['hooks']:
         if h['type'] == 'prompt':
@@ -99,9 +99,9 @@ fi
 
 group "Stop Hook — Completeness Checks"
 
-stop_text=$(python3 -c "
-import json
-d = json.load(open('$HOOKS_FILE'))
+stop_text=$(HOOKS_FILE="$HOOKS_FILE" python3 -c "
+import json, os
+d = json.load(open(os.environ['HOOKS_FILE']))
 for m in d['hooks']['Stop']:
     for h in m['hooks']:
         if h['type'] == 'prompt':
@@ -124,9 +124,9 @@ fi
 group "PreCompact — State Preservation"
 
 # 18: PreCompact preserves key research state
-precompact_text=$(python3 -c "
-import json
-d = json.load(open('$HOOKS_FILE'))
+precompact_text=$(HOOKS_FILE="$HOOKS_FILE" python3 -c "
+import json, os
+d = json.load(open(os.environ['HOOKS_FILE']))
 for m in d['hooks']['PreCompact']:
     for h in m['hooks']:
         if h['type'] == 'prompt':
@@ -148,9 +148,9 @@ fi
 group "New Hooks — PreToolUse & SubagentStop"
 
 # 19: PreToolUse matcher is "Bash"
-if python3 -c "
-import json
-d = json.load(open('$HOOKS_FILE'))
+if HOOKS_FILE="$HOOKS_FILE" python3 -c "
+import json, os
+d = json.load(open(os.environ['HOOKS_FILE']))
 assert d['hooks']['PreToolUse'][0]['matcher'] == 'Bash'
 " 2>/dev/null; then
   pass "PreToolUse matcher is Bash"
@@ -159,9 +159,9 @@ else
 fi
 
 # 20: SubagentStop matcher is "*"
-if python3 -c "
-import json
-d = json.load(open('$HOOKS_FILE'))
+if HOOKS_FILE="$HOOKS_FILE" python3 -c "
+import json, os
+d = json.load(open(os.environ['HOOKS_FILE']))
 assert d['hooks']['SubagentStop'][0]['matcher'] == '*'
 " 2>/dev/null; then
   pass "SubagentStop matcher is *"
