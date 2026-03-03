@@ -121,7 +121,7 @@ for i, a in enumerate(names):
         if len(shared) > 8:
             print(f'{a} & {b} share {len(shared)} words: {sorted(shared)[:5]}')
             sys.exit(1)
-" 2>/dev/null); then
+" 2>&1); then
   pass "no two skills share >8 identical trigger words"
 else
   should_fix "skill trigger word overlap" "${overlap_detail:-two skills share too many trigger words}"

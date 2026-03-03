@@ -1,5 +1,5 @@
 #!/bin/bash
-# Test Group 10: Hook prompt coverage and integration (20 tests)
+# Test Group 10: Hook prompt coverage and integration (23 tests)
 source "$(dirname "$0")/../lib/assert.sh"
 
 export HOOKS_FILE="$PLUGIN_DIR/hooks/hooks.json"
@@ -75,6 +75,16 @@ for cat in "${CATEGORIES[@]}"; do
 done
 if $all_cats; then pass "UserPromptSubmit covers all 13 categories"; fi
 
+# 15a: CONVERGENCE category contains its specific trigger keywords
+conv_ok=true
+for kw in "optimizer" "Hessian" "BFGS"; do
+  if ! echo "$prompt_text" | grep -qi "$kw"; then
+    conv_ok=false
+    must_fix "UserPromptSubmit CONVERGENCE keyword: $kw" "missing"
+  fi
+done
+if $conv_ok; then pass "UserPromptSubmit CONVERGENCE has trigger keywords (optimizer/Hessian/BFGS)"; fi
+
 group "PostToolUse — Content Coverage"
 
 # 16: PostToolUse covers all content types (languages + bibliography + pipeline)
@@ -88,15 +98,15 @@ for m in d['hooks']['PostToolUse']:
 " 2>/dev/null || echo "")
 
 ptu_missing=""
-for term in "Python" "R estimation" "Stata" "Julia" "bib" "Makefile"; do
+for term in "Python" "R estimation" "Stata" "Julia" "simulation-designer" "mathematical-prover" "bib" "Makefile" "results-verifier" "specification-analyzer"; do
   if ! echo "$ptu_text" | grep -qi "$term"; then
     ptu_missing="$ptu_missing $term"
   fi
 done
 if [ -z "$ptu_missing" ]; then
-  pass "PostToolUse covers all content types (languages + bibliography + pipeline)"
+  pass "PostToolUse covers all 10 content categories"
 else
-  must_fix "PostToolUse covers all content types" "missing:$ptu_missing"
+  must_fix "PostToolUse covers all 10 content categories" "missing:$ptu_missing"
 fi
 
 group "Stop Hook — Completeness Checks"
@@ -121,6 +131,20 @@ if [ -z "$stop_missing" ]; then
   pass "Stop checks critical conditions (SE, seeds, sensitivity, commands)"
 else
   must_fix "Stop checks critical conditions" "missing:$stop_missing"
+fi
+
+# 17a: Stop prompt contains BLOCKING RULES section (items 1-4 only)
+if echo "$stop_text" | grep -q "BLOCKING RULES"; then
+  pass "Stop prompt has BLOCKING RULES section"
+else
+  must_fix "Stop prompt has BLOCKING RULES section" "missing — blocking contract undocumented"
+fi
+
+# 17b: Stop prompt explicitly marks items 5-8 as suggestion-only (cannot block)
+if echo "$stop_text" | grep -qE "Items 5-8|items 5-8|suggestion.only|MUST NOT block"; then
+  pass "Stop prompt marks items 5-8 as suggestion-only"
+else
+  must_fix "Stop prompt marks items 5-8 as suggestion-only" "missing — at-most-once blocking contract not enforced"
 fi
 
 group "PreCompact — State Preservation"

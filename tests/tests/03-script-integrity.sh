@@ -49,7 +49,7 @@ else
 fi
 
 # 8: No unquoted variable expansion
-unquoted=$(python3 -c "
+if unquoted=$(python3 -c "
 import re, os
 with open(os.environ['PLUGIN_DIR'] + '/scripts/session-init.sh') as f:
     for i, line in enumerate(f, 1):
@@ -67,11 +67,14 @@ with open(os.environ['PLUGIN_DIR'] + '/scripts/session-init.sh') as f:
                     print(f'{i}: {line}')
                     break
             j += 1
-" 2>/dev/null || true)
-if [ -z "$unquoted" ]; then
-  pass "session-init.sh variables are properly quoted"
+" 2>/dev/null); then
+  if [ -z "$unquoted" ]; then
+    pass "session-init.sh variables are properly quoted"
+  else
+    should_fix "session-init.sh variables are properly quoted" "potential unquoted vars found"
+  fi
 else
-  should_fix "session-init.sh variables are properly quoted" "potential unquoted vars found"
+  must_fix "session-init.sh variables are properly quoted" "python3 failed — could not check"
 fi
 
 group "Hardcoded Paths"

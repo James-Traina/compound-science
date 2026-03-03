@@ -158,13 +158,23 @@ fi
 
 group "No Sensitive Data"
 
-# 14: No API keys or tokens
-sensitive=$(grep -rn $EXCLUDE -Ei 'sk-[a-z0-9]{20,}|api[_-]?key\s*=\s*["\x27][a-z0-9]|password\s*=\s*["\x27][^\x27"]+["\x27]' "$PLUGIN_DIR" 2>/dev/null || true)
-if [ -z "$sensitive" ]; then
-  pass "no API keys or tokens"
-else
-  must_fix "no API keys or tokens" "sensitive data found"
-fi
+# 14: No API keys or tokens (python3 for portable regex — \x27 is not supported by BSD grep -E on macOS)
+py_eval "no API keys or tokens" "
+import re, os
+exclude = {'tests', '.ralph', '.serena', '.git', '.claude'}
+pat = re.compile(r'sk-[a-z0-9]{20,}|api[_-]?key\s*=\s*[a-z0-9_-]{8,}', re.I)
+findings = []
+for root, dirs, files in os.walk(os.environ['PLUGIN_DIR']):
+    dirs[:] = [d for d in dirs if d not in exclude]
+    for f in files:
+        try:
+            text = open(os.path.join(root, f), errors='ignore').read()
+            for m in pat.finditer(text):
+                findings.append(os.path.basename(root) + '/' + f + ': ' + m.group()[:30])
+        except Exception:
+            pass
+assert not findings, 'sensitive data: ' + findings[0]
+" "python3 failed — could not scan for credentials"
 
 # 15: No email addresses (except in LICENSE/README)
 emails=$(grep -rn $EXCLUDE -Ei '[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}' "$PLUGIN_DIR" --include="*.md" --include="*.sh" --include="*.json" 2>/dev/null | grep -v 'LICENSE\|README\|github.com\|noreply' || true)

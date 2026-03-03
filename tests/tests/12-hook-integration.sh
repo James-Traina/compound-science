@@ -24,18 +24,17 @@ for event in d['hooks']:
 " "found invalid event name"
 
 # 3: No duplicate event keys
-dup_count=$(python3 -c "
+py_eval "no duplicate event keys" "
 import json, os, re
 text = open(os.environ['HOOKS_FILE']).read()
-# JSON object keys are unique by spec, but check the raw text
 keys = re.findall(r'\"((?:Session|User|Pre|Post|Stop|Sub|Notification)\w*)\"(?=\s*:)', text)
-print(len(keys) - len(set(keys)))
-" 2>/dev/null || echo "0")
-assert_count "no duplicate event keys" 0 "$dup_count"
+dups = len(keys) - len(set(keys))
+assert dups == 0, str(dups) + ' duplicate key(s) found'
+" "could not check for duplicate event keys"
 
 group "PreToolUse Specifics"
 
-# Extract all PreToolUse fields in one call
+# Extract all PreToolUse fields in one call (2>&1 so python3 errors surface in "got:" messages)
 ptu_data=$(python3 -c "
 import json, os
 d = json.load(open(os.environ['HOOKS_FILE']))
@@ -44,7 +43,7 @@ h = ptu['hooks'][0]
 print(ptu['matcher'])
 print(h['type'])
 print(h['prompt'])
-" 2>/dev/null || echo "")
+" 2>&1 || true)
 ptu_matcher=$(echo "$ptu_data" | head -1)
 ptu_type=$(echo "$ptu_data" | sed -n '2p')
 ptu_prompt=$(echo "$ptu_data" | tail -n +3)
@@ -86,7 +85,7 @@ fi
 
 group "SubagentStop Specifics"
 
-# Extract all SubagentStop fields in one call
+# Extract all SubagentStop fields in one call (2>&1 so python3 errors surface in "got:" messages)
 sas_data=$(python3 -c "
 import json, os
 d = json.load(open(os.environ['HOOKS_FILE']))
@@ -95,7 +94,7 @@ h = sas['hooks'][0]
 print(sas['matcher'])
 print(h['type'])
 print(h['prompt'])
-" 2>/dev/null || echo "")
+" 2>&1 || true)
 sas_matcher=$(echo "$sas_data" | head -1)
 sas_type=$(echo "$sas_data" | sed -n '2p')
 sas_prompt=$(echo "$sas_data" | tail -n +3)
@@ -144,7 +143,7 @@ AGENT_NAMES=("econometric-reviewer" "mathematical-prover" "numerical-auditor" "i
 all_ref=true
 for event in SessionStart UserPromptSubmit PostToolUse Stop PreCompact PreToolUse SubagentStop; do
   export EVENT="$event"
-  event_prompt=$(python3 -c "
+  if ! event_prompt=$(python3 -c "
 import json, os
 d = json.load(open(os.environ['HOOKS_FILE']))
 event = os.environ['EVENT']
@@ -153,7 +152,11 @@ if event in d['hooks']:
         for h in m['hooks']:
             if h['type'] == 'prompt':
                 print(h['prompt'])
-" 2>/dev/null || echo "")
+" 2>/dev/null); then
+    all_ref=false
+    must_fix "hook $event references an agent" "python3 failed — check HOOKS_FILE"
+    continue
+  fi
   if [ -z "$event_prompt" ]; then continue; fi
   found=false
   for agent in "${AGENT_NAMES[@]}"; do
