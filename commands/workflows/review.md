@@ -66,7 +66,7 @@ Perform exhaustive econometric and methodological review using multi-agent paral
    If no settings file exists, use defaults:
    ```yaml
    review_agents:
-     - econometrician
+     - econometric-reviewer
      - numerical-auditor
      - identification-critic
    ```
@@ -93,7 +93,7 @@ Launch domain reviewers in parallel using the Task tool. The specific agents dep
 Launch all configured review agents in parallel:
 
 ```
-Task econometrician(changed files + review context)
+Task econometric-reviewer(changed files + review context)
   → Checks: identification strategy, endogeneity, standard errors, instrument validity,
     sample selection, asymptotic properties, correct package usage
 
@@ -117,7 +117,7 @@ Task identification-critic(changed files + review context)
 (Files matching: `*.tex`, `*.md` with theorem/proof/lemma/proposition content, `docs/proofs/*`)
 
 ```
-Task referee(written artifact files + review context)
+Task journal-referee(written artifact files + review context)
   → Simulates top-5 journal referee: contribution clarity, relation to literature,
     identification concerns, economic vs statistical significance, R&R concerns
     (robustness, external validity, mechanism)
@@ -132,12 +132,21 @@ Task pipeline-validator(pipeline files + review context)
     package versions pinned, end-to-end pipeline, relative paths, data not committed
 ```
 
+**TABLES/FIGURES: If tables or figures were generated:**
+(Files matching: `tables/*`, `figures/*`, `*.tex` with tabular content, `*.csv` result files)
+
+```
+Task results-verifier(output files + estimation code + review context)
+  → Checks: table numbers match underlying code output, no manual edits to generated tables,
+    statistical summaries consistent with estimation logs, formatting correct
+```
+
 </conditional_agents>
 
 #### Always Run Post-Review
 
 ```
-Task learnings-researcher(all review findings + changed modules)
+Task solutions-archivist(all review findings + changed modules)
   → Searches docs/solutions/ for past issues related to this PR's modules and patterns
   → Flags matches as "Known Pattern" with links to solution docs
 ```
@@ -169,8 +178,8 @@ Task silent-failure-hunter(changed files) # pr-review-toolkit agent (if error ha
 
 3. **Deduplicate and Cross-Reference**
 
-   - Remove duplicate findings across agents (e.g., econometrician and identification-critic may both flag the same exclusion restriction)
-   - Surface learnings-researcher results: if past solutions are relevant, tag findings as "Known Pattern — see docs/solutions/[path]"
+   - Remove duplicate findings across agents (e.g., econometric-reviewer and identification-critic may both flag the same exclusion restriction)
+   - Surface solutions-archivist results: if past solutions are relevant, tag findings as "Known Pattern — see docs/solutions/[path]"
    - Discard any findings that recommend deleting files in protected artifact directories
 
 4. **Estimation-Specific Synthesis**
@@ -179,12 +188,12 @@ Task silent-failure-hunter(changed files) # pr-review-toolkit agent (if error ha
 
    | Dimension | Status | Details |
    |-----------|--------|---------|
-   | **Identification** | [valid/concerns/invalid] | Summary from econometrician + identification-critic |
-   | **Estimation** | [correct/issues/incorrect] | Summary from econometrician + numerical-auditor |
-   | **Inference** | [valid/concerns/invalid] | Standard error assessment from econometrician |
+   | **Identification** | [valid/concerns/invalid] | Summary from econometric-reviewer + identification-critic |
+   | **Estimation** | [correct/issues/incorrect] | Summary from econometric-reviewer + numerical-auditor |
+   | **Inference** | [valid/concerns/invalid] | Standard error assessment from econometric-reviewer |
    | **Numerical Stability** | [stable/warnings/unstable] | Summary from numerical-auditor |
    | **Reproducibility** | [complete/gaps/missing] | Summary from pipeline-validator (if run) |
-   | **Rigor** | [publication-ready/needs-work/insufficient] | Summary from referee (if run) |
+   | **Rigor** | [publication-ready/needs-work/insufficient] | Summary from journal-referee (if run) |
 
 ### Phase 4: Action
 
@@ -237,14 +246,14 @@ Task silent-failure-hunter(changed files) # pr-review-toolkit agent (if error ha
    - [summarized notes]
 
    ### Known Patterns (from docs/solutions/)
-   - [any matches from learnings-researcher]
+   - [any matches from solutions-archivist]
 
    ### Review Agents Used
-   - econometrician
+   - econometric-reviewer
    - numerical-auditor
    - identification-critic
    - [conditional agents if triggered]
-   - learnings-researcher
+   - solutions-archivist
    - pr-review-toolkit (code quality)
 
    ### Next Steps
@@ -292,11 +301,11 @@ Review agents are configured in `compound-science.local.md` at the project root.
 ```yaml
 ---
 review_agents:
-  - econometrician
+  - econometric-reviewer
   - numerical-auditor
   - identification-critic
   # Uncomment to always include:
-  # - referee
+  # - journal-referee
   # - pipeline-validator
 ---
 ```
@@ -309,7 +318,7 @@ Focus on identification strategy — this paper uses a shift-share instrument
 and we need to verify the exclusion restriction argument is complete.
 ```
 
-To create or modify settings, run the `setup` skill.
+To create or modify settings, run the `project-setup` skill.
 
 ---
 

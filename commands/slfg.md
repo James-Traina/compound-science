@@ -7,7 +7,7 @@ disable-model-invocation: true
 
 Swarm-enabled LFG. Run these steps in order, parallelizing where indicated. Do not stop between steps — complete every step through to the end.
 
-Load skill: orchestrating-swarms
+Load skill: swarm-orchestration
 
 ## Sequential Phase
 

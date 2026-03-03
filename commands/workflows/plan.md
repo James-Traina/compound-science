@@ -63,8 +63,8 @@ Decompose the research description to understand scope:
 
 Run these agents **in parallel** to gather local context:
 
-- Task methods-researcher(research_description)
-- Task learnings-researcher(research_description)
+- Task methods-explorer(research_description)
+- Task solutions-archivist(research_description)
 
 **What to look for:**
 - **Methods research:** existing estimation patterns, methodology used in this project, relevant packages and implementations
@@ -119,7 +119,7 @@ After all research steps complete, consolidate findings:
 
 After planning the structure, run SpecFlow Analyzer to validate the research specification:
 
-- Task spec-flow-analyzer(research_description, research_findings)
+- Task specification-analyzer(research_description, research_findings)
 
 Review analysis results and incorporate identified gaps or edge cases into the plan.
 
@@ -424,5 +424,11 @@ Automatically proceed to `/workflows:work` if invoked from `/lfg` or `/slfg`.
 - **Research impact over system impact** — identification, estimation, robustness, and replication are what matter
 - **Parsimony in planning** — match plan complexity to task complexity; a simple bug fix needs a MINIMAL plan
 - **The brainstorm is the origin document** — carry forward all decisions, don't re-derive what was already decided
+
+## Routes To
+
+- `/workflows:work` — implement the plan
+- `/workflows:brainstorm` — explore alternatives before committing
+- `specification-analyzer` agent — for detailed spec-to-code flow analysis
 
 NEVER CODE! Just research and write the plan.

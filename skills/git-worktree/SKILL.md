@@ -1,11 +1,11 @@
 ---
 name: git-worktree
-description: This skill manages Git worktrees for isolated parallel development. It handles creating, listing, switching, and cleaning up worktrees with a simple interactive interface, following KISS principles.
+description: "Manages Git worktrees for isolated parallel research work — running concurrent estimation specifications, comparing identification strategies side-by-side, or isolating experimental numerical code. Use when you need parallel branches for different estimators (NFXP vs MPEC), want to run multiple robustness specifications simultaneously, need isolation for risky numerical experiments, or when /workflows:work needs concurrent execution paths."
 ---
 
 # Git Worktree Manager
 
-This skill provides a unified interface for managing Git worktrees across your development workflow. Whether you're reviewing PRs in isolation or working on features in parallel, this skill handles all the complexity.
+This skill provides a unified interface for managing Git worktrees across your research workflow. Whether you're running concurrent estimation specifications, comparing identification strategies side-by-side, or isolating experimental Monte Carlo designs, this skill handles all the complexity.
 
 ## What This Skill Does
 
@@ -27,21 +27,23 @@ The script handles critical setup that raw git commands don't:
 3. Creates consistent directory structure
 
 ```bash
-# ✅ CORRECT - Always use the script
-bash ${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/scripts/worktree-manager.sh create feature-name
+# CORRECT - Always use the script
+bash ${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/scripts/worktree-manager.sh create nfxp-starting-values
 
-# ❌ WRONG - Never do this directly
-git worktree add .worktrees/feature-name -b feature-name main
+# WRONG - Never do this directly
+git worktree add .worktrees/nfxp-starting-values -b nfxp-starting-values main
 ```
 
 ## When to Use This Skill
 
 Use this skill in these scenarios:
 
-1. **Code Review (`/workflows:review`)**: If NOT already on the target branch (PR branch or requested branch), offer worktree for isolated review
-2. **Feature Work (`/workflows:work`)**: Always ask if user wants parallel worktree or live branch work
-3. **Parallel Development**: When working on multiple features simultaneously
-4. **Cleanup**: After completing work in a worktree
+1. **Review (`/workflows:review`)**: If NOT already on the target branch (PR branch or requested branch), offer worktree for isolated review
+2. **Research Work (`/workflows:work`)**: Always ask if user wants parallel worktree or live branch work
+3. **Parallel Estimation**: Running BLP with different starting value grids, comparing NFXP vs MPEC vs CCP on the same data, or testing alternative instrument sets simultaneously
+4. **Concurrent Simulations**: Running Monte Carlo studies with different DGP specifications in parallel (e.g., varying sample sizes, error distributions, or endogeneity strength)
+5. **Robustness Branches**: Isolating specification variants — DiD with staggered adoption vs standard two-period, IV with different exclusion restrictions, alternative moment conditions
+6. **Cleanup**: After completing work in a worktree
 
 ## How to Use
 
@@ -60,16 +62,16 @@ You can also invoke the skill directly from bash:
 
 ```bash
 # Create a new worktree (copies .env files automatically)
-bash ${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/scripts/worktree-manager.sh create feature-login
+bash ${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/scripts/worktree-manager.sh create blp-alt-moments
 
 # List all worktrees
 bash ${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/scripts/worktree-manager.sh list
 
 # Switch to a worktree
-bash ${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/scripts/worktree-manager.sh switch feature-login
+bash ${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/scripts/worktree-manager.sh switch blp-alt-moments
 
 # Copy .env files to an existing worktree (if they weren't copied)
-bash ${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/scripts/worktree-manager.sh copy-env feature-login
+bash ${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/scripts/worktree-manager.sh copy-env blp-alt-moments
 
 # Clean up completed worktrees
 bash ${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/scripts/worktree-manager.sh cleanup
@@ -87,7 +89,7 @@ Creates a new worktree with the given branch name.
 
 **Example:**
 ```bash
-bash ${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/scripts/worktree-manager.sh create feature-login
+bash ${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/scripts/worktree-manager.sh create nfxp-starting-values
 ```
 
 **What happens:**
@@ -118,7 +120,7 @@ Switches to an existing worktree and cd's into it.
 
 **Example:**
 ```bash
-bash ${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/scripts/worktree-manager.sh switch feature-login
+bash ${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/scripts/worktree-manager.sh switch nfxp-starting-values
 ```
 
 **Optional:**
@@ -141,41 +143,69 @@ bash ${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/scripts/worktree-manager.sh clean
 
 ## Workflow Examples
 
-### Code Review with Worktree
+### Comparing Estimation Methods
 
 ```bash
-# Claude Code recognizes you're not on the PR branch
-# Offers: "Use worktree for isolated review? (y/n)"
+# Run BLP demand estimation with NFXP (nested fixed-point):
+bash ${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/scripts/worktree-manager.sh create blp-nfxp
 
-# You respond: yes
-# Script runs (copies .env files automatically):
-bash ${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/scripts/worktree-manager.sh create pr-123-feature-name
+# In parallel, run the same model with MPEC (constrained optimization):
+bash ${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/scripts/worktree-manager.sh create blp-mpec
 
-# You're now in isolated worktree for review with all env vars
-cd .worktrees/pr-123-feature-name
+# And a CCP (conditional choice probability) approach:
+bash ${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/scripts/worktree-manager.sh create blp-ccp
 
-# After review, return to main:
-cd ../..
+# List all concurrent estimation runs:
+bash ${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/scripts/worktree-manager.sh list
+
+# Switch to check convergence on the NFXP run:
+bash ${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/scripts/worktree-manager.sh switch blp-nfxp
+
+# After comparing results across methods, clean up:
+cd .
 bash ${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/scripts/worktree-manager.sh cleanup
 ```
 
-### Parallel Feature Development
+### Parallel Robustness Specifications
 
 ```bash
-# For first feature (copies .env files):
-bash ${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/scripts/worktree-manager.sh create feature-login
+# Baseline DiD specification with staggered adoption (copies .env files):
+bash ${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/scripts/worktree-manager.sh create did-staggered-robust
 
-# Later, start second feature (also copies .env files):
-bash ${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/scripts/worktree-manager.sh create feature-notifications
+# Alternative: Callaway-Sant'Anna estimator:
+bash ${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/scripts/worktree-manager.sh create did-callaway-santanna
+
+# Alternative: Sun-Abraham interaction-weighted estimator:
+bash ${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/scripts/worktree-manager.sh create did-sun-abraham
 
 # List what you have:
 bash ${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/scripts/worktree-manager.sh list
 
-# Switch between them as needed:
-bash ${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/scripts/worktree-manager.sh switch feature-login
+# Switch between them to compare treatment effect estimates:
+bash ${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/scripts/worktree-manager.sh switch did-staggered-robust
 
 # Return to main and cleanup when done:
 cd .
+bash ${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/scripts/worktree-manager.sh cleanup
+```
+
+### Concurrent Monte Carlo Simulations
+
+```bash
+# Baseline DGP with homoskedastic errors:
+bash ${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/scripts/worktree-manager.sh create mc-dgp-homoskedastic
+
+# Variant with heteroskedastic errors:
+bash ${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/scripts/worktree-manager.sh create mc-dgp-heteroskedastic
+
+# Variant with weak instruments:
+bash ${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/scripts/worktree-manager.sh create mc-dgp-weak-iv
+
+# Each worktree runs its simulation independently.
+# Switch to check bias/RMSE/coverage results:
+bash ${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/scripts/worktree-manager.sh switch mc-dgp-weak-iv
+
+# Cleanup after consolidating results:
 bash ${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/scripts/worktree-manager.sh cleanup
 ```
 
@@ -217,14 +247,16 @@ Instead of always creating a worktree:
    - no → proceed with PR diff on current branch
 ```
 
+The `research-coordinator` agent can help decide when parallel worktrees are appropriate versus sequential work on a single branch. Typical triggers: running alternative estimation specifications that each take hours, or isolating a risky numerical experiment (e.g., new optimizer settings) from your working results.
+
 ### `/workflows:work`
 
 Always offer choice:
 
 ```
 1. Ask: "How do you want to work?
-   1. New branch on current worktree (live work)
-   2. Worktree (parallel work)"
+   1. New branch on current worktree (sequential — e.g., one specification at a time)
+   2. Worktree (parallel — e.g., run NFXP and MPEC simultaneously)"
 
 2. If choice 1 → create new branch normally
 3. If choice 2 → call git-worktree skill to create from main
@@ -258,7 +290,7 @@ bash ${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/scripts/worktree-manager.sh list
 If a worktree was created without .env files (e.g., via raw `git worktree add`), copy them:
 
 ```bash
-bash ${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/scripts/worktree-manager.sh copy-env feature-name
+bash ${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/scripts/worktree-manager.sh copy-env blp-alt-moments
 ```
 
 Navigate back to main:
@@ -273,13 +305,17 @@ cd $(git rev-parse --show-toplevel)
 
 ```
 .worktrees/
-├── feature-login/          # Worktree 1
+├── blp-nfxp/               # NFXP estimation run
 │   ├── .git
-│   ├── app/
+│   ├── src/
 │   └── ...
-├── feature-notifications/  # Worktree 2
+├── blp-mpec/               # MPEC estimation run
 │   ├── .git
-│   ├── app/
+│   ├── src/
+│   └── ...
+├── did-staggered-robust/   # Robustness specification
+│   ├── .git
+│   ├── src/
 │   └── ...
 └── ...
 

@@ -22,11 +22,13 @@ Design and execute a Monte Carlo simulation study from DGP specification through
 
 Define or load the data generating process. The DGP must be completely specified before any simulation runs.
 
-1. **Dispatch `dgp-architect` agent** (via Task tool) to formalize the DGP:
+1. **Dispatch `process-architect` agent** (via Task tool) to formalize the DGP:
    - Translate verbal description into a precise mathematical specification
    - Specify all distributional assumptions
    - Verify the DGP produces data consistent with the features being studied
    - Check that the DGP has sufficient variation for identification
+
+2. For calibration targets and empirical moments to validate DGP parameters, dispatch `benchmark-researcher`.
 
 2. **Document DGP in structured format:**
 
@@ -54,9 +56,9 @@ Define or load the data generating process. The DGP must be completely specified
 
 ### Phase 2: Simulation Design
 
-Set parameters for the Monte Carlo study. Dispatch `monte-carlo-designer` agent for design choices.
+Set parameters for the Monte Carlo study. Dispatch `simulation-designer` agent for design choices.
 
-1. **Dispatch `monte-carlo-designer` agent** (via Task tool) with the DGP and research question:
+1. **Dispatch `simulation-designer` agent** (via Task tool) with the DGP and research question:
    - Recommend number of replications
    - Suggest sample size grid
    - Identify which metrics matter most for this comparison
@@ -253,8 +255,8 @@ Save complete results for reproducibility.
 - [any flagged issues, or "None detected"]
 
 ### Agent Reviews
-- dgp-architect: [DGP assessment]
-- monte-carlo-designer: [design assessment]
+- process-architect: [DGP assessment]
+- simulation-designer: [design assessment]
 - numerical-auditor: [stability assessment]
 
 ### Files

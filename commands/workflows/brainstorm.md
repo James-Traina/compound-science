@@ -10,7 +10,7 @@ argument-hint: "<research question or methodological problem>"
 
 Brainstorming helps answer **WHAT** approach to take through structured analysis. It precedes `/workflows:plan`, which answers **HOW** to implement it.
 
-**Process knowledge:** Load the `brainstorming` skill for detailed question techniques, approach exploration patterns, and parsimony principles.
+**Process knowledge:** Load the `strategy-brainstorm` skill for detailed question techniques, approach exploration patterns, and parsimony principles.
 
 ## Research Question
 
@@ -41,7 +41,7 @@ Skip brainstorming and note: "Requirements are detailed enough to proceed direct
 
 Run a targeted scan to understand existing patterns and related methods:
 
-- Task methods-researcher("Understand existing methodological patterns and approaches related to: <research_question>")
+- Task methods-explorer("Understand existing methodological patterns and approaches related to: <research_question>")
 
 Focus on: existing estimation code, identification strategies used in this project, methodology documented in papers or notes.
 
@@ -169,5 +169,11 @@ Automatically proceed to `/workflows:plan` if invoked from `/lfg` or `/slfg`.
 - **Be specific about tradeoffs** — "more efficient but requires stronger assumptions" not "has pros and cons"
 - **Ground in real methods** — cite actual estimators (2SLS, GMM, MPEC), packages (statsmodels, fixest, PyBLP), and papers
 - **Keep outputs concise** — 200-300 words per section max
+
+## Routes To
+
+- `/workflows:plan` — proceed with the chosen approach
+- `literature-scout` agent — for deeper literature search on a specific method
+- `benchmark-researcher` agent — for calibration targets and empirical moments
 
 NEVER CODE! Just explore and document methodological decisions.

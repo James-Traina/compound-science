@@ -2,6 +2,7 @@
 name: reproducibility-checker
 description: "Pre-submission reproducibility verification for replication packages: checks whether the full analysis reproduces from the package, whether all data sources are documented and accessible, whether the computational environment is fully specified, whether output tables and figures match the manuscript, and whether hidden dependencies exist. Use when preparing to submit a replication package to a journal, verifying a co-author's package, or conducting a pre-submission dry run."
 model: sonnet
+tools: Read, Grep, Glob, Bash
 ---
 
 <examples>
@@ -306,7 +307,7 @@ Produce a comprehensive pre-submission report:
 - [ ] Data citations complete
 ```
 
-## Scope Boundary
+## SCOPE
 
 **This agent checks whether the package reproduces.** It verifies that a stranger could take this package, follow the instructions, and get the same results as in the paper.
 
@@ -320,7 +321,7 @@ A pipeline can pass structural validation (all seeds set, all paths relative) bu
 
 Both agents reference the `reproducible-pipelines` skill for conventions. The pipeline-validator checks that conventions are followed; the reproducibility-checker verifies the package meets journal submission standards (AEA Data Editor requirements, README template, pre-submission checklist).
 
-## Core Principles
+## CORE PHILOSOPHY
 
 1. **First-time user perspective** — evaluate the package as someone who has never seen this project before
 2. **README is the interface** — if the README doesn't say it, it doesn't exist

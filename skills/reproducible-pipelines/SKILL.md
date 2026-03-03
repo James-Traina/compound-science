@@ -20,7 +20,12 @@ Use when the user is:
 Skip when:
 - The task is about estimation methodology (use `causal-inference` or `structural-modeling` skill)
 - The task is git workflow management (use `git-worktree` skill)
-- The task is about orchestrating Claude agents (use `orchestrating-swarms` skill)
+- The task is about orchestrating Claude agents (use `swarm-orchestration` skill)
+
+## Where to Start
+- **New project?** Start with Directory Structure below
+- **Adding a workflow manager?** Jump to [Workflow Managers](#workflow-managers) (Make / Snakemake / DVC)
+- **Preparing for submission?** Jump to [Pre-Submission Checklist](#pre-submission-checklist)
 
 ## Project Directory Structure
 
@@ -561,3 +566,5 @@ Run this before submitting the replication package:
 | "It works on my laptop" | Different OS, library versions, locale settings | Test in Docker or CI; provide `environment.yml` |
 | Results tables copy-pasted into paper | Tables get stale when estimates change | Generate LaTeX tables directly from estimation code |
 | Pipeline only tested by the author | Missing implicit dependencies | Have a co-author or RA run from scratch; or use CI |
+
+The `pipeline-validator` agent can audit pipelines for these anti-patterns automatically, and the `reproducibility-checker` agent can verify replication packages before submission.

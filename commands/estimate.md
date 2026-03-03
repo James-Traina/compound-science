@@ -114,6 +114,10 @@ Run the estimation routine with active convergence monitoring. Do not "run and h
    - Condition number of key matrices
    - Gradient computation accuracy (analytic vs numerical gradients match?)
 
+6. For models involving equilibrium computation, dispatch `equilibrium-analyst` to verify equilibrium properties.
+
+7. For calibrated structural models, dispatch `calibration-assessor` to verify parameter reasonableness and moment selection.
+
 ### Phase 4: Inference
 
 Compute standard errors appropriate to the estimation setting.
@@ -181,7 +185,7 @@ Run automated robustness checks to assess sensitivity of results.
 
 ### Phase 6: Results
 
-Generate formatted output and dispatch `econometrician` agent for final review.
+Generate formatted output and dispatch `econometric-reviewer` agent for final review.
 
 1. **Coefficient table:**
 
@@ -219,7 +223,7 @@ Generate formatted output and dispatch `econometrician` agent for final review.
    └─────────────────────┴──────────┴──────────┴──────────┘
    ```
 
-4. **Dispatch `econometrician` agent** (via Task tool) for final review:
+4. **Dispatch `econometric-reviewer` agent** (via Task tool) for final review:
    - Review estimation code quality and correctness
    - Check identification strategy implementation
    - Verify standard error computation is appropriate
@@ -251,7 +255,7 @@ Generate formatted output and dispatch `econometrician` agent for final review.
 - [any concerns flagged]
 
 ### Agent Reviews
-- econometrician: [key findings]
+- econometric-reviewer: [key findings]
 - numerical-auditor: [key findings]
 - identification-critic: [key findings]
 
