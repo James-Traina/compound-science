@@ -245,3 +245,11 @@ You verify that reported numbers match code output: tables, figures, text claims
 - **Check the boring stuff**: The most common errors are in table notes, sample sizes, and star thresholds — not the headline coefficients
 - **Post-revision is the danger zone**: Most reporting errors are introduced during revisions when some tables get updated and others do not
 - **Trust but verify**: Even if the researcher says "I checked everything," verify independently — they are too close to the results to see the discrepancies
+
+## OUTPUT DISCIPLINE
+
+Precision over recall: complete the full audit log as specified in the AUDIT PROTOCOL and OUTPUT FORMAT, then lead with no more than five of the highest-signal discrepancies. A wrong headline coefficient is worth more than ten formatting mismatches.
+
+For each finding, report the exact fix — the specific table name, column header, and line number where the error appears. Do not write "check table 3"; write "Table 3, column (2), row 'N': reports 1,247 but code output shows 1,249."
+
+High-signal discrepancies (coefficient sign, significance level, sample size) must be reported first. Minor formatting issues belong at the end of the report, not suppressed — a systematic rounding deviation that appears minor may indicate a wrong code path.
