@@ -60,7 +60,11 @@ Use `/lfg` to chain all four steps automatically, or `/slfg` for parallel swarm 
 
 - `structural-modeling` — NFXP, MPEC, BLP, dynamic discrete choice, auction models
 - `causal-inference` — IV/2SLS/GMM, DiD, RDD, synthetic control, matching
-- `reproducible-pipelines` — Makefile/Snakemake/DVC, environment management, replication standards
+- `causal-ml` — Double ML, causal forests (GRF), DR-Learner, post-LASSO, high-dimensional controls
+- `game-theory` — Nash/SPE/BNE equilibria, entry models, conduct testing, bargaining, multiple equilibria
+- `identification-proofs` — Formal identification arguments: target parameter → model → rank conditions → regularity conditions
+- `bayesian-estimation` — MCMC, Stan/PyMC/Numpyro, prior elicitation, MCMC diagnostics, Bayesian structural models
+- `reproducible-pipelines` — Makefile/Snakemake/DVC, Stata pipelines, environment management, replication standards
 - `strategy-brainstorm` — Structured research brainstorming techniques
 - `compound-catalog` — Solution documentation by category (estimation, data, numerical, methodology)
 - `git-worktree` — Parallel branches for concurrent estimation runs
@@ -74,11 +78,11 @@ Use `/lfg` to chain all four steps automatically, or `/slfg` for parallel swarm 
 The plugin detects research context automatically through 7 hooks covering 13 domain categories:
 - **SessionStart** — Detects project type (empirical/paper), estimation language, data/pipeline presence
 - **UserPromptSubmit** — Injects domain context across 13 categories. Trigger words include: `estimate`, `identify`, `GMM`, `Monte Carlo`, `prove`, `equilibrium`, `Makefile`, `merge`, `diagnostic`, `tabulate`, `replication`, `Oster bounds`, `convergence`
-- **PostToolUse** — Fires on Write/Edit. Triggers include: Python with `statsmodels`/`pyblp`/`scipy.optimize`, R with `fixest`/`did`, Stata `.do` files, `.tex` with `\begin{table}` or `\begin{theorem}`, `Makefile`/`Snakefile`
+- **PostToolUse** — Fires on Write/Edit. Triggers include: Python with `statsmodels`/`pyblp`/`scipy.optimize`, R with `fixest`/`did`, Stata `.do` files, `.tex` with `\begin{table}` or `\begin{theorem}`, `Makefile`/`Snakefile`, Bayesian code with `pymc`/`stan`/`numpyro`/`brms`
 - **Stop** — Checks 8 completeness conditions. Blocks (at most once) for: missing standard errors after estimation, unseeded simulations, unstated regularity conditions, unvalidated merges. Suggests (non-blocking): `/tabulate`, `/stress-test`, `/replicate`, `/workflows:compound`
-- **PreCompact** — Preserves 8 categories of research state before context compaction
-- **PreToolUse** — Guards bash commands. Warns on: `python estimate.py` without `--seed`, absolute paths like `/Users/.../data.csv`, `pip install pandas` without `==version`
-- **SubagentStop** — Suggests next steps using severity routing: critical findings (convergence, identification) get immediate actions, presentation findings get suggestions. Uses pattern: `[agent]: [finding] → [action]`
+- **PreCompact** — Preserves 10 categories of research state before context compaction (including software environment versions and failed approaches)
+- **PreToolUse** — Guards bash commands. Warns on: `python estimate.py` without `--seed`, absolute paths like `/Users/.../data.csv`, `pip install pandas` without `==version`, `dvc repro`/`snakemake` without seed configuration
+- **SubagentStop** — Suggests next steps using severity routing: critical findings (convergence, identification) get immediate actions, presentation findings get suggestions. Multi-critical prioritization: identification failure → numerical instability → wrong SEs → robustness. Uses pattern: `[agent]: [finding] → [action]`
 
 ## Integration
 
@@ -87,7 +91,7 @@ This plugin works alongside: pr-review-toolkit (generic code review), commit-com
 ## Development
 
 ### Testing
-- Run: `bash tests/run-all.sh` (232 tests across 12 groups)
+- Run: `bash tests/run-all.sh` (236 tests across 12 groups)
 - Selective: `bash tests/run-all.sh 07` runs a single group; `--list` shows all groups
 - Reports are gitignored at `tests/reports/`
 

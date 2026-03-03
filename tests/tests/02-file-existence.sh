@@ -76,6 +76,10 @@ group "File Existence — Skills"
 SKILLS=(
   "strategy-brainstorm"
   "causal-inference"
+  "causal-ml"
+  "game-theory"
+  "identification-proofs"
+  "bayesian-estimation"
   "compound-catalog"
   "git-worktree"
   "swarm-orchestration"
@@ -86,7 +90,7 @@ SKILLS=(
   "empirical-playbook"
 )
 
-# 3-4: all 10 skills exist (dir + SKILL.md)
+# 3-4: all 14 skills exist (dir + SKILL.md)
 all_dirs=true
 all_files=true
 for skill in "${SKILLS[@]}"; do
@@ -99,8 +103,8 @@ for skill in "${SKILLS[@]}"; do
     must_fix "skill SKILL.md $skill exists" "file not found"
   fi
 done
-if $all_dirs; then pass "all 10 skill directories exist"; fi
-if $all_files; then pass "all 10 skill SKILL.md files exist"; fi
+if $all_dirs; then pass "all 14 skill directories exist"; fi
+if $all_files; then pass "all 14 skill SKILL.md files exist"; fi
 
 group "File Existence — Infrastructure"
 
@@ -125,11 +129,11 @@ print(len(d['hooks']))
 # 10-14
 assert_count "agents = 20" 20 "$actual_agents"
 assert_count "commands = 15" 15 "$actual_commands"
-assert_count "skills = 10" 10 "$actual_skills"
+assert_count "skills = 14" 14 "$actual_skills"
 assert_count "hooks = 7" 7 "$actual_hooks"
 
 total=$((actual_agents + actual_commands + actual_skills + actual_hooks))
-assert_count "total components = 52" 52 "$total"
+assert_count "total components = 56" 56 "$total"
 
 group "Agent Category Counts"
 

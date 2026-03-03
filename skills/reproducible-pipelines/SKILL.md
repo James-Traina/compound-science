@@ -246,6 +246,46 @@ stages:
       - n_bootstrap
 ```
 
+**Enhanced DVC: remote storage and experiment tracking:**
+
+```bash
+# Remote storage options
+dvc remote add -d s3remote s3://my-bucket/dvc-cache      # AWS S3
+dvc remote add -d gcsremote gs://my-bucket/dvc-cache     # Google Cloud
+dvc remote add -d sshremote ssh://server.edu/path/cache  # SSH server (common for university HPC)
+dvc remote add -d localremote /data/shared/dvc-cache     # Shared NFS mount
+
+# Visualize pipeline DAG
+dvc dag                        # ASCII DAG in terminal
+dvc dag --dot | dot -Tpdf > pipeline.pdf  # PDF visualization
+
+# Parameter tracking and comparison
+# params.yaml — centralize all tunable parameters
+# DVC auto-tracks params files listed in dvc.yaml
+
+dvc params diff HEAD~1         # Compare current params to last commit
+dvc params diff main feature-branch  # Compare across branches
+
+# Metrics: track experiment outcomes
+# In dvc.yaml: add metrics: [output/metrics.json] to a stage
+dvc metrics show               # Show all tracked metrics
+dvc metrics diff HEAD~3        # Compare metrics across commits
+
+# Partial pipeline execution
+dvc repro estimate             # Run only the 'estimate' stage and its deps
+dvc repro --force              # Re-run even if inputs haven't changed
+
+# Pull only what you need (for large datasets)
+dvc pull data/final/analysis.parquet.dvc  # Pull only one file
+dvc fetch --run-cache          # Prefetch cached stage outputs
+```
+
+**DVC best practices for research:**
+- Commit `dvc.lock` to git — it records the exact state of all outputs
+- Use `params.yaml` for all tunable parameters (seeds, model specs, sample cutoffs); DVC tracks changes automatically
+- On HPC clusters: configure SSH remote pointing at shared storage so collaborators don't re-run expensive stages
+- `dvc metrics` is useful for tracking bias/RMSE across Monte Carlo runs; commit `metrics.json` to see history
+
 ### Which Workflow Manager to Use
 
 | Factor | Make | Snakemake | DVC |
@@ -258,6 +298,148 @@ stages:
 | Reviewer familiarity | Very high | Medium | Lower |
 
 **Recommendation:** Start with Make. Switch to Snakemake if you need cluster execution or parameter sweeps. Add DVC if data files are too large for git.
+
+## Stata Projects
+
+Stata pipelines have different conventions from Python/R. The core principle is the same — single entry point, numbered scripts, no manual steps — but the execution model (interactive GUI vs batch) requires extra care.
+
+### Stata Project Structure
+
+```
+project/
+├── master.do                  # Single entry point: runs the entire pipeline
+├── code/
+│   ├── 01_clean.do            # Data cleaning
+│   ├── 02_build.do            # Variable construction
+│   ├── 03_estimate.do         # Main estimation
+│   ├── 04_robustness.do       # Robustness checks
+│   └── 05_tables.do           # Table output
+├── ado/                       # Custom ado-files (project-specific Stata programs)
+├── data/
+│   ├── raw/                   # Immutable raw data (.dta, .csv)
+│   └── intermediate/          # Cleaned data (gitignored)
+├── output/
+│   ├── tables/                # Exported tables (.tex, .xlsx)
+│   └── figures/               # Exported figures (.pdf, .eps)
+└── logs/                      # Log files from do-file runs (gitignored)
+```
+
+### master.do — The Single Entry Point
+
+```stata
+* master.do — Run the entire pipeline
+* Usage: stata -b do master.do  (batch mode, no GUI)
+
+version 17.0          // Pin Stata version — critical for reproducibility
+
+* === PATHS ===
+* Use relative paths from project root
+global root    "."
+global code    "$root/code"
+global data    "$root/data"
+global output  "$root/output"
+global logs    "$root/logs"
+
+* === SETTINGS ===
+set more off           // Never pause — required for batch mode
+set matsize 11000      // Increase matrix size for large datasets
+set linesize 120       // Wider output for tables
+
+* === LOGGING ===
+capture mkdir "$logs"
+local logfile = "$logs/master_" + c(current_date) + ".log"
+log using "`logfile'", replace text
+
+* === PIPELINE ===
+di "Starting pipeline: $S_DATE $S_TIME"
+
+do "$code/01_clean.do"
+do "$code/02_build.do"
+do "$code/03_estimate.do"
+do "$code/04_robustness.do"
+do "$code/05_tables.do"
+
+di "Pipeline complete: $S_DATE $S_TIME"
+log close
+```
+
+### do-file Conventions
+
+Each do-file should have a standard header and operate on global macros for paths:
+
+```stata
+* 03_estimate.do
+* Purpose: Baseline DiD estimation with two-way FE
+* Input:   $data/intermediate/panel_clean.dta
+* Output:  $output/tables/table1_did.tex, $data/intermediate/estimates.dta
+* Author:  [Name], [Date]
+* Updated: [Date] — [change description]
+
+version 17.0
+set more off
+
+* Load data
+use "$data/intermediate/panel_clean.dta", clear
+
+* Baseline DiD with reghdfe
+reghdfe y treated##post controls, absorb(unit_fe time_fe) vce(cluster unit_id)
+
+* Export table
+estimates store main_did
+esttab main_did using "$output/tables/table1_did.tex", ///
+    replace label star(* 0.10 ** 0.05 *** 0.01) se ///
+    title("Main DiD Results") booktabs
+```
+
+### Running Stata in Batch Mode (for reproducibility)
+
+Never rely on interactive clicks. Always run via batch:
+
+```bash
+# Run full pipeline (no GUI)
+stata -b do master.do
+
+# Or stata-mp for parallel processing
+stata-mp -b do master.do
+
+# Check exit code
+echo $?   # 0 = success, non-zero = error
+
+# Integrate with Make
+output/tables/table1_did.tex: code/03_estimate.do data/intermediate/panel_clean.dta
+	stata -b do code/03_estimate.do
+	@[ -f output/tables/table1_did.tex ] || (echo "Stata failed — check logs/" && exit 1)
+```
+
+### ado-file Versioning
+
+Custom programs (ado-files) must be version-controlled and loaded before estimation:
+
+```stata
+* In master.do, before any do-files:
+adopath + "$root/ado"   // Load project-specific ado-files first
+
+* In your ado/ directory: myprog.ado, myprog.sthlp
+* This ensures project ado-files take precedence over user-installed packages
+
+* Document installed packages in a setup do-file:
+* code/00_setup.do
+ssc install reghdfe, replace
+ssc install ftools, replace
+ssc install estout, replace
+ssc install rdrobust, replace
+```
+
+### Stata Anti-Patterns
+
+| Anti-Pattern | Problem | Fix |
+|---|---|---|
+| No `version` statement | Results may change across Stata versions | Add `version 17.0` to every do-file |
+| `set more on` (default) | Pipeline hangs waiting for keypress in batch | Always `set more off` in master.do |
+| Absolute paths (`/Users/me/...`) | Breaks on collaborator machines | Use global macros from master.do |
+| Interactive graph window (`graph display`) | Batch mode crashes | Use `graph export filename.pdf, replace` |
+| Missing `log close` | Log file left open if error occurs | Add `cap log close` at top, `log close` at bottom |
+| Point-and-click menu operations | Not reproducible | Everything in do-files |
 
 ## Environment Management
 
