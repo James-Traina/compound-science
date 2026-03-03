@@ -1,5 +1,5 @@
 #!/bin/bash
-# Test Group 2: All components exist as files with correct counts (21 tests)
+# Test Group 2: All components exist as files with correct counts (20 tests)
 source "$(dirname "$0")/../lib/assert.sh"
 
 group "File Existence — Agents"

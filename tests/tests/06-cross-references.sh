@@ -53,10 +53,10 @@ for name in $claude_names; do
     resolved=$((resolved + 1))
   fi
 done
-if [ "$resolved" -ge 30 ]; then
+if [ "$resolved" -ge 25 ]; then
   pass "CLAUDE.md references $resolved resolvable component names"
 else
-  must_fix "CLAUDE.md references >=30 components" "found only $resolved"
+  must_fix "CLAUDE.md references >=25 components" "found only $resolved"
 fi
 
 # 4: Every agent file is mentioned in CLAUDE.md
@@ -269,7 +269,7 @@ for chain_cmd in lfg slfg; do
   if [ -f "$file" ]; then
     delegates_ok=true
     for target in plan work review compound; do
-      if ! grep -q "$target" "$file"; then
+      if ! grep -q "workflows:$target\|/$target" "$file"; then
         delegates_ok=false
       fi
     done

@@ -109,14 +109,16 @@ assert_count() {
 }
 
 # py_eval MSG SCRIPT [DETAIL] — run python3 script, assert pass/fail
-# Caller should pass shell variables via env: VAR="$val" py_eval ...
+# Caller should export shell variables before calling: export VAR="$val"
+# On failure, shows the actual Python error (stderr) if non-empty, else DETAIL.
 py_eval() {
   local msg="$1"
   local script="$2"
   local detail="${3:-python3 check failed}"
-  if python3 -c "$script" 2>/dev/null; then
+  local py_err
+  if py_err=$(python3 -c "$script" 2>&1 >/dev/null); then
     pass "$msg"
   else
-    must_fix "$msg" "$detail"
+    must_fix "$msg" "${py_err:-$detail}"
   fi
 }

@@ -138,10 +138,12 @@ echo ""
 echo "  Report: $SHARED_REPORT"
 echo ""
 
-# When running the full suite, verify total test count to catch silently-crashed scripts
+# When running the full suite, verify test count is not below expected (catches crashed scripts).
+# Note: legitimate test failures inflate the count above EXPECTED_TOTAL (each must_fix adds a
+# test but the summary pass is suppressed), so only a count below the floor signals a crash.
 EXPECTED_TOTAL=228
-if [ $# -eq 0 ] && [ "$total_all" -ne "$EXPECTED_TOTAL" ]; then
-  echo "  ✗ TOTAL MISMATCH: expected $EXPECTED_TOTAL tests, got $total_all"
+if [ $# -eq 0 ] && [ "$total_all" -lt "$EXPECTED_TOTAL" ]; then
+  echo "  ✗ TOTAL MISMATCH: expected >=$EXPECTED_TOTAL tests, got $total_all"
   echo "    A test script may have crashed mid-run. Check each group individually."
   exit 1
 fi

@@ -20,13 +20,8 @@ done
 group "Hook Timeouts"
 
 # 8-14: All timeouts within limits (command <=60, prompt <=30)
-while IFS=: read -r status event htype timing; do
-  if [ "$status" = "OK" ]; then
-    pass "timeout $event ($htype) = $timing"
-  else
-    must_fix "timeout $event ($htype)" "$timing exceeds limit"
-  fi
-done < <(python3 -c "
+timeout_lines=""
+if ! timeout_lines=$(python3 -c "
 import json, os, sys
 d = json.load(open(os.environ['HOOKS_FILE']))
 limits = {'command': 60, 'prompt': 30}
@@ -45,7 +40,17 @@ if ok:
     sys.exit(0)
 else:
     sys.exit(1)
-" 2>/dev/null)
+" 2>/dev/null); then
+  must_fix "timeout checks (all events)" "python3 error parsing hooks.json"
+else
+  while IFS=: read -r status event htype timing; do
+    if [ "$status" = "OK" ]; then
+      pass "timeout $event ($htype) = $timing"
+    else
+      must_fix "timeout $event ($htype)" "$timing exceeds limit"
+    fi
+  done <<< "$timeout_lines"
+fi
 
 group "UserPromptSubmit — Domain Categories"
 
