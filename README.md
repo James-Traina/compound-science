@@ -121,7 +121,7 @@ Organized by role. Each runs as a specialized subagent with deep domain knowledg
 | `research-coordinator` | Coordinate multi-agent research workflows, manage handoffs between estimation/simulation/identification phases |
 | `progress-tracker` | Track research progress, maintain running checklist of completed and pending research steps |
 
-## Skills (10)
+## Skills (14)
 
 Domain knowledge and methodology references.
 
@@ -129,7 +129,11 @@ Domain knowledge and methodology references.
 |-------|---------|
 | `structural-modeling` | NFXP, MPEC, BLP, dynamic discrete choice, auction models — from model specification through estimation |
 | `causal-inference` | IV/2SLS/GMM, DiD (including staggered), RDD, synthetic control, matching estimators |
-| `reproducible-pipelines` | Makefile/Snakemake/DVC patterns, environment management, replication package standards |
+| `causal-ml` | Double ML (Chernozhukov et al.), causal forests (GRF), DR-Learner, post-double-selection LASSO, heterogeneous treatment effects |
+| `game-theory` | Nash/SPE/BNE equilibria, entry models (Bresnahan-Reiss, Ciliberto-Tamer), conduct testing, bargaining, multiple equilibria problem |
+| `identification-proofs` | Formal identification argument architecture: target parameter → model primitives → rank conditions → regularity conditions → estimation link |
+| `bayesian-estimation` | MCMC (Stan/PyMC/Numpyro), prior elicitation, MCMC diagnostics (R-hat, ESS, divergences), Bayesian structural models |
+| `reproducible-pipelines` | Makefile/Snakemake/DVC patterns, Stata pipelines (master.do, batch mode), environment management, replication package standards |
 | `strategy-brainstorm` | Structured research brainstorming techniques for methodology selection |
 | `compound-catalog` | Solution documentation patterns by category (estimation, data, numerical, methodology) |
 | `git-worktree` | Parallel branches for concurrent estimation runs and specification comparisons |
@@ -174,9 +178,9 @@ This plugin is designed to work alongside:
 |----------|-------|
 | Agents | 20 (10 review + 5 research + 5 workflow) |
 | Commands | 15 (5 workflow + 2 chain + 3 domain + 5 utility) |
-| Skills | 10 |
+| Skills | 14 |
 | Hooks | 7 |
-| **Total** | **52 components** |
+| **Total** | **56 components** |
 
 ## Layout
 

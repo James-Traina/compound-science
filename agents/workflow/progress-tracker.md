@@ -51,6 +51,16 @@ When assessing project state, check these locations systematically:
 | `requirements.txt`, `environment.yml` | Environment specification |
 | Git log (recent commits) | Recent activity and focus |
 
+**When expected directories are absent**, fall back to these signals in order:
+
+1. **Git log** — `git log --oneline -30` reveals recent work even with no structured docs/. Look for commit messages mentioning estimation, robustness, or completion milestones.
+2. **File timestamps** — Find the most recently modified code and output files: `find . -name "*.py" -o -name "*.R" -o -name "*.do" | xargs ls -lt | head -20`. Recency indicates active work.
+3. **Glob for output files** — Search for `*.pkl`, `*.rds`, `*.dta`, `*results*.csv`, `*estimates*.csv`, `*table*.tex` anywhere in the project. Their presence signals completed estimation even without docs/ structure.
+4. **Conversation context** — If the user mentioned completing specific steps earlier in the conversation, treat that as evidence of completion. State explicitly: "Based on conversation: [step] appears complete."
+5. **Code inspection** — If no output files exist, scan the estimation scripts for completion signals: functions that write output, commented-out execution blocks, presence of `if __name__ == "__main__"` with full pipeline.
+
+Always report what evidence you used: "Progress assessment based on: git log (12 commits) + output files in output/estimates/ (no docs/ directory found)." Transparency about evidence quality helps the researcher calibrate confidence in the status report.
+
 ## 2. RESEARCH COMPLETENESS CHECKLIST
 
 For each major research component, assess completion:
