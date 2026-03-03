@@ -34,8 +34,8 @@ assert dups == 0, str(dups) + ' duplicate key(s) found'
 
 group "PreToolUse Specifics"
 
-# Extract all PreToolUse fields in one call (2>&1 so python3 errors surface in "got:" messages)
-ptu_data=$(python3 -c "
+# Extract all PreToolUse fields in one call
+if ! ptu_data=$(python3 -c "
 import json, os
 d = json.load(open(os.environ['HOOKS_FILE']))
 ptu = d['hooks']['PreToolUse'][0]
@@ -43,50 +43,53 @@ h = ptu['hooks'][0]
 print(ptu['matcher'])
 print(h['type'])
 print(h['prompt'])
-" 2>&1 || true)
-ptu_matcher=$(echo "$ptu_data" | head -1)
-ptu_type=$(echo "$ptu_data" | sed -n '2p')
-ptu_prompt=$(echo "$ptu_data" | tail -n +3)
-
-# 4: PreToolUse matcher is exactly "Bash"
-if [ "$ptu_matcher" = "Bash" ]; then
-  pass "PreToolUse matcher is exactly Bash"
+" 2>/dev/null); then
+  must_fix "PreToolUse data extraction" "python3 failed — check HOOKS_FILE syntax"
 else
-  must_fix "PreToolUse matcher is Bash" "got: $ptu_matcher"
-fi
+  ptu_matcher=$(echo "$ptu_data" | head -1)
+  ptu_type=$(echo "$ptu_data" | sed -n '2p')
+  ptu_prompt=$(echo "$ptu_data" | tail -n +3)
 
-# 5: PreToolUse hook type is "prompt"
-if [ "$ptu_type" = "prompt" ]; then
-  pass "PreToolUse hook type is prompt"
-else
-  must_fix "PreToolUse hook type is prompt" "got: $ptu_type"
-fi
+  # 4: PreToolUse matcher is exactly "Bash"
+  if [ "$ptu_matcher" = "Bash" ]; then
+    pass "PreToolUse matcher is exactly Bash"
+  else
+    must_fix "PreToolUse matcher is Bash" "got: $ptu_matcher"
+  fi
 
-# 6: PreToolUse prompt mentions seed/random
-if echo "$ptu_prompt" | grep -qi "seed\|random"; then
-  pass "PreToolUse prompt mentions seed/random"
-else
-  must_fix "PreToolUse mentions seed/random" "missing"
-fi
+  # 5: PreToolUse hook type is "prompt"
+  if [ "$ptu_type" = "prompt" ]; then
+    pass "PreToolUse hook type is prompt"
+  else
+    must_fix "PreToolUse hook type is prompt" "got: $ptu_type"
+  fi
 
-# 7: PreToolUse prompt mentions absolute path
-if echo "$ptu_prompt" | grep -qi "absolute path\|home directory\|relative path"; then
-  pass "PreToolUse prompt mentions absolute paths"
-else
-  must_fix "PreToolUse mentions absolute paths" "missing"
-fi
+  # 6: PreToolUse prompt mentions seed/random
+  if echo "$ptu_prompt" | grep -qi "seed\|random"; then
+    pass "PreToolUse prompt mentions seed/random"
+  else
+    must_fix "PreToolUse mentions seed/random" "missing"
+  fi
 
-# 8: PreToolUse prompt mentions version/pin
-if echo "$ptu_prompt" | grep -qi "version\|pin"; then
-  pass "PreToolUse prompt mentions version/pin"
-else
-  must_fix "PreToolUse mentions version/pin" "missing"
+  # 7: PreToolUse prompt mentions absolute path
+  if echo "$ptu_prompt" | grep -qi "absolute path\|home directory\|relative path"; then
+    pass "PreToolUse prompt mentions absolute paths"
+  else
+    must_fix "PreToolUse mentions absolute paths" "missing"
+  fi
+
+  # 8: PreToolUse prompt mentions version/pin
+  if echo "$ptu_prompt" | grep -qi "version\|pin"; then
+    pass "PreToolUse prompt mentions version/pin"
+  else
+    must_fix "PreToolUse mentions version/pin" "missing"
+  fi
 fi
 
 group "SubagentStop Specifics"
 
-# Extract all SubagentStop fields in one call (2>&1 so python3 errors surface in "got:" messages)
-sas_data=$(python3 -c "
+# Extract all SubagentStop fields in one call
+if ! sas_data=$(python3 -c "
 import json, os
 d = json.load(open(os.environ['HOOKS_FILE']))
 sas = d['hooks']['SubagentStop'][0]
@@ -94,44 +97,47 @@ h = sas['hooks'][0]
 print(sas['matcher'])
 print(h['type'])
 print(h['prompt'])
-" 2>&1 || true)
-sas_matcher=$(echo "$sas_data" | head -1)
-sas_type=$(echo "$sas_data" | sed -n '2p')
-sas_prompt=$(echo "$sas_data" | tail -n +3)
-
-# 9: SubagentStop matcher is exactly "*"
-if [ "$sas_matcher" = "*" ]; then
-  pass "SubagentStop matcher is exactly *"
+" 2>/dev/null); then
+  must_fix "SubagentStop data extraction" "python3 failed — check HOOKS_FILE syntax"
 else
-  must_fix "SubagentStop matcher is *" "got: $sas_matcher"
-fi
+  sas_matcher=$(echo "$sas_data" | head -1)
+  sas_type=$(echo "$sas_data" | sed -n '2p')
+  sas_prompt=$(echo "$sas_data" | tail -n +3)
 
-# 10: SubagentStop hook type is "prompt"
-if [ "$sas_type" = "prompt" ]; then
-  pass "SubagentStop hook type is prompt"
-else
-  must_fix "SubagentStop hook type is prompt" "got: $sas_type"
-fi
+  # 9: SubagentStop matcher is exactly "*"
+  if [ "$sas_matcher" = "*" ]; then
+    pass "SubagentStop matcher is exactly *"
+  else
+    must_fix "SubagentStop matcher is *" "got: $sas_matcher"
+  fi
 
-# 11: SubagentStop prompt mentions review agent(s) by name
-if echo "$sas_prompt" | grep -qE "econometric-reviewer|numerical-auditor|identification-critic"; then
-  pass "SubagentStop mentions review agents by name"
-else
-  must_fix "SubagentStop mentions review agents" "missing agent names"
-fi
+  # 10: SubagentStop hook type is "prompt"
+  if [ "$sas_type" = "prompt" ]; then
+    pass "SubagentStop hook type is prompt"
+  else
+    must_fix "SubagentStop hook type is prompt" "got: $sas_type"
+  fi
 
-# 12: SubagentStop prompt mentions research agent(s) by name
-if echo "$sas_prompt" | grep -qE "literature-scout|methods-explorer|data-detective"; then
-  pass "SubagentStop mentions research agents by name"
-else
-  must_fix "SubagentStop mentions research agents" "missing agent names"
-fi
+  # 11: SubagentStop prompt mentions review agent(s) by name
+  if echo "$sas_prompt" | grep -qE "econometric-reviewer|numerical-auditor|identification-critic"; then
+    pass "SubagentStop mentions review agents by name"
+  else
+    must_fix "SubagentStop mentions review agents" "missing agent names"
+  fi
 
-# 13: SubagentStop prompt mentions /workflows:compound or next steps
-if echo "$sas_prompt" | grep -qE '/workflows:compound|next step'; then
-  pass "SubagentStop mentions compound workflow or next steps"
-else
-  must_fix "SubagentStop mentions compound/next steps" "missing"
+  # 12: SubagentStop prompt mentions research agent(s) by name
+  if echo "$sas_prompt" | grep -qE "literature-scout|methods-explorer|data-detective"; then
+    pass "SubagentStop mentions research agents by name"
+  else
+    must_fix "SubagentStop mentions research agents" "missing agent names"
+  fi
+
+  # 13: SubagentStop prompt mentions /workflows:compound or next steps
+  if echo "$sas_prompt" | grep -qE '/workflows:compound|next step'; then
+    pass "SubagentStop mentions compound workflow or next steps"
+  else
+    must_fix "SubagentStop mentions compound/next steps" "missing"
+  fi
 fi
 
 group "Cross-Component Wiring"

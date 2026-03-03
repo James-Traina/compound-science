@@ -84,7 +84,7 @@ for line in text.strip().split('\n'):
         break
 else:
     print(0)
-" 2>/dev/null)
+" 2>/dev/null) || desc_len=0
   if [ "${desc_len:-0}" -lt 50 ]; then
     all_desc=false
     must_fix "skill $skill description >= 50 chars" "got $desc_len chars"

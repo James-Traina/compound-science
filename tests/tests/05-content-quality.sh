@@ -162,7 +162,7 @@ group "No Sensitive Data"
 py_eval "no API keys or tokens" "
 import re, os
 exclude = {'tests', '.ralph', '.serena', '.git', '.claude'}
-pat = re.compile(r'sk-[a-z0-9]{20,}|api[_-]?key\s*=\s*[a-z0-9_-]{8,}', re.I)
+pat = re.compile(r'sk-[a-z0-9]{20,}|api[_-]?key\s*=\s*[\x22\x27][a-z0-9]|password\s*=\s*[\x22\x27][^\x22\x27]{4,}[\x22\x27]', re.I)
 findings = []
 for root, dirs, files in os.walk(os.environ['PLUGIN_DIR']):
     dirs[:] = [d for d in dirs if d not in exclude]
@@ -171,8 +171,10 @@ for root, dirs, files in os.walk(os.environ['PLUGIN_DIR']):
             text = open(os.path.join(root, f), errors='ignore').read()
             for m in pat.finditer(text):
                 findings.append(os.path.basename(root) + '/' + f + ': ' + m.group()[:30])
-        except Exception:
+        except (PermissionError, IsADirectoryError):
             pass
+        except OSError as e:
+            findings.append('SCAN ERROR: ' + str(e))
 assert not findings, 'sensitive data: ' + findings[0]
 " "python3 failed — could not scan for credentials"
 

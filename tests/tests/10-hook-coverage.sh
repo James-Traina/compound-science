@@ -1,5 +1,5 @@
 #!/bin/bash
-# Test Group 10: Hook prompt coverage and integration (23 tests)
+# Test Group 10: Hook prompt coverage and integration (24 tests)
 source "$(dirname "$0")/../lib/assert.sh"
 
 export HOOKS_FILE="$PLUGIN_DIR/hooks/hooks.json"
@@ -57,33 +57,35 @@ group "UserPromptSubmit — Domain Categories"
 # 15: All 13 domain categories covered
 CATEGORIES=("IDENTIFICATION" "ESTIMATION" "SIMULATION" "PROOF" "EQUILIBRIUM" "PIPELINE" "DATA" "DIAGNOSTICS" "TABLES" "REPLICATION" "SENSITIVITY" "SUBMISSION" "CONVERGENCE")
 
-prompt_text=$(python3 -c "
+if ! prompt_text=$(python3 -c "
 import json, os
 d = json.load(open(os.environ['HOOKS_FILE']))
 for m in d['hooks']['UserPromptSubmit']:
     for h in m['hooks']:
         if h['type'] == 'prompt':
             print(h['prompt'])
-" 2>/dev/null || echo "")
+" 2>/dev/null); then
+  must_fix "UserPromptSubmit prompt extraction" "python3 failed — check HOOKS_FILE"
+else
+  all_cats=true
+  for cat in "${CATEGORIES[@]}"; do
+    if ! echo "$prompt_text" | grep -q "$cat"; then
+      all_cats=false
+      must_fix "UserPromptSubmit covers $cat" "category missing"
+    fi
+  done
+  if $all_cats; then pass "UserPromptSubmit covers all 13 categories"; fi
 
-all_cats=true
-for cat in "${CATEGORIES[@]}"; do
-  if ! echo "$prompt_text" | grep -q "$cat"; then
-    all_cats=false
-    must_fix "UserPromptSubmit covers $cat" "category missing"
-  fi
-done
-if $all_cats; then pass "UserPromptSubmit covers all 13 categories"; fi
-
-# 15a: CONVERGENCE category contains its specific trigger keywords
-conv_ok=true
-for kw in "optimizer" "Hessian" "BFGS"; do
-  if ! echo "$prompt_text" | grep -qi "$kw"; then
-    conv_ok=false
-    must_fix "UserPromptSubmit CONVERGENCE keyword: $kw" "missing"
-  fi
-done
-if $conv_ok; then pass "UserPromptSubmit CONVERGENCE has trigger keywords (optimizer/Hessian/BFGS)"; fi
+  # 15a: CONVERGENCE category contains its specific trigger keywords
+  conv_ok=true
+  for kw in "Hessian" "BFGS" "Nelder-Mead"; do
+    if ! echo "$prompt_text" | grep -qi "$kw"; then
+      conv_ok=false
+      must_fix "UserPromptSubmit CONVERGENCE keyword: $kw" "missing"
+    fi
+  done
+  if $conv_ok; then pass "UserPromptSubmit CONVERGENCE has trigger keywords (Hessian/BFGS/Nelder-Mead)"; fi
+fi
 
 group "PostToolUse — Content Coverage"
 
@@ -111,40 +113,49 @@ fi
 
 group "Stop Hook — Completeness Checks"
 
-stop_text=$(python3 -c "
+if ! stop_text=$(python3 -c "
 import json, os
 d = json.load(open(os.environ['HOOKS_FILE']))
 for m in d['hooks']['Stop']:
     for h in m['hooks']:
         if h['type'] == 'prompt':
             print(h['prompt'])
-" 2>/dev/null || echo "")
-
-# 17: Stop checks critical completeness conditions (SE, seeds, sensitivity, commands)
-stop_missing=""
-for term in "standard error" "seed" "sensitiv" "/diagnose"; do
-  if ! echo "$stop_text" | grep -qi "$term"; then
-    stop_missing="$stop_missing $term"
+" 2>/dev/null); then
+  must_fix "Stop prompt extraction" "python3 failed — check HOOKS_FILE"
+else
+  # 17: Stop checks critical completeness conditions (SE, seeds, sensitivity, commands)
+  stop_missing=""
+  for term in "standard error" "seed" "sensitiv" "/diagnose"; do
+    if ! echo "$stop_text" | grep -qi "$term"; then
+      stop_missing="$stop_missing $term"
+    fi
+  done
+  if [ -z "$stop_missing" ]; then
+    pass "Stop checks critical conditions (SE, seeds, sensitivity, commands)"
+  else
+    must_fix "Stop checks critical conditions" "missing:$stop_missing"
   fi
-done
-if [ -z "$stop_missing" ]; then
-  pass "Stop checks critical conditions (SE, seeds, sensitivity, commands)"
-else
-  must_fix "Stop checks critical conditions" "missing:$stop_missing"
-fi
 
-# 17a: Stop prompt contains BLOCKING RULES section (items 1-4 only)
-if echo "$stop_text" | grep -q "BLOCKING RULES"; then
-  pass "Stop prompt has BLOCKING RULES section"
-else
-  must_fix "Stop prompt has BLOCKING RULES section" "missing — blocking contract undocumented"
-fi
+  # 17a: Stop prompt contains BLOCKING RULES section (items 1-4 only)
+  if echo "$stop_text" | grep -q "BLOCKING RULES"; then
+    pass "Stop prompt has BLOCKING RULES section"
+  else
+    must_fix "Stop prompt has BLOCKING RULES section" "missing — blocking contract undocumented"
+  fi
 
-# 17b: Stop prompt explicitly marks items 5-8 as suggestion-only (cannot block)
-if echo "$stop_text" | grep -qE "Items 5-8|items 5-8|suggestion.only|MUST NOT block"; then
-  pass "Stop prompt marks items 5-8 as suggestion-only"
-else
-  must_fix "Stop prompt marks items 5-8 as suggestion-only" "missing — at-most-once blocking contract not enforced"
+  # 17b: Stop prompt explicitly marks items 5-8 as suggestion-only (cannot block)
+  if echo "$stop_text" | grep -qE "Items 5-8|items 5-8|suggestion.only|MUST NOT block"; then
+    pass "Stop prompt marks items 5-8 as suggestion-only"
+  else
+    must_fix "Stop prompt marks items 5-8 as suggestion-only" "missing — at-most-once blocking contract not enforced"
+  fi
+
+  # 17c: Stop prompt specifies JSON response schema (decision/reason/systemMessage)
+  if echo "$stop_text" | grep -qE 'decision.*block|decision.*approve|systemMessage'; then
+    pass "Stop prompt specifies JSON response schema"
+  else
+    must_fix "Stop prompt specifies JSON response schema" "missing — model won't know how to format block/approve decisions"
+  fi
 fi
 
 group "PreCompact — State Preservation"
