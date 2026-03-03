@@ -197,22 +197,22 @@ commands/
 skills/         10 domain knowledge bases with reference material
 hooks/          hooks.json (7 ambient hooks, 13 domain categories)
 scripts/        session-init.sh
-tests/          240 tests across 12 groups (dev-only)
+tests/          231 tests across 12 groups (dev-only)
 ```
 
 ## Testing
 
 ```bash
-bash tests/run-all.sh              # Run all 240 tests
+bash tests/run-all.sh              # Run all 231 tests
 bash tests/run-all.sh 07           # Run a specific test group
 bash tests/run-all.sh --list       # List available test groups
 ```
 
-## Background
+## Background & Attribution
 
-This plugin grew out of [compound-engineering](https://github.com/EveryInc/compound-engineering-plugin) by Every Inc, which codified web development workflows for Claude Code. The core loop — plan, work, review, compound — maps well onto quantitative research, where the same convergence problems, identification pitfalls, and numerical issues recur across projects.
+This plugin is directly inspired by [compound-engineering](https://github.com/EveryInc/compound-engineering-plugin) by [Every](https://every.to), which pioneered the compound workflow pattern for web development in Claude Code. The core loop — plan, work, review, compound — and the structural idea of ambient hooks that watch for domain artifacts both come from their work. compound-science adapts that pattern to quantitative social science research.
 
-The main adaptation was swapping web-focused agents for domain-specific ones: an econometric-reviewer instead of a frontend reviewer, a numerical auditor instead of a performance profiler. The research commands (`/estimate`, `/simulate`, `/identify`) and utility commands (`/diagnose`, `/tabulate`, `/replicate`, `/visualize`, `/stress-test`) handle domain-specific workflows, and the ambient hooks watch for estimation packages, LaTeX files, and data directories.
+The main adaptation was swapping web-focused agents for domain-specific ones: an `econometric-reviewer` instead of a frontend reviewer, a `numerical-auditor` instead of a performance profiler. The research commands (`/estimate`, `/simulate`, `/identify`) and utility commands (`/diagnose`, `/tabulate`, `/replicate`, `/visualize`, `/stress-test`) handle domain-specific workflows that have no web equivalent, and the ambient hooks watch for estimation packages, LaTeX files, and data directories rather than JavaScript frameworks and API endpoints.
 
 ## Domain Keywords
 
