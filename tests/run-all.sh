@@ -141,7 +141,7 @@ echo ""
 # When running the full suite, verify test count is not below expected (catches crashed scripts).
 # Note: legitimate test failures inflate the count above EXPECTED_TOTAL (each must_fix adds a
 # test but the summary pass is suppressed), so only a count below the floor signals a crash.
-EXPECTED_TOTAL=232
+EXPECTED_TOTAL=236
 if [ $# -eq 0 ] && [ "$total_all" -lt "$EXPECTED_TOTAL" ]; then
   echo "  ✗ TOTAL MISMATCH: expected >=$EXPECTED_TOTAL tests, got $total_all"
   echo "    A test script may have crashed mid-run. Check each group individually."

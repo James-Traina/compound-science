@@ -1,5 +1,5 @@
 #!/bin/bash
-# Test Group 11: Skill content depth and trigger quality (20 tests)
+# Test Group 11: Skill content depth and trigger quality (24 tests)
 source "$(dirname "$0")/../lib/assert.sh"
 
 SKILLS_DIR="$PLUGIN_DIR/skills"
@@ -23,7 +23,7 @@ SKILLS=(
 
 group "Content Depth"
 
-# 1: All 10 skills have >=100 lines
+# 1: All 14 skills have >=100 lines
 all_long=true
 for skill in "${SKILLS[@]}"; do
   f="$SKILLS_DIR/$skill/SKILL.md"
@@ -35,7 +35,7 @@ for skill in "${SKILLS[@]}"; do
 done
 if $all_long; then pass "all 14 skills have >= 100 lines"; fi
 
-# 2: All 10 skills have >=3 ## section headers
+# 2: All 14 skills have >=3 ## section headers
 all_headers=true
 for skill in "${SKILLS[@]}"; do
   headers=$(grep -c '^## ' "$SKILLS_DIR/$skill/SKILL.md" 2>/dev/null) || headers=0
@@ -46,7 +46,7 @@ for skill in "${SKILLS[@]}"; do
 done
 if $all_headers; then pass "all 14 skills have >= 3 section headers"; fi
 
-# 3: All 10 skills have code examples
+# 3: All 14 skills have code examples
 all_code=true
 for skill in "${SKILLS[@]}"; do
   codeblocks=$(grep -c '```' "$SKILLS_DIR/$skill/SKILL.md" 2>/dev/null) || codeblocks=0
@@ -57,7 +57,7 @@ for skill in "${SKILLS[@]}"; do
 done
 if $all_code; then pass "all 14 skills have code examples"; fi
 
-# 4: All 10 skills have >=500 words
+# 4: All 14 skills have >=500 words
 all_words=true
 for skill in "${SKILLS[@]}"; do
   f="$SKILLS_DIR/$skill/SKILL.md"
@@ -133,19 +133,23 @@ fi
 
 group "Domain Content"
 
-# 7-16: Each skill contains expected domain terms
+# 7-20: Each skill contains expected domain terms
 get_skill_terms() {
   case "$1" in
-    structural-modeling)  echo "NFXP|MPEC|BLP" ;;
-    causal-inference)     echo "IV|2SLS|DiD|RDD" ;;
-    empirical-playbook)   echo "method selection|diagnostics|power" ;;
-    submission-guide)     echo "journal|referee|revision" ;;
-    compound-catalog)     echo "category|frontmatter|problem_type" ;;
+    structural-modeling)    echo "NFXP|MPEC|BLP" ;;
+    causal-inference)       echo "IV|2SLS|DiD|RDD" ;;
+    causal-ml)              echo "DML|causal.forest|Chernozhukov" ;;
+    game-theory)            echo "Nash|BNE|SPE" ;;
+    identification-proofs)  echo "rank condition|regularity|LATE" ;;
+    bayesian-estimation)    echo "MCMC|Stan|PyMC" ;;
+    empirical-playbook)     echo "method selection|diagnostics|power" ;;
+    submission-guide)       echo "journal|referee|revision" ;;
+    compound-catalog)       echo "category|frontmatter|problem_type" ;;
     reproducible-pipelines) echo "Makefile|Snakemake|DVC" ;;
-    strategy-brainstorm)  echo "approach|parsimony" ;;
-    project-setup)        echo "compound-science.local" ;;
-    git-worktree)         echo "worktree|branch" ;;
-    swarm-orchestration)  echo "parallel|teammate" ;;
+    strategy-brainstorm)    echo "approach|parsimony" ;;
+    project-setup)          echo "compound-science.local" ;;
+    git-worktree)           echo "worktree|branch" ;;
+    swarm-orchestration)    echo "parallel|teammate" ;;
   esac
 }
 
@@ -160,7 +164,7 @@ done
 
 group "Integration"
 
-# 17: All skills reference at least one agent name
+# 21: All skills reference at least one agent name
 AGENT_PATTERN="econometric-reviewer|mathematical-prover|numerical-auditor|identification-critic|journal-referee|simulation-designer|process-architect|equilibrium-analyst|calibration-assessor|results-verifier|literature-scout|methods-explorer|data-detective|solutions-archivist|benchmark-researcher|pipeline-validator|reproducibility-checker|specification-analyzer|research-coordinator|progress-tracker"
 
 ref_count=0
@@ -177,7 +181,7 @@ else
   must_fix "all skills reference an agent" "only $ref_count/14 skills reference agents"
 fi
 
-# 18: No skill exceeds 2000 lines (bloat guard)
+# 22: No skill exceeds 2000 lines (bloat guard)
 all_slim=true
 for skill in "${SKILLS[@]}"; do
   f="$SKILLS_DIR/$skill/SKILL.md"
@@ -189,7 +193,7 @@ for skill in "${SKILLS[@]}"; do
 done
 if $all_slim; then pass "no skill exceeds 2000 lines"; fi
 
-# 19: All skill directories contain exactly 1 file (SKILL.md)
+# 23: All skill directories contain exactly 1 file (SKILL.md)
 all_single=true
 for skill in "${SKILLS[@]}"; do
   count=$(find "$SKILLS_DIR/$skill" -maxdepth 1 -type f | wc -l | tr -d ' ')
@@ -200,7 +204,7 @@ for skill in "${SKILLS[@]}"; do
 done
 if $all_single; then pass "all skill directories contain exactly 1 file"; fi
 
-# 20: All skill names match word-word kebab-case
+# 24: All skill names match word-word kebab-case
 all_kebab=true
 for skill in "${SKILLS[@]}"; do
   if ! echo "$skill" | python3 -c "

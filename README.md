@@ -201,7 +201,7 @@ commands/
 skills/         10 domain knowledge bases with reference material
 hooks/          hooks.json (7 ambient hooks, 13 domain categories)
 scripts/        session-init.sh
-tests/          232 tests across 12 groups (dev-only)
+tests/          236 tests across 12 groups (dev-only)
 ```
 
 ## Testing

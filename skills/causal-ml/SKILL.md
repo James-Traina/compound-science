@@ -5,7 +5,7 @@ description: Guide for causal machine learning methods in applied economics and 
 
 # Causal Machine Learning
 
-Reference for causal ML methods: double machine learning, causal forests, meta-learners, and high-dimensional control selection. Covers identification, estimation, inference, and diagnostics for ML-based causal estimators used in applied economics and quantitative social science.
+Reference for semiparametric machine learning estimators: DML with cross-fitting, generalized random forests, debiased regularization approaches, and nuisance function approximation. Covers Neyman-orthogonal moment conditions, sample splitting, plug-in bias correction, and heterogeneous treatment effects using R and Python frameworks.
 
 ## When to Use This Skill
 
