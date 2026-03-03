@@ -8,7 +8,7 @@ Every time you solve a methodological problem (a convergence fix, an identificat
 
 The core loop is Plan, Work, Review, Compound, Repeat.
 
-You describe a research task. The plugin plans an approach, executes it with convergence monitoring and quality gates, runs domain-specific review agents (an econometric-reviewer checks your identification, a numerical auditor checks your floating-point stability, a referee tries to reject your paper), and extracts reusable solutions into a knowledge base at `docs/solutions/`.
+You describe a research task. The plugin plans an approach, executes it with convergence monitoring and quality gates, runs domain-specific review agents (an econometric-reviewer checks your identification, a numerical auditor checks your floating-point stability, a journal-referee tries to reject your paper), and extracts reusable solutions into a knowledge base at `docs/solutions/`.
 
 Workflow commands chain the steps. `/lfg` runs the full loop autonomously; `/slfg` runs review and compound in parallel using agent swarms. Domain commands handle specific tasks: `/estimate` runs a complete estimation pipeline, `/simulate` designs Monte Carlo studies, `/identify` formalizes identification arguments. Utility commands handle output: `/diagnose` runs diagnostic batteries, `/tabulate` generates publication-ready tables, `/visualize` creates research figures, `/stress-test` runs formal robustness analysis, `/replicate` builds AEA-compliant replication packages. Ambient hooks run without being invoked: when you write estimation code the plugin offers relevant agents, and when a session ends it checks for missing standard errors or RNG seeds.
 
@@ -64,13 +64,18 @@ claude plugin install /path/to/compound-science
 | `/lfg` | Chain all four steps automatically |
 | `/slfg` | Same as `/lfg` with parallel swarm execution for review and compound |
 
-### Utility
+### Domain
 
 | Command | What it does |
 |---------|-------------|
 | `/estimate` | Run structural estimation pipeline: data validation, identification check, estimation with convergence monitoring, proper standard errors, automated robustness checks, formatted results |
 | `/simulate` | Design and run Monte Carlo studies: DGP specification, parameter selection, simulation execution, bias/RMSE/coverage metrics, results tables |
 | `/identify` | Formalize identification arguments: target parameter, model specification, derivation, regularity conditions, link to estimation |
+
+### Utility
+
+| Command | What it does |
+|---------|-------------|
 | `/diagnose` | Run diagnostic battery on estimation results: specification tests, instrument diagnostics, residual analysis, model fit assessment |
 | `/tabulate` | Generate publication-ready tables: regression results, summary statistics, Monte Carlo output, balance tables |
 | `/replicate` | Build and verify AEA-compliant replication packages: inventory, README, dependency audit, pipeline verification, data documentation |
