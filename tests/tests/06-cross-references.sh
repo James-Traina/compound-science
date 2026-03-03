@@ -42,21 +42,28 @@ fi
 group "Cross-References — CLAUDE.md Agents"
 
 # 3: CLAUDE.md backtick names resolve to agents, skills, or commands
+# Names that are legitimate non-component references (config keys, etc.) are excluded.
 claude_names=$(grep -oE '`[a-z]+-[a-z-]+`' "$PLUGIN_DIR/CLAUDE.md" | tr -d '`' | sort -u)
-resolved=0
+# These hyphenated names appear in CLAUDE.md backticks but are not plugin components.
+non_components="disable-model-invocation set-e no-verify"
+unresolved=""
 for name in $claude_names; do
+  # Skip known non-component names
+  if echo "$non_components" | grep -qw "$name"; then continue; fi
   if find "$PLUGIN_DIR/agents" -name "$name.md" 2>/dev/null | grep -q .; then
-    resolved=$((resolved + 1))
+    : # valid agent
   elif [ -d "$PLUGIN_DIR/skills/$name" ]; then
-    resolved=$((resolved + 1))
+    : # valid skill
   elif [ -f "$PLUGIN_DIR/commands/$name.md" ] || [ -f "$PLUGIN_DIR/commands/workflows/$name.md" ]; then
-    resolved=$((resolved + 1))
+    : # valid command
+  else
+    unresolved="$unresolved $name"
   fi
 done
-if [ "$resolved" -ge 25 ]; then
-  pass "CLAUDE.md references $resolved resolvable component names"
+if [ -z "$unresolved" ]; then
+  pass "all CLAUDE.md component names resolve to files"
 else
-  must_fix "CLAUDE.md references >=25 components" "found only $resolved"
+  should_fix "CLAUDE.md unresolved component names" "not found:$unresolved"
 fi
 
 # 4: Every agent file is mentioned in CLAUDE.md

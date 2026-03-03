@@ -22,10 +22,11 @@ group "Content Depth"
 # 1: All 10 skills have >=100 lines
 all_long=true
 for skill in "${SKILLS[@]}"; do
-  lines=$(wc -l < "$SKILLS_DIR/$skill/SKILL.md" 2>/dev/null | tr -d ' ')
+  f="$SKILLS_DIR/$skill/SKILL.md"
+  lines=0; [ -f "$f" ] && lines=$(wc -l < "$f" | tr -d ' ')
   if [ "${lines:-0}" -lt 100 ]; then
     all_long=false
-    must_fix "skill $skill >= 100 lines" "got $lines lines"
+    must_fix "skill $skill >= 100 lines" "got ${lines:-0} lines"
   fi
 done
 if $all_long; then pass "all 10 skills have >= 100 lines"; fi
@@ -55,10 +56,11 @@ if $all_code; then pass "all 10 skills have code examples"; fi
 # 4: All 10 skills have >=500 words
 all_words=true
 for skill in "${SKILLS[@]}"; do
-  words=$(wc -w < "$SKILLS_DIR/$skill/SKILL.md" 2>/dev/null | tr -d ' ')
+  f="$SKILLS_DIR/$skill/SKILL.md"
+  words=0; [ -f "$f" ] && words=$(wc -w < "$f" | tr -d ' ')
   if [ "${words:-0}" -lt 500 ]; then
     all_words=false
-    must_fix "skill $skill >= 500 words" "got $words words"
+    must_fix "skill $skill >= 500 words" "got ${words:-0} words"
   fi
 done
 if $all_words; then pass "all 10 skills have >= 500 words"; fi
@@ -174,10 +176,11 @@ fi
 # 18: No skill exceeds 2000 lines (bloat guard)
 all_slim=true
 for skill in "${SKILLS[@]}"; do
-  lines=$(wc -l < "$SKILLS_DIR/$skill/SKILL.md" 2>/dev/null | tr -d ' ')
+  f="$SKILLS_DIR/$skill/SKILL.md"
+  lines=0; [ -f "$f" ] && lines=$(wc -l < "$f" | tr -d ' ')
   if [ "${lines:-0}" -gt 2000 ]; then
     all_slim=false
-    should_fix "skill $skill <= 2000 lines" "got $lines lines"
+    should_fix "skill $skill <= 2000 lines" "got ${lines:-0} lines"
   fi
 done
 if $all_slim; then pass "no skill exceeds 2000 lines"; fi
