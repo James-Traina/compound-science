@@ -97,7 +97,7 @@ This plugin works alongside: pr-review-toolkit (generic code review), commit-com
 
 ### Critical Invariants
 - **Flat repo structure**: `.claude-plugin/plugin.json` must be at repo root — not nested in a subdirectory. `claude plugin install` won't find it otherwise.
-- **marketplace.json**: Must be at repo root alongside `.claude-plugin/`. It registers the plugin with the Claude Code marketplace and lists the `source` as `./.claude-plugin`.
+- **Version bumping required for updates**: Claude Code caches plugins; users only get updates if `version` in `plugin.json` is incremented. Current version is tracked in `.claude-plugin/plugin.json`.
 - **Hook wrapper format**: `hooks.json` requires the `{"description":"...","hooks":{...}}` envelope. Missing the outer wrapper silently disables all hooks.
 - **Dev-only dirs are hidden**: `.tests/` and `.evals/` start with `.` so they don't appear in the default file tree for users who install the plugin. Reports go to `.tests/reports/` (gitignored).
 - **grep -P unavailable on macOS**: Use `python3 -c "import re; ..."` for Perl-compatible regex. All QA scripts avoid `grep -P`.

@@ -14,6 +14,15 @@ Workflow commands chain the steps. `/lfg` runs the full loop autonomously; `/slf
 
 ## Install
 
+Via the [science-plugins](https://github.com/James-Traina/science-plugins) marketplace (recommended — enables one-command updates):
+
+```bash
+/plugin marketplace add James-Traina/science-plugins
+/plugin install compound-science@science-plugins
+```
+
+Or directly from GitHub:
+
 ```bash
 claude plugin install https://github.com/James-Traina/compound-science
 ```
@@ -22,6 +31,12 @@ Or from a local clone:
 
 ```bash
 claude plugin install /path/to/compound-science
+```
+
+To update after a new release:
+
+```bash
+/plugin update compound-science
 ```
 
 ## Quick start
@@ -185,8 +200,9 @@ This plugin is designed to work alongside:
 ## Layout
 
 ```
-.claude-plugin/ plugin.json (manifest — must be at repo root for install to work)
-marketplace.json (marketplace listing)
+.claude-plugin/ plugin.json (manifest)
+settings.json   (plugin default settings)
+CHANGELOG.md    (version history)
 agents/
   review/       econometric-reviewer, mathematical-prover, numerical-auditor, identification-critic,
                 journal-referee, simulation-designer, process-architect, equilibrium-analyst,
