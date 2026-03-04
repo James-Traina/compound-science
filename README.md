@@ -185,7 +185,12 @@ This plugin is designed to work alongside:
 ## Layout
 
 ```
-.claude-plugin/ plugin.json (manifest — must be at repo root for install to work)
+.claude-plugin/
+  plugin.json             plugin manifest
+hooks/
+  hooks.json              7 ambient hooks (declarative config)
+  scripts/
+    session-init.sh
 agents/
   review/       econometric-reviewer, mathematical-prover, numerical-auditor, identification-critic,
                 journal-referee, simulation-designer, process-architect, equilibrium-analyst,
@@ -198,9 +203,8 @@ commands/
   workflows/    brainstorm, plan, work, review, compound
   estimate, simulate, identify, lfg, slfg
   diagnose, tabulate, replicate, visualize, stress-test
-skills/         10 domain knowledge bases with reference material
-hooks/          hooks.json (7 ambient hooks, 13 domain categories)
-scripts/        session-init.sh
+skills/         14 domain knowledge bases with reference material
+eval/           grading scripts
 tests/          236 tests across 12 groups (dev-only)
 ```
 
