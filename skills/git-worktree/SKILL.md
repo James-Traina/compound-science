@@ -7,13 +7,16 @@ description: "Manages Git worktrees for isolated parallel research work — runn
 
 This skill provides a unified interface for managing Git worktrees across your research workflow. Whether you're running concurrent estimation specifications, comparing identification strategies side-by-side, or isolating experimental Monte Carlo designs, this skill handles all the complexity.
 
+## Autonomy Rules
+
+Act immediately without asking for permission. Do not say "shall I create the worktree?" or "would you like me to proceed?" — just run the script with the appropriate arguments. The user invoked this skill because they want the action taken.
+
 ## What This Skill Does
 
 - **Create worktrees** from main branch with clear branch names
 - **List worktrees** with current status
 - **Switch between worktrees** for parallel work
 - **Clean up completed worktrees** automatically
-- **Interactive confirmations** at each step
 - **Automatic .gitignore management** for worktree directory
 - **Automatic .env file copying** from main repo to new worktrees
 
@@ -227,39 +230,28 @@ bash ${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/scripts/worktree-manager.sh clean
 
 ### Safety First
 
-- **Confirms before creating** worktrees
-- **Confirms before cleanup** to prevent accidental removal
-- **Won't remove current worktree**
+- **Won't remove the current worktree**
 - **Clear error messages** for issues
 
 ## Integration with Workflows
 
 ### `/workflows:review`
 
-Instead of always creating a worktree:
-
 ```
 1. Check current branch
 2. If ALREADY on target branch (PR branch or requested branch) → stay there, no worktree needed
-3. If DIFFERENT branch than the review target → offer worktree:
-   "Use worktree for isolated review? (y/n)"
-   - yes → call git-worktree skill
-   - no → proceed with PR diff on current branch
+3. If DIFFERENT branch than the review target → create a worktree automatically for isolated review
 ```
 
 The `research-coordinator` agent can help decide when parallel worktrees are appropriate versus sequential work on a single branch. Typical triggers: running alternative estimation specifications that each take hours, or isolating a risky numerical experiment (e.g., new optimizer settings) from your working results.
 
 ### `/workflows:work`
 
-Always offer choice:
+Use a worktree when the task involves running multiple long-running specifications in parallel or isolating a risky numerical experiment. Default to a new branch on the current worktree for sequential work. Decide based on context — do not prompt the user to choose unless their intent is genuinely ambiguous.
 
 ```
-1. Ask: "How do you want to work?
-   1. New branch on current worktree (sequential — e.g., one specification at a time)
-   2. Worktree (parallel — e.g., run NFXP and MPEC simultaneously)"
-
-2. If choice 1 → create new branch normally
-3. If choice 2 → call git-worktree skill to create from main
+- Parallel specs (NFXP vs MPEC, multiple robustness runs) → worktree
+- Sequential single-branch work → create new branch normally
 ```
 
 ## Troubleshooting

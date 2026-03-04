@@ -2,7 +2,7 @@
 name: solutions-archivist
 description: "Searches docs/solutions/ for relevant past methodological solutions by frontmatter metadata. Use before implementing estimation routines, fixing convergence problems, or debugging data issues to surface institutional knowledge and prevent repeated mistakes. Triggers on 'have we seen this', 'past solutions', 'similar problem', 'check learnings', or when /workflows:plan and /workflows:review invoke knowledge retrieval."
 model: sonnet
-tools: Read, Grep, Glob, Bash, WebSearch, WebFetch
+tools: Read, Grep, Glob, WebSearch, WebFetch
 ---
 
 <examples>

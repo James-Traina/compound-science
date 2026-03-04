@@ -2,7 +2,7 @@
 name: literature-scout
 description: "Conducts systematic literature surveys of econometric methods, seminal papers, and prior applications. Use when you need to find related papers, understand the intellectual genealogy of a method, survey standard approaches for a research question, or identify which assumptions are standard vs novel in a given literature."
 model: sonnet
-tools: Read, Grep, Glob, Bash, WebSearch, WebFetch
+tools: Read, Grep, Glob, WebSearch, WebFetch
 ---
 
 <examples>
