@@ -111,17 +111,17 @@ assert '/Users/' not in text and '/home/' not in text, 'absolute paths found'
 group "Test Infrastructure"
 
 # 13: run-all.sh syntax
-assert_ok "run-all.sh syntax" bash -n "$PLUGIN_DIR/tests/run-all.sh"
+assert_ok "run-all.sh syntax" bash -n "$PLUGIN_DIR/.tests/run-all.sh"
 
 # 14: assert.sh syntax
-assert_ok "assert.sh syntax" bash -n "$PLUGIN_DIR/tests/lib/assert.sh"
+assert_ok "assert.sh syntax" bash -n "$PLUGIN_DIR/.tests/lib/assert.sh"
 
 # 15: fixtures.sh syntax
-assert_ok "fixtures.sh syntax" bash -n "$PLUGIN_DIR/tests/lib/fixtures.sh"
+assert_ok "fixtures.sh syntax" bash -n "$PLUGIN_DIR/.tests/lib/fixtures.sh"
 
 # 16: All test files have valid syntax
 all_valid=true
-for test_file in "$PLUGIN_DIR"/tests/tests/*.sh; do
+for test_file in "$PLUGIN_DIR"/.tests/tests/*.sh; do
   if ! bash -n "$test_file" 2>/dev/null; then
     all_valid=false
     must_fix "$(basename $test_file) syntax" "bash -n failed"
@@ -131,7 +131,7 @@ if $all_valid; then pass "all test files have valid bash syntax"; fi
 
 # 17: All test files source assert.sh
 all_source=true
-for test_file in "$PLUGIN_DIR"/tests/tests/*.sh; do
+for test_file in "$PLUGIN_DIR"/.tests/tests/*.sh; do
   if ! grep -q 'source.*assert.sh' "$test_file" 2>/dev/null; then
     all_source=false
     must_fix "$(basename $test_file) sources assert.sh" "missing source line"
@@ -140,21 +140,21 @@ done
 if $all_source; then pass "all test files source assert.sh"; fi
 
 # 18: run-all.sh has set -euo pipefail
-if head -15 "$PLUGIN_DIR/tests/run-all.sh" | grep -q 'set -euo pipefail'; then
+if head -15 "$PLUGIN_DIR/.tests/run-all.sh" | grep -q 'set -euo pipefail'; then
   pass "run-all.sh has set -euo pipefail"
 else
   must_fix "run-all.sh has set -euo pipefail" "missing safety flags"
 fi
 
 # 19: Test report directory is gitignored
-if grep -q 'tests/reports' "$PLUGIN_DIR/.gitignore" 2>/dev/null; then
-  pass "tests/reports is gitignored"
+if grep -q '\.tests/reports' "$PLUGIN_DIR/.gitignore" 2>/dev/null; then
+  pass ".tests/reports is gitignored"
 else
-  should_fix "tests/reports is gitignored" "test reports should not be committed"
+  should_fix ".tests/reports is gitignored" "test reports should not be committed"
 fi
 
 # 20: No grep -P in any script (macOS incompatible)
-if grep -rn 'grep -P' "$PLUGIN_DIR/scripts/" "$PLUGIN_DIR/tests/" --exclude-dir=reports --exclude='03-script-integrity.sh' 2>/dev/null | head -1 | grep -q .; then
+if grep -rn 'grep -P' "$PLUGIN_DIR/scripts/" "$PLUGIN_DIR/.tests/" --exclude-dir=reports --exclude='03-script-integrity.sh' 2>/dev/null | head -1 | grep -q .; then
   must_fix "no grep -P usage" "grep -P unavailable on macOS; use python3 regex"
 else
   pass "no grep -P usage (macOS compatible)"

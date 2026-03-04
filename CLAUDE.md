@@ -91,15 +91,17 @@ This plugin works alongside: pr-review-toolkit (generic code review), commit-com
 ## Development
 
 ### Testing
-- Run: `bash tests/run-all.sh` (236 tests across 12 groups)
-- Selective: `bash tests/run-all.sh 07` runs a single group; `--list` shows all groups
-- Reports are gitignored at `tests/reports/`
+- Run: `bash .tests/run-all.sh` (235 tests across 12 groups)
+- Selective: `bash .tests/run-all.sh 07` runs a single group; `--list` shows all groups
+- Reports are gitignored at `.tests/reports/`
 
 ### Critical Invariants
 - **Flat repo structure**: `.claude-plugin/plugin.json` must be at repo root — not nested in a subdirectory. `claude plugin install` won't find it otherwise.
+- **marketplace.json**: Must be at repo root alongside `.claude-plugin/`. It registers the plugin with the Claude Code marketplace and lists the `source` as `./.claude-plugin`.
 - **Hook wrapper format**: `hooks.json` requires the `{"description":"...","hooks":{...}}` envelope. Missing the outer wrapper silently disables all hooks.
+- **Dev-only dirs are hidden**: `.tests/` and `.evals/` start with `.` so they don't appear in the default file tree for users who install the plugin. Reports go to `.tests/reports/` (gitignored).
 - **grep -P unavailable on macOS**: Use `python3 -c "import re; ..."` for Perl-compatible regex. All QA scripts avoid `grep -P`.
-- **QA self-scanning exclusions**: When the plugin root is the repo root, content greps must use `--exclude-dir=tests,.ralph,.serena,.git,.claude` to avoid false positives from test fixtures.
+- **QA self-scanning exclusions**: When the plugin root is the repo root, content greps must use `--exclude-dir=.tests,.evals,.ralph,.serena,.git,.claude` to avoid false positives from test fixtures.
 - **Chain command frontmatter**: `/lfg` and `/slfg` use `disable-model-invocation: true` so they delegate to sub-commands without an extra model call.
 
 ## Domain Keywords

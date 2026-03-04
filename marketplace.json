@@ -1,0 +1,16 @@
+{
+  "name": "compound-science",
+  "owner": {
+    "name": "James-Traina"
+  },
+  "plugins": [
+    {
+      "name": "compound-science",
+      "source": "./.claude-plugin",
+      "description": "AI research assistant for quantitative social science: structural econometrics, causal inference, game theory, identification arguments, Monte Carlo studies, and reproducible pipelines.",
+      "author": {
+        "name": "James Traina"
+      }
+    }
+  ]
+}

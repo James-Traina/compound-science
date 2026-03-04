@@ -10,7 +10,7 @@ py_eval "plugin.json parses" \
   "invalid JSON"
 
 # 2-5: Required fields
-for field in name version description license; do
+for field in name description license; do
   export FIELD="$field"
   py_eval "plugin.json has '$field'" "
 import json, os
@@ -112,12 +112,12 @@ for event, matchers in d['hooks'].items():
             assert h['type'] in ('command', 'prompt'), f'{event}: invalid type {h[\"type\"]}'
 " "invalid hook type found"
 
-# 15: plugin.json version is semver format
-py_eval "plugin.json version is semver" "
-import json, re, os
+# 15: plugin.json has no version field (Claude Code plugins are versionless)
+py_eval "plugin.json has no version field" "
+import json, os
 d = json.load(open(os.environ['PLUGIN_DIR'] + '/.claude-plugin/plugin.json'))
-assert re.match(r'^\d+\.\d+\.\d+', d['version']), f'not semver: {d[\"version\"]}'
-" "version must be X.Y.Z format"
+assert 'version' not in d, f'version field must be absent (Claude Code plugins are versionless), got: {d[\"version\"]}'
+" "remove the version field from plugin.json"
 
 # 16: plugin.json has keywords array
 py_eval "plugin.json has keywords array" "

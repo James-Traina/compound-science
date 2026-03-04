@@ -25,4 +25,4 @@ jobs:
           python3 -c "import json; json.load(open('hooks/hooks.json'))"
 
       - name: Run test suite
-        run: bash tests/run-all.sh
+        run: bash .tests/run-all.sh

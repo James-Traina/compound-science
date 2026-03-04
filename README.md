@@ -186,6 +186,7 @@ This plugin is designed to work alongside:
 
 ```
 .claude-plugin/ plugin.json (manifest — must be at repo root for install to work)
+marketplace.json (marketplace listing)
 agents/
   review/       econometric-reviewer, mathematical-prover, numerical-auditor, identification-critic,
                 journal-referee, simulation-designer, process-architect, equilibrium-analyst,
@@ -201,15 +202,16 @@ commands/
 skills/         14 domain knowledge bases with reference material
 hooks/          hooks.json (7 ambient hooks, 13 domain categories)
 scripts/        session-init.sh
-tests/          236 tests across 12 groups (dev-only)
+.tests/         235 tests across 12 groups (dev-only, gitignored reports)
+.evals/         evaluation harness (dev-only)
 ```
 
 ## Testing
 
 ```bash
-bash tests/run-all.sh              # Run all 236 tests
-bash tests/run-all.sh 07           # Run a specific test group
-bash tests/run-all.sh --list       # List available test groups
+bash .tests/run-all.sh              # Run all 235 tests
+bash .tests/run-all.sh 07           # Run a specific test group
+bash .tests/run-all.sh --list       # List available test groups
 ```
 
 ## Background & Attribution

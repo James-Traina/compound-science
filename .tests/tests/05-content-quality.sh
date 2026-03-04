@@ -2,7 +2,7 @@
 # Test Group 5: Content quality — no web dev terms, no placeholders, no leaks (20 tests)
 source "$(dirname "$0")/../lib/assert.sh"
 
-EXCLUDE="--exclude-dir=tests --exclude-dir=.ralph --exclude-dir=.serena --exclude-dir=.git --exclude-dir=.claude"
+EXCLUDE="--exclude-dir=.tests --exclude-dir=.evals --exclude-dir=.ralph --exclude-dir=.serena --exclude-dir=.git --exclude-dir=.claude"
 
 group "Web Dev Terms"
 
