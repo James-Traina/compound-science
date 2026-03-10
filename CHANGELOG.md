@@ -21,6 +21,16 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/). Version
 ### Fixed
 - Test files `03`, `06`, `07`, `12`: path references updated from `scripts/session-init.sh` to `hooks/session-start.sh`
 - Test `03-script-integrity.sh`: stale display labels updated to `session-start.sh`
+- Test `03-script-integrity.sh`: hardcoded-path and `grep -P` checks were vacuously passing after `scripts/` was deleted; now correctly scan `hooks/`
+- Test `08-agent-organization.sh`: numbered-section regex anchored to `^` missed YAML-indented sections (2 spaces); removed anchor. Description keyword checks were reading only the `description: >-` line; now scan the full file
+- `progress-tracker.md`: corrupt `0x08` (backspace) byte in `\begin{table}` — would break strict YAML parsers
+- Test `01-json-validity.sh`: semver regex tightened from `re.match` to `re.fullmatch` — previously accepted non-semver suffixes
+
+### Refactored
+- `run-all.sh`: four `grep -c` passes over the report file replaced with a single `awk` pass; removed unused `all_reports` glob
+- `hooks/session-start.sh`: `ls glob` calls replaced with `compgen -G` (bash builtin, no subprocess); four sequential `echo >> ENV_FILE` writes batched into one grouped redirect
+- `fixtures.sh`: four `grep | sed` pipelines for env-file parsing replaced with a single `while read` loop
+- `12-hook-integration.sh`: agent name list was duplicated verbatim in bash and Python; now exports `AGENT_NAMES_STR` once and reads via `os.environ` in the Python block
 
 ## [0.4.0] - 2025-03-04
 

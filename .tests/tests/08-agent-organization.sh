@@ -44,7 +44,7 @@ if $all_multi; then pass "all agents have >=2 examples"; fi
 review_depth=true
 for file in "$PLUGIN_DIR"/agents/review/*.md; do
   name=$(basename "$file" .md)
-  section_count=$(grep -cE '^#{2,3} [0-9]+\.' "$file" 2>/dev/null) || section_count=0
+  section_count=$(grep -cE '#{2,3} [0-9]+\.' "$file" 2>/dev/null) || section_count=0
   if [ "$section_count" -lt 2 ]; then
     review_depth=false
     should_fix "review agent $name has numbered sections" "found $section_count"
@@ -58,10 +58,9 @@ group "Agent Description Quality"
 workflow_relevant=true
 for file in "$PLUGIN_DIR"/agents/workflow/*.md; do
   name=$(basename "$file" .md)
-  desc=$(grep '^description:' "$file" | head -1)
-  if ! echo "$desc" | grep -qiE 'pipeline|reproducib|workflow|coordinat|progress|track|spec|flow'; then
+  if ! grep -qiE 'pipeline|reproducib|workflow|coordinat|progress|track|spec|flow' "$file"; then
     workflow_relevant=false
-    should_fix "workflow agent $name description mentions process" "description: $desc"
+    should_fix "workflow agent $name description mentions process" "no matching keyword found"
   fi
 done
 if $workflow_relevant; then pass "all workflow agents have process-related descriptions"; fi
@@ -70,10 +69,9 @@ if $workflow_relevant; then pass "all workflow agents have process-related descr
 research_relevant=true
 for file in "$PLUGIN_DIR"/agents/research/*.md; do
   name=$(basename "$file" .md)
-  desc=$(grep '^description:' "$file" | head -1)
-  if ! echo "$desc" | grep -qiE 'search|investigat|scout|research|quality|solution|find|deep dive'; then
+  if ! grep -qiE 'search|investigat|scout|research|quality|solution|find|deep dive' "$file"; then
     research_relevant=false
-    should_fix "research agent $name description mentions research" "description: $desc"
+    should_fix "research agent $name description mentions research" "no matching keyword found"
   fi
 done
 if $research_relevant; then pass "all research agents have investigation-related descriptions"; fi
