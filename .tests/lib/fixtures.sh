@@ -105,7 +105,7 @@ fixture_with_local_config() {
   echo "$dir"
 }
 
-# Run session-init.sh against a fixture directory, capture env vars and output
+# Run session-start.sh against a fixture directory, capture env vars and output
 run_session_init() {
   local project_dir="$1"
   local script="$2"

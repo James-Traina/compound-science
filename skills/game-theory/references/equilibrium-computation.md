@@ -139,8 +139,8 @@ def solve_zerosum(A):
     c = np.zeros(m + 1)
     c[-1] = -1   # -v
 
-    # Inequality: -A @ q + v * 1 <= 0  →  [-A | 1] @ x <= 0
-    A_ub = np.hstack([-A, np.ones((n, 1))])
+    # Inequality: -A.T @ p + v * 1 <= 0  →  [-A.T | 1] @ x <= 0  (n rows, one per column strategy)
+    A_ub = np.hstack([-A.T, np.ones((n, 1))])
     b_ub = np.zeros(n)
 
     # Equality: sum(q) = 1

@@ -94,7 +94,7 @@ This plugin works alongside: pr-review-toolkit (generic code review), commit-com
 ## Development
 
 ### Testing
-- Run: `bash .tests/run-all.sh` (235 tests across 12 groups)
+- Run: `bash .tests/run-all.sh` (237 tests across 12 groups)
 - Selective: `bash .tests/run-all.sh 07` runs a single group; `--list` shows all groups
 - Reports are gitignored at `.tests/reports/`
 
