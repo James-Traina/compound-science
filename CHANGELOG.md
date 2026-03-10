@@ -4,6 +4,20 @@ All notable changes to compound-science are documented here.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/). Versioning follows [Semantic Versioning](https://semver.org/).
 
+## [0.4.4] - 2026-03-09
+
+### Changed
+- **Progressive disclosure for 8 skills**: Moved deep reference content (code examples, full API tables, per-method implementation details) to `references/` subdirectories, keeping SKILL.md files lean (197–358 lines). All 237 tests pass. Skills affected:
+  - `causal-ml` (1,049 → 358 lines): created `references/dml.md`, `references/grf-meta-learners.md`, `references/high-dim-cross-fitting.md`
+  - `game-theory` (1,179 → 316 lines): created `references/equilibrium-computation.md`, `references/io-applications.md`, `references/estimation-diagnostics.md`
+  - `reproducible-pipelines` (787 → 323 lines): created `references/stata-and-crosslang.md`, `references/environment-and-seeds.md`, `references/replication-package.md`
+  - `bayesian-estimation` (850 → 220 lines): created `references/implementation.md`, `references/diagnostics-guide.md`, `references/structural-models.md`
+  - `empirical-playbook` (643 → 250 lines): created `references/reporting-standards.md`
+  - `submission-guide` (544 → 264 lines): created `references/journal-profiles.md`, `references/referee-tactics.md`
+  - `causal-inference` (591 → 224 lines): created `references/method-implementations.md`, `references/staggered-did.md`, `references/synthetic-control.md`
+  - `structural-modeling` (599 → 197 lines): created `references/estimation-methods.md`, `references/diagnostics-and-se.md`, `references/jax-guide.md`
+- 21 reference files total, 4,708 total SKILL.md lines (down from ~8,200)
+
 ## [0.4.3] - 2026-03-09
 
 ### Changed
