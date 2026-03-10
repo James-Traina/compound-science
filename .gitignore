@@ -1,5 +1,8 @@
 .DS_Store
+*.swp
+*.swo
+*~
 .ralph/
 .serena/
 .claude/
-tests/reports/
+.tests/reports/

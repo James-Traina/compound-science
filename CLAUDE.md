@@ -27,6 +27,7 @@ Use `/lfg` to chain all four steps automatically, or `/slfg` for parallel swarm 
 - `/replicate` — Build and verify AEA-compliant replication packages with dependency audit and pipeline verification
 - `/visualize` — Generate publication-quality research visualization code: event studies, RD plots, coefficient plots, power curves
 - `/stress-test` — Run sensitivity analysis on causal estimates: Oster bounds, specification curve, breakdown frontier
+- `/deepen-plan` — Enrich a research plan with parallel literature, identification, benchmark, and methods research
 
 ## Agents
 
@@ -72,6 +73,8 @@ Use `/lfg` to chain all four steps automatically, or `/slfg` for parallel swarm 
 - `project-setup` — Configure compound-science.local.md for project-specific settings
 - `submission-guide` — Pre-submission checklists, journal-specific formatting for 20+ journals, referee response strategy
 - `empirical-playbook` — Method selection decision tree, diagnostics by method, power analysis, reporting standards
+- `data-acquisition` — FRED and World Bank API access: time series, vintage data, cross-national panels
+- `referee-response` — Draft structured author responses to peer review
 
 ## Ambient Hooks
 
@@ -91,15 +94,17 @@ This plugin works alongside: pr-review-toolkit (generic code review), commit-com
 ## Development
 
 ### Testing
-- Run: `bash tests/run-all.sh` (236 tests across 12 groups)
-- Selective: `bash tests/run-all.sh 07` runs a single group; `--list` shows all groups
-- Reports are gitignored at `tests/reports/`
+- Run: `bash .tests/run-all.sh` (237 tests across 12 groups)
+- Selective: `bash .tests/run-all.sh 07` runs a single group; `--list` shows all groups
+- Reports are gitignored at `.tests/reports/`
 
 ### Critical Invariants
 - **Flat repo structure**: `.claude-plugin/plugin.json` must be at repo root — not nested in a subdirectory. `claude plugin install` won't find it otherwise.
+- **Version bumping required for updates**: Claude Code caches plugins; users only get updates if `version` in `plugin.json` is incremented. Current version is tracked in `.claude-plugin/plugin.json`.
 - **Hook wrapper format**: `hooks.json` requires the `{"description":"...","hooks":{...}}` envelope. Missing the outer wrapper silently disables all hooks.
+- **Dev-only dirs are hidden**: `.tests/` and `.evals/` start with `.` so they don't appear in the default file tree for users who install the plugin. Reports go to `.tests/reports/` (gitignored).
 - **grep -P unavailable on macOS**: Use `python3 -c "import re; ..."` for Perl-compatible regex. All QA scripts avoid `grep -P`.
-- **QA self-scanning exclusions**: When the plugin root is the repo root, content greps must use `--exclude-dir=tests,.ralph,.serena,.git,.claude` to avoid false positives from test fixtures.
+- **QA self-scanning exclusions**: When the plugin root is the repo root, content greps must use `--exclude-dir=.tests,.evals,.ralph,.serena,.git,.claude` to avoid false positives from test fixtures.
 - **Chain command frontmatter**: `/lfg` and `/slfg` use `disable-model-invocation: true` so they delegate to sub-commands without an extra model call.
 
 ## Domain Keywords

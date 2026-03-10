@@ -2,6 +2,7 @@
 name: workflows:review
 description: Run multi-agent econometric review on estimation code, identification arguments, and research artifacts
 argument-hint: "<PR number, branch name, plan reference, or latest>"
+allowed-tools: Read, Grep, Glob, Bash
 ---
 
 # Review Command

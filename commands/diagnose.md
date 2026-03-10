@@ -2,6 +2,7 @@
 name: diagnose
 description: "Run diagnostic battery on estimation results: specification tests, instrument checks, residual analysis, model fit"
 argument-hint: "<estimation output, regression results, or code file to diagnose>"
+allowed-tools: Read, Grep, Glob, Bash
 ---
 
 # Estimation Diagnostics Pipeline

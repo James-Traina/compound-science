@@ -1,10 +1,12 @@
 {
   "name": "compound-science",
-  "version": "0.3.0",
-  "description": "Research workflow toolkit for structural econometrics, causal inference, game theory, and quantitative social science. Each unit of research work makes subsequent work easier.",
+  "version": "0.4.4",
+  "description": "AI research assistant for quantitative social science: structural econometrics, causal inference, game theory, identification arguments, Monte Carlo studies, and reproducible pipelines.",
   "author": {
-    "name": "James Traina"
+    "name": "James Traina",
+    "url": "https://github.com/James-Traina"
   },
+  "homepage": "https://github.com/James-Traina/compound-science",
   "repository": "https://github.com/James-Traina/compound-science",
   "license": "MIT",
   "keywords": [

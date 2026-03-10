@@ -2,6 +2,7 @@
 name: workflows:plan
 description: Transform research descriptions into well-structured implementation plans following project conventions
 argument-hint: "<research task, estimation problem, or methodological improvement>"
+allowed-tools: Read, Glob, Bash
 ---
 
 # Create an Implementation Plan for a Research Task

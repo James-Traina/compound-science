@@ -2,6 +2,7 @@
 name: visualize
 description: "Generate publication-quality research visualization code: event studies, RD plots, coefficient plots, power curves, densities"
 argument-hint: "<visualization type, estimation results, or data to plot>"
+allowed-tools: Read, Write, Edit, Bash
 ---
 
 # Research Visualization Pipeline

@@ -1,10 +1,10 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Git Worktree Manager
 # Handles creating, listing, switching, and cleaning up Git worktrees
 # KISS principle: Simple, interactive, opinionated
 
-set -e
+set -euo pipefail
 
 # Colors for output
 RED='\033[0;31m'

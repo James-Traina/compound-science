@@ -1,6 +1,7 @@
 ---
 name: swarm-orchestration
-description: "Reference for orchestrating multi-agent parallel execution in Claude Code — spawning teammates, managing task lists, coordinating agent handoffs, and synchronizing results. Use when running /slfg, dispatching multiple agents in parallel, coordinating review swarms, or building custom multi-agent workflows."
+description: >-
+  Reference for orchestrating multi-agent parallel execution in Claude Code — spawning teammates, managing task lists, coordinating agent handoffs, and synchronizing results. Use when running /slfg, dispatching multiple agents in parallel, coordinating review swarms, or building custom multi-agent workflows.
 disable-model-invocation: true
 ---
 
