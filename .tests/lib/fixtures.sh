@@ -115,12 +115,18 @@ run_session_init() {
   local output
   output=$(CLAUDE_PROJECT_DIR="$project_dir" CLAUDE_ENV_FILE="$env_file" bash "$script" 2>&1) || true
 
-  # Parse env file
-  local project_type estimation_lang has_data has_pipeline
-  project_type=$(grep 'CS_PROJECT_TYPE=' "$env_file" 2>/dev/null | sed 's/.*=//' || echo "")
-  estimation_lang=$(grep 'CS_ESTIMATION_LANG=' "$env_file" 2>/dev/null | sed 's/.*=//' || echo "")
-  has_data=$(grep 'CS_HAS_DATA=' "$env_file" 2>/dev/null | sed 's/.*=//' || echo "")
-  has_pipeline=$(grep 'CS_HAS_PIPELINE=' "$env_file" 2>/dev/null | sed 's/.*=//' || echo "")
+  # Parse env file in one pass
+  local project_type="" estimation_lang="" has_data="" has_pipeline=""
+  while IFS= read -r line; do
+    key="${line#export }"; key="${key%%=*}"
+    val="${line#*=}"
+    case "$key" in
+      CS_PROJECT_TYPE)    project_type="$val" ;;
+      CS_ESTIMATION_LANG) estimation_lang="$val" ;;
+      CS_HAS_DATA)        has_data="$val" ;;
+      CS_HAS_PIPELINE)    has_pipeline="$val" ;;
+    esac
+  done < "$env_file"
 
   # Clean up
   rm -f "$env_file"

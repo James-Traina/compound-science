@@ -144,6 +144,7 @@ group "Cross-Component Wiring"
 
 # 14: All prompt hooks reference >=1 agent name that exists in agents/
 AGENT_NAMES=("econometric-reviewer" "mathematical-prover" "numerical-auditor" "identification-critic" "journal-referee" "simulation-designer" "process-architect" "equilibrium-analyst" "calibration-assessor" "results-verifier" "literature-scout" "methods-explorer" "data-detective" "solutions-archivist" "benchmark-researcher" "pipeline-validator" "reproducibility-checker" "specification-analyzer" "research-coordinator" "progress-tracker")
+export AGENT_NAMES_STR="${AGENT_NAMES[*]}"
 
 # Check each prompt hook references at least one agent
 all_ref=true
@@ -204,7 +205,7 @@ fi
 agent_count=$(python3 -c "
 import json, os
 d = json.load(open(os.environ['HOOKS_FILE']))
-agents = ['econometric-reviewer','mathematical-prover','numerical-auditor','identification-critic','journal-referee','simulation-designer','process-architect','equilibrium-analyst','calibration-assessor','results-verifier','literature-scout','methods-explorer','data-detective','solutions-archivist','benchmark-researcher','pipeline-validator','reproducibility-checker','specification-analyzer','research-coordinator','progress-tracker']
+agents = os.environ['AGENT_NAMES_STR'].split()
 text = ''
 for m in d['hooks']['PostToolUse']:
     for h in m['hooks']:
