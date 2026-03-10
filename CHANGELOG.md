@@ -4,6 +4,15 @@ All notable changes to compound-science are documented here.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/). Versioning follows [Semantic Versioning](https://semver.org/).
 
+## [0.4.3] - 2026-03-09
+
+### Changed
+- **`UserPromptSubmit` hook**: Added category 14 — DESIGN BEFORE RESULTS. Fires when the user asks whether an estimate is reasonable, large, or significant before the identification design has been validated. Injects Cunningham's norm: evaluate whether assumptions hold before evaluating magnitudes. Directs to `/identify` or `identification-critic`.
+- **`Stop` hook**: Added two method-specific suggestion checks (items 9-10):
+  - Item 9: DiD estimation without pre-trends — triggers when DiD code appears in the conversation but no event-study or parallel trends test is visible; suggests CS21/SA21/BJS24 for staggered DiD
+  - Item 10: IV/2SLS without first-stage diagnostics — triggers when IV estimation appears but no first-stage F is discussed; directs to Montiel Olea-Pflueger effective F (not Stock-Yogo)
+  - Updated blocking rule: items 5-10 are suggestion-only (was: items 5-8)
+
 ## [0.4.2] - 2026-03-09
 
 ### Added
