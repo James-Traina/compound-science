@@ -27,7 +27,7 @@ if [ "${1:-}" = "--list" ]; then
   echo "Available test groups:"
   for test_file in "$QA_DIR"/tests/*.sh; do
     name=$(basename "$test_file" .sh)
-    desc=$(head -2 "$test_file" | grep '^#' | tail -1 | sed 's/^# *//')
+    desc=$(awk 'NR<=2 && /^#/{d=$0} END{sub(/^# */,"",d); print d}' "$test_file")
     printf "  %-30s %s\n" "$name" "$desc"
   done
   exit 0

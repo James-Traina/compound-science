@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Test Group 2: All components exist as files with correct counts (20 tests)
 source "$(dirname "$0")/../lib/assert.sh"
+source "$(dirname "$0")/../lib/fixtures.sh"
 
 group "File Existence — Agents"
 
@@ -73,25 +74,6 @@ if $all_exist; then
 fi
 
 group "File Existence — Skills"
-
-SKILLS=(
-  "strategy-brainstorm"
-  "causal-inference"
-  "causal-ml"
-  "game-theory"
-  "identification-proofs"
-  "bayesian-estimation"
-  "compound-catalog"
-  "git-worktree"
-  "swarm-orchestration"
-  "reproducible-pipelines"
-  "project-setup"
-  "structural-modeling"
-  "submission-guide"
-  "empirical-playbook"
-  "data-acquisition"
-  "referee-response"
-)
 
 # 3-4: all 16 skills exist (dir + SKILL.md)
 all_dirs=true

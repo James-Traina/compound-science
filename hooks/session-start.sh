@@ -13,26 +13,22 @@ HAS_DATA=false
 HAS_PIPELINE=false
 
 # Python econometrics
-if [ -f "$PROJECT_DIR/requirements.txt" ] || [ -f "$PROJECT_DIR/pyproject.toml" ] || [ -f "$PROJECT_DIR/setup.py" ]; then
-  for f in "$PROJECT_DIR/requirements.txt" "$PROJECT_DIR/pyproject.toml" "$PROJECT_DIR/setup.py"; do
-    if [ -f "$f" ] && grep -qiE "statsmodels|linearmodels|pyblp|econtools|doubleml|causalml|dowhy" "$f" 2>/dev/null; then
-      ESTIMATION_LANG="python"
-      PROJECT_TYPE="empirical"
-      break
-    fi
-  done
-fi
+for f in "$PROJECT_DIR/requirements.txt" "$PROJECT_DIR/pyproject.toml" "$PROJECT_DIR/setup.py"; do
+  if [ -f "$f" ] && grep -qiE "statsmodels|linearmodels|pyblp|econtools|doubleml|causalml|dowhy" "$f" 2>/dev/null; then
+    ESTIMATION_LANG="python"
+    PROJECT_TYPE="empirical"
+    break
+  fi
+done
 
 # R econometrics (check dependency files for econometrics packages)
-if [ -f "$PROJECT_DIR/DESCRIPTION" ] || [ -f "$PROJECT_DIR/renv.lock" ] || compgen -G "$PROJECT_DIR/*.Rproj" > /dev/null 2>&1; then
-  for f in "$PROJECT_DIR/DESCRIPTION" "$PROJECT_DIR/renv.lock"; do
-    if [ -f "$f" ] && grep -qiE "fixest|lfe|AER|plm|ivreg|did|rdrobust|Synth|estimatr|sandwich|bacondecomp" "$f" 2>/dev/null; then
-      ESTIMATION_LANG="R"
-      PROJECT_TYPE="empirical"
-      break
-    fi
-  done
-fi
+for f in "$PROJECT_DIR/DESCRIPTION" "$PROJECT_DIR/renv.lock"; do
+  if [ -f "$f" ] && grep -qiE "fixest|lfe|AER|plm|ivreg|did|rdrobust|Synth|estimatr|sandwich|bacondecomp" "$f" 2>/dev/null; then
+    ESTIMATION_LANG="R"
+    PROJECT_TYPE="empirical"
+    break
+  fi
+done
 
 # Julia
 if [ -f "$PROJECT_DIR/Project.toml" ]; then

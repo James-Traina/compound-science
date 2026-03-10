@@ -2,6 +2,8 @@
 # Test Group 6: Cross-reference integrity between components (22 tests)
 source "$(dirname "$0")/../lib/assert.sh"
 
+export HOOKS_FILE="$PLUGIN_DIR/hooks/hooks.json"
+
 group "Cross-References — Agents in Commands"
 
 # 1: Agent references in commands resolve to real agent files
@@ -126,7 +128,7 @@ group "Cross-References — Hook Integrity"
 valid_events="SessionStart|SessionEnd|PreToolUse|PostToolUse|Stop|SubagentStop|UserPromptSubmit|PreCompact|Notification"
 hook_events=$(python3 -c "
 import json, os
-d = json.load(open(os.environ['PLUGIN_DIR'] + '/hooks/hooks.json'))
+d = json.load(open(os.environ['HOOKS_FILE']))
 for e in d['hooks'].keys():
     print(e)
 " 2>/dev/null)
@@ -143,7 +145,7 @@ if $all_valid; then pass "all hook events are valid Claude Code events"; fi
 # 9: SessionStart script path resolves
 session_cmd=$(python3 -c "
 import json, os
-d = json.load(open(os.environ['PLUGIN_DIR'] + '/hooks/hooks.json'))
+d = json.load(open(os.environ['HOOKS_FILE']))
 for h in d['hooks']['SessionStart'][0]['hooks']:
     if h['type'] == 'command':
         print(h['command'])
@@ -160,7 +162,7 @@ group "Cross-References — Hook Content"
 # 10: UserPromptSubmit references at least 5 agents
 ups_agents=$(python3 -c "
 import json, re, os
-d = json.load(open(os.environ['PLUGIN_DIR'] + '/hooks/hooks.json'))
+d = json.load(open(os.environ['HOOKS_FILE']))
 for m in d['hooks']['UserPromptSubmit']:
     for h in m['hooks']:
         if h['type'] == 'prompt':
@@ -176,7 +178,7 @@ fi
 # 11: PostToolUse references at least 3 agents
 ptu_agents=$(python3 -c "
 import json, re, os
-d = json.load(open(os.environ['PLUGIN_DIR'] + '/hooks/hooks.json'))
+d = json.load(open(os.environ['HOOKS_FILE']))
 for m in d['hooks']['PostToolUse']:
     for h in m['hooks']:
         if h['type'] == 'prompt':
@@ -192,7 +194,7 @@ fi
 # 12: UserPromptSubmit references at least 3 commands
 ups_cmds=$(python3 -c "
 import json, re, os
-d = json.load(open(os.environ['PLUGIN_DIR'] + '/hooks/hooks.json'))
+d = json.load(open(os.environ['HOOKS_FILE']))
 for m in d['hooks']['UserPromptSubmit']:
     for h in m['hooks']:
         if h['type'] == 'prompt':

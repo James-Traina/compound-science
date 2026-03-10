@@ -139,3 +139,23 @@ run_session_init() {
 cleanup_fixtures() {
   rm -rf "${TMPDIR:-/tmp}"/cs-qa-*
 }
+
+# Canonical skill list — shared by test files to prevent drift when skills are added
+SKILLS=(
+  "strategy-brainstorm"
+  "causal-inference"
+  "causal-ml"
+  "game-theory"
+  "identification-proofs"
+  "bayesian-estimation"
+  "compound-catalog"
+  "git-worktree"
+  "swarm-orchestration"
+  "reproducible-pipelines"
+  "project-setup"
+  "structural-modeling"
+  "submission-guide"
+  "empirical-playbook"
+  "data-acquisition"
+  "referee-response"
+)

@@ -2,6 +2,8 @@
 # Test Group 1: JSON configuration file validity and structure (16 tests)
 source "$(dirname "$0")/../lib/assert.sh"
 
+export HOOKS_FILE="$PLUGIN_DIR/hooks/hooks.json"
+
 group "plugin.json Validity"
 
 # 1
@@ -31,13 +33,13 @@ group "hooks.json Validity"
 
 # 7
 py_eval "hooks.json parses" \
-  "import json, os; json.load(open(os.environ['PLUGIN_DIR'] + '/hooks/hooks.json'))" \
+  "import json, os; json.load(open(os.environ['HOOKS_FILE']))" \
   "invalid JSON"
 
 # 8
 py_eval "hooks.json has wrapper structure" "
 import json, os
-d = json.load(open(os.environ['PLUGIN_DIR'] + '/hooks/hooks.json'))
+d = json.load(open(os.environ['HOOKS_FILE']))
 assert 'hooks' in d, 'missing hooks wrapper'
 assert isinstance(d['hooks'], dict), 'hooks must be object'
 " 'needs {"hooks": {...}} format'
@@ -45,14 +47,14 @@ assert isinstance(d['hooks'], dict), 'hooks must be object'
 # 9
 py_eval "hooks.json has description" "
 import json, os
-d = json.load(open(os.environ['PLUGIN_DIR'] + '/hooks/hooks.json'))
+d = json.load(open(os.environ['HOOKS_FILE']))
 assert 'description' in d, 'missing description'
 " "top-level description missing"
 
 # 10
 py_eval "all hook entries have valid structure" "
 import json, os
-d = json.load(open(os.environ['PLUGIN_DIR'] + '/hooks/hooks.json'))
+d = json.load(open(os.environ['HOOKS_FILE']))
 for event, matchers in d['hooks'].items():
     for m in matchers:
         assert 'matcher' in m, f'{event}: missing matcher'
@@ -70,7 +72,7 @@ group "Hook Entry Validation"
 # 11: All hook events have proper timeouts
 py_eval "all hook events have timeouts" "
 import json, os
-d = json.load(open(os.environ['PLUGIN_DIR'] + '/hooks/hooks.json'))
+d = json.load(open(os.environ['HOOKS_FILE']))
 missing = []
 for event, matchers in d['hooks'].items():
     for m in matchers:
@@ -85,7 +87,7 @@ group "Hook JSON Integrity"
 # 12: All matchers are non-empty strings
 py_eval "all matchers are non-empty strings" "
 import json, os
-d = json.load(open(os.environ['PLUGIN_DIR'] + '/hooks/hooks.json'))
+d = json.load(open(os.environ['HOOKS_FILE']))
 for event, matchers in d['hooks'].items():
     for m in matchers:
         assert isinstance(m['matcher'], str) and len(m['matcher']) > 0, f'{event}: empty matcher'
@@ -94,7 +96,7 @@ for event, matchers in d['hooks'].items():
 # 13: All prompt hooks have non-trivial prompts (>100 chars)
 py_eval "all prompt hooks have substantive content" "
 import json, os
-d = json.load(open(os.environ['PLUGIN_DIR'] + '/hooks/hooks.json'))
+d = json.load(open(os.environ['HOOKS_FILE']))
 for event, matchers in d['hooks'].items():
     for m in matchers:
         for h in m['hooks']:
@@ -105,7 +107,7 @@ for event, matchers in d['hooks'].items():
 # 14: Hook types are only 'command' or 'prompt'
 py_eval "all hook types are command or prompt" "
 import json, os
-d = json.load(open(os.environ['PLUGIN_DIR'] + '/hooks/hooks.json'))
+d = json.load(open(os.environ['HOOKS_FILE']))
 for event, matchers in d['hooks'].items():
     for m in matchers:
         for h in m['hooks']:

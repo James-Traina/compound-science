@@ -1,27 +1,9 @@
 #!/usr/bin/env bash
 # Test Group 11: Skill content depth and trigger quality (24 tests)
 source "$(dirname "$0")/../lib/assert.sh"
+source "$(dirname "$0")/../lib/fixtures.sh"
 
 SKILLS_DIR="$PLUGIN_DIR/skills"
-
-SKILLS=(
-  "strategy-brainstorm"
-  "causal-inference"
-  "causal-ml"
-  "game-theory"
-  "identification-proofs"
-  "bayesian-estimation"
-  "compound-catalog"
-  "git-worktree"
-  "swarm-orchestration"
-  "reproducible-pipelines"
-  "project-setup"
-  "structural-modeling"
-  "submission-guide"
-  "empirical-playbook"
-  "data-acquisition"
-  "referee-response"
-)
 
 group "Content Depth"
 
