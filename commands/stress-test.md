@@ -2,6 +2,7 @@
 name: stress-test
 description: "Run sensitivity analysis on causal estimates: Oster bounds, exclusion restriction tests, breakdown frontier, specification curve"
 argument-hint: "<estimation results, baseline specification, or causal claim to stress-test>"
+allowed-tools: Read, Write, Edit, Bash, Glob
 ---
 
 # Sensitivity Analysis Pipeline

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test Group 1: JSON configuration file validity and structure (16 tests)
 source "$(dirname "$0")/../lib/assert.sh"
 
@@ -112,12 +112,13 @@ for event, matchers in d['hooks'].items():
             assert h['type'] in ('command', 'prompt'), f'{event}: invalid type {h[\"type\"]}'
 " "invalid hook type found"
 
-# 15: plugin.json has no version field (Claude Code plugins are versionless)
-py_eval "plugin.json has no version field" "
-import json, os
+# 15: plugin.json has version field (semver string)
+py_eval "plugin.json has version field" "
+import json, os, re
 d = json.load(open(os.environ['PLUGIN_DIR'] + '/.claude-plugin/plugin.json'))
-assert 'version' not in d, f'version field must be absent (Claude Code plugins are versionless), got: {d[\"version\"]}'
-" "remove the version field from plugin.json"
+assert 'version' in d, 'version field must be present'
+assert re.fullmatch(r'\d+\.\d+\.\d+', d['version']), f'version must be semver, got: {d[\"version\"]}'
+" "add a semver version field to plugin.json"
 
 # 16: plugin.json has keywords array
 py_eval "plugin.json has keywords array" "

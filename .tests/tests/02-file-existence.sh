@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test Group 2: All components exist as files with correct counts (20 tests)
 source "$(dirname "$0")/../lib/assert.sh"
 
@@ -113,7 +113,7 @@ assert_file_exists "CLAUDE.md" "$PLUGIN_DIR/CLAUDE.md"
 assert_file_exists "README.md" "$PLUGIN_DIR/README.md"
 assert_file_exists "LICENSE" "$PLUGIN_DIR/LICENSE"
 assert_file_exists "hooks/hooks.json" "$PLUGIN_DIR/hooks/hooks.json"
-assert_file_exists "scripts/session-init.sh" "$PLUGIN_DIR/scripts/session-init.sh"
+assert_file_exists "hooks/session-start.sh" "$PLUGIN_DIR/hooks/session-start.sh"
 
 group "Component Counts"
 

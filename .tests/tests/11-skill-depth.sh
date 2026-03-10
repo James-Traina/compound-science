@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test Group 11: Skill content depth and trigger quality (24 tests)
 source "$(dirname "$0")/../lib/assert.sh"
 

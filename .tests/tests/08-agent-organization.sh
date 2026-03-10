@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test Group 8: Agent directory organization and consistency (10 tests)
 source "$(dirname "$0")/../lib/assert.sh"
 

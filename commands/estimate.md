@@ -2,6 +2,7 @@
 name: estimate
 description: "Run structural estimation pipeline with convergence monitoring and robustness checks"
 argument-hint: "<model description, estimation specification, or existing code file>"
+allowed-tools: Read, Write, Edit, Bash, Glob
 ---
 
 # Structural Estimation Pipeline

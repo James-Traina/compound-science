@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test Group 5: Content quality — no web dev terms, no placeholders, no leaks (20 tests)
 source "$(dirname "$0")/../lib/assert.sh"
 

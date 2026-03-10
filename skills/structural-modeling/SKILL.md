@@ -1,6 +1,7 @@
 ---
 name: structural-modeling
-description: Guide for implementing structural econometric models. Use when the user is building, estimating, or debugging structural models — including BLP demand estimation, dynamic discrete choice, auction models, or any workflow involving moment conditions, nested fixed-point algorithms, or MPEC formulations. Triggers on "structural model", "moment conditions", "NFXP", "MPEC", "BLP", "random coefficients", "dynamic discrete choice", "CCP", "Rust model", "auction estimation", "GMM objective", "inner loop", "contraction mapping", or convergence/starting value problems in optimization-based estimation.
+description: >-
+  Guide for implementing structural econometric models. Use when the user is building, estimating, or debugging structural models — including BLP demand estimation, dynamic discrete choice, auction models, or any workflow involving moment conditions, nested fixed-point algorithms, or MPEC formulations. Triggers on "structural model", "moment conditions", "NFXP", "MPEC", "BLP", "random coefficients", "dynamic discrete choice", "CCP", "Rust model", "auction estimation", "GMM objective", "inner loop", "contraction mapping", or convergence/starting value problems in optimization-based estimation.
 ---
 
 # Structural Modeling

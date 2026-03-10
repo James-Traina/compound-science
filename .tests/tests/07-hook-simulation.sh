@@ -1,9 +1,9 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test Group 7: Functional hook simulation with test fixtures (20 tests)
 source "$(dirname "$0")/../lib/assert.sh"
 source "$(dirname "$0")/../lib/fixtures.sh"
 
-SCRIPT="$PLUGIN_DIR/scripts/session-init.sh"
+SCRIPT="$PLUGIN_DIR/hooks/session-start.sh"
 
 group "SessionStart — Empty Project"
 

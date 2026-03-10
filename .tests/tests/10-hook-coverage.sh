@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test Group 10: Hook prompt coverage and integration (24 tests)
 source "$(dirname "$0")/../lib/assert.sh"
 

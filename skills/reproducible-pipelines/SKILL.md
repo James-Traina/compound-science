@@ -1,6 +1,7 @@
 ---
 name: reproducible-pipelines
-description: Guide for building reproducible research pipelines and replication packages. Use when the user is setting up a research project directory structure, configuring workflow managers (Make, Snakemake, DVC), managing computational environments, preparing replication packages for journal submission, or debugging reproducibility failures. Triggers on "reproducible", "replication package", "Makefile", "Snakemake", "DVC", "pipeline", "workflow manager", "data versioning", "conda environment", "Docker", "seed management", "AEA data editor", "replication", "project structure", or "submission checklist".
+description: >-
+  Guide for building reproducible research pipelines and replication packages. Use when the user is setting up a research project directory structure, configuring workflow managers (Make, Snakemake, DVC), managing computational environments, preparing replication packages for journal submission, or debugging reproducibility failures. Triggers on "reproducible", "replication package", "Makefile", "Snakemake", "DVC", "pipeline", "workflow manager", "data versioning", "conda environment", "Docker", "seed management", "AEA data editor", "replication", "project structure", or "submission checklist".
 ---
 
 # Reproducible Pipelines

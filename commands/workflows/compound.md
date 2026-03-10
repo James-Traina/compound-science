@@ -2,6 +2,7 @@
 name: workflows:compound
 description: Document a recently solved research problem to compound methodological knowledge
 argument-hint: "[optional: brief context about the fix or problem solved]"
+allowed-tools: Read, Write, Edit, Glob
 ---
 
 # /compound

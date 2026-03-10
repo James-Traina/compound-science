@@ -1,6 +1,7 @@
 ---
 name: empirical-playbook
-description: Guide for choosing and implementing applied microeconomic empirical methods. Use when the user is selecting an identification strategy, comparing estimators, running diagnostics, designing a research study, or evaluating an empirical strategy. Triggers on "which method", "what estimator", "how to choose", "method comparison", "empirical strategy", "research design", "applied micro", "identification strategy", "power analysis", "design-based", "model-based", "minimum detectable effect", "specification".
+description: >-
+  Guide for choosing and implementing applied microeconomic empirical methods. Use when the user is selecting an identification strategy, comparing estimators, running diagnostics, designing a research study, or evaluating an empirical strategy. Triggers on "which method", "what estimator", "how to choose", "method comparison", "empirical strategy", "research design", "applied micro", "identification strategy", "power analysis", "design-based", "model-based", "minimum detectable effect", "specification".
 ---
 
 # Applied Micro Toolkit

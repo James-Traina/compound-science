@@ -1,6 +1,7 @@
 ---
 name: causal-inference
-description: Guide for causal inference methods in observational and quasi-experimental settings. Use when the user is implementing, choosing between, or debugging causal identification strategies — including instrumental variables, difference-in-differences, regression discontinuity, synthetic control, or matching estimators. Triggers on "causal effect", "identification strategy", "instrumental variable", "2SLS", "GMM", "difference-in-differences", "DiD", "staggered treatment", "regression discontinuity", "RDD", "synthetic control", "matching", "propensity score", "IPW", "AIPW", "doubly robust", "LATE", "ATT", "ATE", "parallel trends", "exclusion restriction", "first stage", "weak instruments", or "endogeneity".
+description: >-
+  Guide for causal inference methods in observational and quasi-experimental settings. Use when the user is implementing, choosing between, or debugging causal identification strategies — including instrumental variables, difference-in-differences, regression discontinuity, synthetic control, or matching estimators. Triggers on "causal effect", "identification strategy", "instrumental variable", "2SLS", "GMM", "difference-in-differences", "DiD", "staggered treatment", "regression discontinuity", "RDD", "synthetic control", "matching", "propensity score", "IPW", "AIPW", "doubly robust", "LATE", "ATT", "ATE", "parallel trends", "exclusion restriction", "first stage", "weak instruments", or "endogeneity".
 ---
 
 # Causal Inference

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test Group 12: Hook integration and cross-component wiring (20 tests)
 source "$(dirname "$0")/../lib/assert.sh"
 
@@ -252,16 +252,16 @@ for event, matchers in d['hooks'].items():
             assert 'timeout' in h, f'missing timeout: {event}'
 " "missing timeout field"
 
-# 19: SessionStart command path includes session-init.sh
-py_eval "SessionStart references session-init.sh" "
+# 19: SessionStart command path includes session-start.sh
+py_eval "SessionStart references session-start.sh" "
 import json, os
 d = json.load(open(os.environ['HOOKS_FILE']))
 found = any(
-    'command' in h and 'session-init.sh' in h['command']
+    'command' in h and 'session-start.sh' in h['command']
     for m in d['hooks']['SessionStart']
     for h in m['hooks']
 )
-assert found, 'session-init.sh not referenced'
+assert found, 'session-start.sh not referenced'
 " "missing"
 
 # 20: No hook prompt exceeds 5000 characters (bloat guard)

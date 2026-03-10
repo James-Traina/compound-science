@@ -2,6 +2,7 @@
 name: replicate
 description: "Build and verify AEA-compliant replication packages with dependency audit, pipeline verification, and data documentation"
 argument-hint: "<project directory, paper draft, or replication package to verify>"
+allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 ---
 
 # Replication Package Pipeline

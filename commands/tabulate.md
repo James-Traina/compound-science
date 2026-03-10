@@ -2,6 +2,7 @@
 name: tabulate
 description: "Generate publication-ready tables from estimation results, summary statistics, or Monte Carlo output"
 argument-hint: "<regression results, summary statistics, data file, or table specification>"
+allowed-tools: Read, Write, Edit, Bash
 ---
 
 # Publication Table Pipeline

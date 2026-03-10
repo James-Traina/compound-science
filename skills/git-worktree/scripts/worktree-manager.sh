@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Git Worktree Manager
 # Handles creating, listing, switching, and cleaning up Git worktrees

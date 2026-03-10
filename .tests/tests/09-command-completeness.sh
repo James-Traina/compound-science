@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test Group 9: Command structure, completeness, and integration (20 tests)
 source "$(dirname "$0")/../lib/assert.sh"
 

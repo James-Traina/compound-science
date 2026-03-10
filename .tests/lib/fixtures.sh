@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test fixture creation for hook simulation tests
 
 set -euo pipefail

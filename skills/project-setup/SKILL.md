@@ -1,6 +1,7 @@
 ---
 name: project-setup
-description: Configure which review agents run for your project. Auto-detects research stack and writes compound-science.local.md. Use when setting up compound-science for a new project, reconfiguring agents, changing estimation language, or adjusting project settings. Triggers on "setup compound", "configure agents", "set up project", "change review agents", "switch to R", "set estimation language", or when /workflows:work reads project configuration.
+description: >-
+  Configure which review agents run for your project. Auto-detects research stack and writes compound-science.local.md. Use when setting up compound-science for a new project, reconfiguring agents, changing estimation language, or adjusting project settings. Triggers on "setup compound", "configure agents", "set up project", "change review agents", "switch to R", "set estimation language", or when /workflows:work reads project configuration.
 ---
 
 # compound-science Setup

@@ -2,6 +2,7 @@
 name: identify
 description: "Formalize identification argument with assumptions, derivation, regularity conditions, and adversarial review"
 argument-hint: "<target parameter, model description, or identification strategy>"
+allowed-tools: Read, Write, Edit, Glob
 ---
 
 # Identification Argument Pipeline

@@ -1,20 +1,20 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test Group 3: Bash script syntax, permissions, safety, and portability (20 tests)
 source "$(dirname "$0")/../lib/assert.sh"
 
 group "Script Syntax"
 
 # 1-2
-assert_ok "session-init.sh syntax" bash -n "$PLUGIN_DIR/scripts/session-init.sh"
+assert_ok "session-start.sh syntax" bash -n "$PLUGIN_DIR/hooks/session-start.sh"
 assert_ok "worktree-manager.sh syntax" bash -n "$PLUGIN_DIR/skills/git-worktree/scripts/worktree-manager.sh"
 
 group "Script Permissions"
 
 # 3-4
-if [ -x "$PLUGIN_DIR/scripts/session-init.sh" ]; then
-  pass "session-init.sh is executable"
+if [ -x "$PLUGIN_DIR/hooks/session-start.sh" ]; then
+  pass "session-start.sh is executable"
 else
-  must_fix "session-init.sh is executable" "chmod +x needed"
+  must_fix "session-start.sh is executable" "chmod +x needed"
 fi
 
 if [ -x "$PLUGIN_DIR/skills/git-worktree/scripts/worktree-manager.sh" ]; then
@@ -26,32 +26,32 @@ fi
 group "Script Safety"
 
 # 5
-if head -5 "$PLUGIN_DIR/scripts/session-init.sh" | grep -q 'set -euo pipefail'; then
-  pass "session-init.sh has set -euo pipefail"
+if head -5 "$PLUGIN_DIR/hooks/session-start.sh" | grep -q 'set -euo pipefail'; then
+  pass "session-start.sh has set -euo pipefail"
 else
-  must_fix "session-init.sh has set -euo pipefail" "missing safety flags"
+  must_fix "session-start.sh has set -euo pipefail" "missing safety flags"
 fi
 
 # 6
-if grep -q 'CLAUDE_PROJECT_DIR:-.}' "$PLUGIN_DIR/scripts/session-init.sh" && \
-   grep -q 'CLAUDE_ENV_FILE:-/dev/null}' "$PLUGIN_DIR/scripts/session-init.sh"; then
-  pass "session-init.sh has proper env defaults"
+if grep -q 'CLAUDE_PROJECT_DIR:-.}' "$PLUGIN_DIR/hooks/session-start.sh" && \
+   grep -q 'CLAUDE_ENV_FILE:-/dev/null}' "$PLUGIN_DIR/hooks/session-start.sh"; then
+  pass "session-start.sh has proper env defaults"
 else
-  must_fix "session-init.sh has proper env defaults" "CLAUDE_PROJECT_DIR and CLAUDE_ENV_FILE need defaults"
+  must_fix "session-start.sh has proper env defaults" "CLAUDE_PROJECT_DIR and CLAUDE_ENV_FILE need defaults"
 fi
 
 # 7
-if grep -q '.claude/compound-science.local.md' "$PLUGIN_DIR/scripts/session-init.sh" && \
-   grep -q 'compound-science.local.md' "$PLUGIN_DIR/scripts/session-init.sh"; then
-  pass "session-init.sh checks both .local.md paths"
+if grep -q '.claude/compound-science.local.md' "$PLUGIN_DIR/hooks/session-start.sh" && \
+   grep -q 'compound-science.local.md' "$PLUGIN_DIR/hooks/session-start.sh"; then
+  pass "session-start.sh checks both .local.md paths"
 else
-  must_fix "session-init.sh checks both .local.md paths" "should check .claude/ and root"
+  must_fix "session-start.sh checks both .local.md paths" "should check .claude/ and root"
 fi
 
 # 8: No unquoted variable expansion
 if unquoted=$(python3 -c "
 import re, os
-with open(os.environ['PLUGIN_DIR'] + '/scripts/session-init.sh') as f:
+with open(os.environ['PLUGIN_DIR'] + '/hooks/session-start.sh') as f:
     for i, line in enumerate(f, 1):
         line = line.strip()
         if line.startswith('#') or not line:
@@ -69,18 +69,18 @@ with open(os.environ['PLUGIN_DIR'] + '/scripts/session-init.sh') as f:
             j += 1
 " 2>/dev/null); then
   if [ -z "$unquoted" ]; then
-    pass "session-init.sh variables are properly quoted"
+    pass "session-start.sh variables are properly quoted"
   else
-    should_fix "session-init.sh variables are properly quoted" "potential unquoted vars found"
+    should_fix "session-start.sh variables are properly quoted" "potential unquoted vars found"
   fi
 else
-  must_fix "session-init.sh variables are properly quoted" "python3 failed — could not check"
+  must_fix "session-start.sh variables are properly quoted" "python3 failed — could not check"
 fi
 
 group "Hardcoded Paths"
 
 # 9-10
-if ! grep -rq '/Users/\|/home/' "$PLUGIN_DIR/scripts/" 2>/dev/null; then
+if ! grep -q '/Users/\|/home/' "$PLUGIN_DIR/hooks/session-start.sh" 2>/dev/null; then
   pass "scripts have no hardcoded user paths"
 else
   must_fix "scripts have no hardcoded user paths" "found /Users/ or /home/ references"
@@ -154,7 +154,7 @@ else
 fi
 
 # 20: No grep -P in any script (macOS incompatible)
-if grep -rn 'grep -P' "$PLUGIN_DIR/scripts/" "$PLUGIN_DIR/.tests/" --exclude-dir=reports --exclude='03-script-integrity.sh' 2>/dev/null | head -1 | grep -q .; then
+if grep -rn 'grep -P' "$PLUGIN_DIR/hooks/" "$PLUGIN_DIR/.tests/" --exclude-dir=reports --exclude='03-script-integrity.sh' 2>/dev/null | head -1 | grep -q .; then
   must_fix "no grep -P usage" "grep -P unavailable on macOS; use python3 regex"
 else
   pass "no grep -P usage (macOS compatible)"

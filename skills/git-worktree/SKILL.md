@@ -1,6 +1,7 @@
 ---
 name: git-worktree
-description: "Manages Git worktrees for isolated parallel research work — running concurrent estimation specifications, comparing identification strategies side-by-side, or isolating experimental numerical code. Use when you need parallel branches for different estimators (NFXP vs MPEC), want to run multiple robustness specifications simultaneously, need isolation for risky numerical experiments, or when /workflows:work needs concurrent execution paths."
+description: >-
+  Manages Git worktrees for isolated parallel research work — running concurrent estimation specifications, comparing identification strategies side-by-side, or isolating experimental numerical code. Use when you need parallel branches for different estimators (NFXP vs MPEC), want to run multiple robustness specifications simultaneously, need isolation for risky numerical experiments, or when /workflows:work needs concurrent execution paths.
 ---
 
 # Git Worktree Manager

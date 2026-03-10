@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # compound-science QA Suite
 # Run all tests and generate a consolidated report.
 #
@@ -74,25 +74,11 @@ echo "║           CONSOLIDATED RESULTS            ║"
 echo "╚═══════════════════════════════════════════╝"
 echo ""
 
-# Aggregate across ALL report files from this run (each test creates one)
-all_reports=("$REPORT_DIR"/report-*.log)
-
-total_pass=0
-total_fail=0
-total_warn=0
-total_skip=0
-
-for rpt in "${all_reports[@]}"; do
-  [ -f "$rpt" ] || continue
-  p=$(grep -c '^\[PASS\]' "$rpt" 2>/dev/null) || p=0
-  f=$(grep -c '^\[FAIL\]' "$rpt" 2>/dev/null) || f=0
-  w=$(grep -c '^\[WARN\]' "$rpt" 2>/dev/null) || w=0
-  s=$(grep -c '^\[SKIP\]' "$rpt" 2>/dev/null) || s=0
-  total_pass=$((total_pass + p))
-  total_fail=$((total_fail + f))
-  total_warn=$((total_warn + w))
-  total_skip=$((total_skip + s))
-done
+# Count results from this run's shared report in one pass
+read -r total_pass total_fail total_warn total_skip < <(awk '
+  /^\[PASS\]/{p++} /^\[FAIL\]/{f++} /^\[WARN\]/{w++} /^\[SKIP\]/{s++}
+  END{print p+0, f+0, w+0, s+0}
+' "$SHARED_REPORT" 2>/dev/null) || true
 
 total_all=$((total_pass + total_fail + total_warn + total_skip))
 
@@ -105,22 +91,16 @@ echo ""
 
 if [ "$total_fail" -gt 0 ]; then
   echo "  MUST-FIX:"
-  for rpt in "${all_reports[@]}"; do
-    [ -f "$rpt" ] || continue
-    grep '^\[FAIL\]' "$rpt" 2>/dev/null | while read -r line; do
-      echo "    $line"
-    done
+  grep '^\[FAIL\]' "$SHARED_REPORT" 2>/dev/null | while read -r line; do
+    echo "    $line"
   done
   echo ""
 fi
 
 if [ "$total_warn" -gt 0 ]; then
   echo "  SHOULD-FIX:"
-  for rpt in "${all_reports[@]}"; do
-    [ -f "$rpt" ] || continue
-    grep '^\[WARN\]' "$rpt" 2>/dev/null | while read -r line; do
-      echo "    $line"
-    done
+  grep '^\[WARN\]' "$SHARED_REPORT" 2>/dev/null | while read -r line; do
+    echo "    $line"
   done
   echo ""
 fi

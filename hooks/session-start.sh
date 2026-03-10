@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # compound-science: SessionStart hook
 # Detects project type and injects relevant context into the session.
 set -euo pipefail
@@ -24,7 +24,7 @@ if [ -f "$PROJECT_DIR/requirements.txt" ] || [ -f "$PROJECT_DIR/pyproject.toml" 
 fi
 
 # R econometrics (check dependency files for econometrics packages)
-if [ -f "$PROJECT_DIR/DESCRIPTION" ] || [ -f "$PROJECT_DIR/renv.lock" ] || ls "$PROJECT_DIR"/*.Rproj 1>/dev/null 2>&1; then
+if [ -f "$PROJECT_DIR/DESCRIPTION" ] || [ -f "$PROJECT_DIR/renv.lock" ] || compgen -G "$PROJECT_DIR/*.Rproj" > /dev/null 2>&1; then
   for f in "$PROJECT_DIR/DESCRIPTION" "$PROJECT_DIR/renv.lock"; do
     if [ -f "$f" ] && grep -qiE "fixest|lfe|AER|plm|ivreg|did|rdrobust|Synth|estimatr|sandwich|bacondecomp" "$f" 2>/dev/null; then
       ESTIMATION_LANG="R"
@@ -43,7 +43,7 @@ if [ -f "$PROJECT_DIR/Project.toml" ]; then
 fi
 
 # Stata econometrics (check .do/.ado files for estimation commands)
-if ls "$PROJECT_DIR"/*.do 1>/dev/null 2>&1 || ls "$PROJECT_DIR"/*.ado 1>/dev/null 2>&1; then
+if compgen -G "$PROJECT_DIR/*.do" > /dev/null 2>&1 || compgen -G "$PROJECT_DIR/*.ado" > /dev/null 2>&1; then
   for f in "$PROJECT_DIR"/*.do "$PROJECT_DIR"/*.ado; do
     if [ -f "$f" ] && grep -qiE "regress|ivregress|xtreg|xtabond|areg|didregress|rdrobust|gmm|mle|nl" "$f" 2>/dev/null; then
       ESTIMATION_LANG="stata"
@@ -54,7 +54,7 @@ if ls "$PROJECT_DIR"/*.do 1>/dev/null 2>&1 || ls "$PROJECT_DIR"/*.ado 1>/dev/nul
 fi
 
 # LaTeX paper
-if ls "$PROJECT_DIR"/*.tex 1>/dev/null 2>&1; then
+if compgen -G "$PROJECT_DIR/*.tex" > /dev/null 2>&1; then
   if [ "$PROJECT_TYPE" = "unknown" ]; then
     PROJECT_TYPE="paper"
   else
@@ -63,7 +63,7 @@ if ls "$PROJECT_DIR"/*.tex 1>/dev/null 2>&1; then
 fi
 
 # Data files
-if ls "$PROJECT_DIR"/data 1>/dev/null 2>&1 || ls "$PROJECT_DIR"/*.csv 1>/dev/null 2>&1 || ls "$PROJECT_DIR"/*.dta 1>/dev/null 2>&1; then
+if [ -e "$PROJECT_DIR/data" ] || compgen -G "$PROJECT_DIR/*.csv" > /dev/null 2>&1 || compgen -G "$PROJECT_DIR/*.dta" > /dev/null 2>&1; then
   HAS_DATA=true
 fi
 
@@ -73,10 +73,12 @@ if [ -f "$PROJECT_DIR/Makefile" ] || [ -f "$PROJECT_DIR/Snakefile" ] || [ -f "$P
 fi
 
 # --- Persist environment ---
-echo "export CS_PROJECT_TYPE=$PROJECT_TYPE" >> "$ENV_FILE"
-echo "export CS_ESTIMATION_LANG=$ESTIMATION_LANG" >> "$ENV_FILE"
-echo "export CS_HAS_DATA=$HAS_DATA" >> "$ENV_FILE"
-echo "export CS_HAS_PIPELINE=$HAS_PIPELINE" >> "$ENV_FILE"
+{
+  echo "export CS_PROJECT_TYPE=$PROJECT_TYPE"
+  echo "export CS_ESTIMATION_LANG=$ESTIMATION_LANG"
+  echo "export CS_HAS_DATA=$HAS_DATA"
+  echo "export CS_HAS_PIPELINE=$HAS_PIPELINE"
+} >> "$ENV_FILE"
 
 # --- Build context message ---
 MSG=""

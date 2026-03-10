@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Assertion library for compound-science plugin testing
 
 set -euo pipefail

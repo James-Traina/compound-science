@@ -2,6 +2,7 @@
 name: simulate
 description: "Design and run Monte Carlo simulation study with DGP specification, seed management, and coverage analysis"
 argument-hint: "<simulation objective, estimator comparison, or DGP description>"
+allowed-tools: Read, Write, Edit, Bash, Glob
 ---
 
 # Monte Carlo Simulation Pipeline

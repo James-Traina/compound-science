@@ -2,6 +2,7 @@
 name: workflows:brainstorm
 description: Explore methodological approaches through structured analysis before planning implementation
 argument-hint: "<research question or methodological problem>"
+allowed-tools: Read, Glob, WebSearch, WebFetch
 ---
 
 # Brainstorm a Research Approach or Methodological Decision

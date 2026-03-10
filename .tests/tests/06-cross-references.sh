@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test Group 6: Cross-reference integrity between components (22 tests)
 source "$(dirname "$0")/../lib/assert.sh"
 
@@ -149,7 +149,7 @@ for h in d['hooks']['SessionStart'][0]['hooks']:
         print(h['command'])
 " 2>/dev/null || echo "")
 
-if echo "$session_cmd" | grep -q 'CLAUDE_PLUGIN_ROOT.*session-init.sh'; then
+if echo "$session_cmd" | grep -q 'CLAUDE_PLUGIN_ROOT.*session-start.sh'; then
   pass "SessionStart hook uses portable path"
 else
   must_fix "SessionStart hook uses portable path" "got: $session_cmd"

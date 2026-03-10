@@ -1,6 +1,7 @@
 ---
 name: game-theory
-description: Guide for game-theoretic methods in structural econometrics and industrial organization. Use when the user is working with strategic interactions, equilibrium analysis, or game-theoretic structural models — including entry games, conduct testing, auction models with strategic bidding, bargaining, or matching markets. Triggers on "Nash equilibrium", "subgame perfect", "best response", "strategic interaction", "entry game", "conduct testing", "auction", "mechanism design", "matching market", "bargaining", "BNE", "Bayesian Nash", "static game", "dynamic game", "repeated game", "multiple equilibria", "equilibrium selection", "discrete game", "oligopoly", "game-theoretic", "player", "payoff", "strategy", "dominant strategy", "Bresnahan-Reiss", "Ciliberto-Tamer", "partial identification", "set identification", or markup test.
+description: >-
+  Guide for game-theoretic methods in structural econometrics and industrial organization. Use when the user is working with strategic interactions, equilibrium analysis, or game-theoretic structural models — including entry games, conduct testing, auction models with strategic bidding, bargaining, or matching markets. Triggers on "Nash equilibrium", "subgame perfect", "best response", "strategic interaction", "entry game", "conduct testing", "auction", "mechanism design", "matching market", "bargaining", "BNE", "Bayesian Nash", "static game", "dynamic game", "repeated game", "multiple equilibria", "equilibrium selection", "discrete game", "oligopoly", "game-theoretic", "player", "payoff", "strategy", "dominant strategy", "Bresnahan-Reiss", "Ciliberto-Tamer", "partial identification", "set identification", or markup test.
 ---
 
 # Game Theory

@@ -1,6 +1,7 @@
 ---
 name: compound-catalog
-description: Capture solved research problems as categorized documentation with YAML frontmatter for fast lookup. Use when a methodological, estimation, or data problem has been solved and should be documented for future reference. Triggers on "that worked", "it's fixed", "problem solved", "estimation converges now", "proof is complete", "pipeline runs", or when /workflows:compound invokes solution documentation. Also triggered by "document this solution", "save this fix", "log this resolution".
+description: >-
+  Capture solved research problems as categorized documentation with YAML frontmatter for fast lookup. Use when a methodological, estimation, or data problem has been solved and should be documented for future reference. Triggers on "that worked", "it's fixed", "problem solved", "estimation converges now", "proof is complete", "pipeline runs", or when /workflows:compound invokes solution documentation. Also triggered by "document this solution", "save this fix", "log this resolution".
 ---
 
 # compound-catalog Skill

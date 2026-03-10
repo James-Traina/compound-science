@@ -1,6 +1,7 @@
 ---
 name: causal-ml
-description: Guide for causal machine learning methods in applied economics and quantitative social science. Use when implementing or choosing between modern ML-based causal estimators — including double machine learning, DML, partially linear models, interactive regression models, cross-fitting, Neyman orthogonality, debiased ML, causal forests, generalized random forest, GRF, honest causal trees, AIPW with machine learning, doubly robust with machine learning, DR-Learner, T-Learner, S-Learner, X-Learner, meta-learners, heterogeneous treatment effects, conditional average treatment effect, CATE, HTE, high-dimensional controls, LASSO controls, post-LASSO, post-double selection, Belloni-Chernozhukov-Hansen, Riesz representer, Chernozhukov, sample splitting, econml, DoubleML package, or any combination of machine learning and causal inference.
+description: >-
+  Guide for causal machine learning methods in applied economics and quantitative social science. Use when implementing or choosing between modern ML-based causal estimators — including double machine learning, DML, partially linear models, interactive regression models, cross-fitting, Neyman orthogonality, debiased ML, causal forests, generalized random forest, GRF, honest causal trees, AIPW with machine learning, doubly robust with machine learning, DR-Learner, T-Learner, S-Learner, X-Learner, meta-learners, heterogeneous treatment effects, conditional average treatment effect, CATE, HTE, high-dimensional controls, LASSO controls, post-LASSO, post-double selection, Belloni-Chernozhukov-Hansen, Riesz representer, Chernozhukov, sample splitting, econml, DoubleML package, or any combination of machine learning and causal inference.
 ---
 
 # Causal Machine Learning

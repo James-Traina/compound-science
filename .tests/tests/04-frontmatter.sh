@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test Group 4: YAML frontmatter validation for all markdown components (20 tests)
 source "$(dirname "$0")/../lib/assert.sh"
 

@@ -252,6 +252,12 @@ This plugin activates when your work involves these areas:
 | Applied Statistics & Research | MLE, bootstrap, clustering, standard errors, Applied Statistics, Business Analytics, Academic Writing, Economic Research |
 | Applied Micro & Research Design | method selection, power analysis, specification curve, research design, Applied Micro |
 
+## Updating
+
+```bash
+/plugin update compound-science
+```
+
 ## License
 
 MIT

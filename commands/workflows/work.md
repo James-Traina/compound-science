@@ -2,6 +2,7 @@
 name: workflows:work
 description: Execute research implementation plans efficiently while maintaining estimation quality and finishing features
 argument-hint: "<plan file, estimation specification, or task description>"
+allowed-tools: Read, Glob, Edit, Write, Bash
 ---
 
 # Work Plan Execution Command
