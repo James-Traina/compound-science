@@ -225,6 +225,44 @@ description: >-
   Signal over noise: do not enumerate all numerical warnings — complete all five audit passes, then prioritize findings by impact. Lead with no more than three critical issues per audit — those that silently produce wrong estimates or standard errors. A convergence failure that silently produces a wrong optimum outweighs ten minor tolerance warnings.
 
   For each finding, state the specific file and the exact fix required — for example: "estimation.py line 47: add `assert np.isfinite(ll).all()` before returning the likelihood value." Do not write vague recommendations; write the exact change at the specific location.
+
+  ## CROSS-LANGUAGE REPLICATION PROTOCOL
+
+  The most powerful numerical verification strategy: replicate the core results independently in a second language (R → Stata, Python → R, Stata → Python). The key insight: **LLM hallucination errors are orthogonal across languages**. If both implementations agree to 6 decimal places, the probability of a shared systematic error is negligible.
+
+  ### When to invoke
+  - After implementing any structural estimator or non-trivial GMM/optimization
+  - Before submitting results to a journal
+  - When numerical results seem surprising (sanity check failed)
+  - When reproducing a prior paper's results
+
+  ### Protocol
+  1. **Never modify the author's original code.** Create a parallel implementation in `code/replication/replicate_core.{R,do,py}` — never touch `code/estimation/*.py` etc.
+  2. **Target only the core estimand**: replicate the main table (5–10 numbers), not the entire analysis pipeline.
+  3. **Use the same data, different code**: same cleaned dataset, independent implementation of estimator.
+  4. **Tolerance thresholds**:
+     - Point estimates: agree to 6+ significant figures for analytical methods; 3+ for simulation-based
+     - Standard errors: agree to 4+ significant figures (allow for finite-sample correction differences across packages)
+     - Statistical significance: identical at all conventional levels (1/5/10%)
+  5. **Document discrepancies by category**:
+     - `EXACT`: bit-identical (integers, strings, categorical)
+     - `NUMERICAL`: floating-point agreement within tolerance
+     - `EQUIVALENT`: different finite-sample corrections (e.g., HC1 vs HC2) that are equivalent asymptotically
+     - `DISCREPANT`: unexplained difference — investigate before proceeding
+
+  ### Common language-specific traps
+  | Trap | Stata | R | Python |
+  |------|-------|---|--------|
+  | Clustering df-adjustment | N-K-1 groups | package-dependent | package-dependent |
+  | `areg` absorbed FE | `areg y x, absorb(id)` loses FE dof | `feols` handles correctly | `PanelOLS` needs explicit dof |
+  | Probit default | MLE | MLE | `statsmodels.Probit` default is MLE |
+  | Missing observations | listwise by default | `na.action` must be set | NaN propagation differs |
+  | Bootstrap seed | `set seed` before `bootstrap` | `set.seed` before replications | `np.random.seed` + `random.seed` both needed |
+  | `reghdfe` vs `feols` | reghdfe | feols | linearmodels.PanelOLS |
+  | SE formula | `vce(cluster)` | `vcov=~cluster` | `cov_type="clustered"` |
+
+  🔴 FAIL: "Results verified" without independent second-language implementation
+  ✅ PASS: Cross-language replication script in `code/replication/` with discrepancy log
 model: sonnet
 tools:
   - Read

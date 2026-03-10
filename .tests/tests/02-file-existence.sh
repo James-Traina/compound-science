@@ -57,9 +57,10 @@ COMMANDS=(
   "replicate"
   "visualize"
   "stress-test"
+  "deepen-plan"
 )
 
-# 2: all 15 commands exist
+# 2: all 16 commands exist
 all_exist=true
 for cmd in "${COMMANDS[@]}"; do
   if [ ! -f "$PLUGIN_DIR/commands/$cmd.md" ]; then
@@ -68,7 +69,7 @@ for cmd in "${COMMANDS[@]}"; do
   fi
 done
 if $all_exist; then
-  pass "all 15 command files exist"
+  pass "all 16 command files exist"
 fi
 
 group "File Existence — Skills"
@@ -88,9 +89,11 @@ SKILLS=(
   "structural-modeling"
   "submission-guide"
   "empirical-playbook"
+  "data-acquisition"
+  "referee-response"
 )
 
-# 3-4: all 14 skills exist (dir + SKILL.md)
+# 3-4: all 16 skills exist (dir + SKILL.md)
 all_dirs=true
 all_files=true
 for skill in "${SKILLS[@]}"; do
@@ -103,8 +106,8 @@ for skill in "${SKILLS[@]}"; do
     must_fix "skill SKILL.md $skill exists" "file not found"
   fi
 done
-if $all_dirs; then pass "all 14 skill directories exist"; fi
-if $all_files; then pass "all 14 skill SKILL.md files exist"; fi
+if $all_dirs; then pass "all 16 skill directories exist"; fi
+if $all_files; then pass "all 16 skill SKILL.md files exist"; fi
 
 group "File Existence — Infrastructure"
 
@@ -128,12 +131,12 @@ print(len(d['hooks']))
 
 # 10-14
 assert_count "agents = 20" 20 "$actual_agents"
-assert_count "commands = 15" 15 "$actual_commands"
-assert_count "skills = 14" 14 "$actual_skills"
+assert_count "commands = 16" 16 "$actual_commands"
+assert_count "skills = 16" 16 "$actual_skills"
 assert_count "hooks = 7" 7 "$actual_hooks"
 
 total=$((actual_agents + actual_commands + actual_skills + actual_hooks))
-assert_count "total components = 56" 56 "$total"
+assert_count "total components = 59" 59 "$total"
 
 group "Agent Category Counts"
 

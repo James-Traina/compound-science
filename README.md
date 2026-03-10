@@ -10,7 +10,7 @@ The core loop is Plan, Work, Review, Compound, Repeat.
 
 You describe a research task. The plugin plans an approach, executes it with convergence monitoring and quality gates, runs domain-specific review agents (an econometric-reviewer checks your identification, a numerical auditor checks your floating-point stability, a journal-referee tries to reject your paper), and extracts reusable solutions into a knowledge base at `docs/solutions/`.
 
-Workflow commands chain the steps. `/lfg` runs the full loop autonomously; `/slfg` runs review and compound in parallel using agent swarms. Domain commands handle specific tasks: `/estimate` runs a complete estimation pipeline, `/simulate` designs Monte Carlo studies, `/identify` formalizes identification arguments. Utility commands handle output: `/diagnose` runs diagnostic batteries, `/tabulate` generates publication-ready tables, `/visualize` creates research figures, `/stress-test` runs formal robustness analysis, `/replicate` builds AEA-compliant replication packages. Ambient hooks run without being invoked: when you write estimation code the plugin offers relevant agents, and when a session ends it checks for missing standard errors or RNG seeds.
+Workflow commands chain the steps. `/lfg` runs the full loop autonomously; `/slfg` runs review and compound in parallel using agent swarms. Domain commands handle specific tasks: `/estimate` runs a complete estimation pipeline, `/simulate` designs Monte Carlo studies, `/identify` formalizes identification arguments. Utility commands handle output: `/diagnose` runs diagnostic batteries, `/tabulate` generates publication-ready tables, `/visualize` creates research figures, `/stress-test` runs formal robustness analysis, `/replicate` builds AEA-compliant replication packages, `/deepen-plan` enriches research plans with parallel specialist research. Ambient hooks run without being invoked: when you write estimation code the plugin offers relevant agents, and when a session ends it checks for missing standard errors or RNG seeds.
 
 ## Install
 
@@ -63,6 +63,7 @@ To update after a new release:
 /stress-test run Oster bounds on baseline estimate
 /visualize create event study plot with confidence intervals
 /replicate build replication package for journal submission
+/deepen-plan enrich my research plan with specialist agent research
 ```
 
 ## Commands
@@ -96,6 +97,7 @@ To update after a new release:
 | `/replicate` | Build and verify AEA-compliant replication packages: inventory, README, dependency audit, pipeline verification, data documentation |
 | `/visualize` | Generate publication-quality research visualization code: event studies, RD plots, coefficient plots, power curves, densities |
 | `/stress-test` | Run sensitivity analysis on causal estimates: Oster bounds, Conley et al. bounds, breakdown frontier, specification curve |
+| `/deepen-plan` | Enrich a research plan with parallel literature, identification, benchmark, and methods research |
 
 ## Agents (20)
 
@@ -136,7 +138,7 @@ Organized by role. Each runs as a specialized subagent with deep domain knowledg
 | `research-coordinator` | Coordinate multi-agent research workflows, manage handoffs between estimation/simulation/identification phases |
 | `progress-tracker` | Track research progress, maintain running checklist of completed and pending research steps |
 
-## Skills (14)
+## Skills (16)
 
 Domain knowledge and methodology references.
 
@@ -156,6 +158,8 @@ Domain knowledge and methodology references.
 | `project-setup` | Configure `compound-science.local.md` for project-specific settings |
 | `submission-guide` | Pre-submission checklists, journal-specific formatting for 20+ journals, referee response strategy, revision management |
 | `empirical-playbook` | Method selection decision tree, estimator comparison, diagnostics by method, power analysis, minimum reporting standards |
+| `data-acquisition` | FRED and World Bank API access: time series, vintage data, cross-national panels |
+| `referee-response` | Draft structured author responses to peer review |
 
 ## Ambient Hooks (7)
 
@@ -192,10 +196,10 @@ This plugin is designed to work alongside:
 | Category | Count |
 |----------|-------|
 | Agents | 20 (10 review + 5 research + 5 workflow) |
-| Commands | 15 (5 workflow + 2 chain + 3 domain + 5 utility) |
-| Skills | 14 |
+| Commands | 16 (5 workflow + 2 chain + 3 domain + 6 utility) |
+| Skills | 16 |
 | Hooks | 7 |
-| **Total** | **56 components** |
+| **Total** | **59 components** |
 
 ## Layout
 
@@ -214,8 +218,8 @@ agents/
 commands/
   workflows/    brainstorm, plan, work, review, compound
   estimate, simulate, identify, lfg, slfg
-  diagnose, tabulate, replicate, visualize, stress-test
-skills/         14 domain knowledge bases with reference material
+  diagnose, tabulate, replicate, visualize, stress-test, deepen-plan
+skills/         16 domain knowledge bases with reference material
 hooks/          hooks.json (7 ambient hooks, 13 domain categories)
 scripts/        session-init.sh
 .tests/         235 tests across 12 groups (dev-only, gitignored reports)

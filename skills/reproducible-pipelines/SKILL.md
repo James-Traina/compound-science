@@ -442,6 +442,40 @@ ssc install rdrobust, replace
 | Missing `log close` | Log file left open if error occurs | Add `cap log close` at top, `log close` at bottom |
 | Point-and-click menu operations | Not reproducible | Everything in do-files |
 
+## CROSS-LANGUAGE REPLICATION STANDARDS
+
+### Tolerance Thresholds (Stata ↔ R ↔ Python)
+When verifying results across languages, use these tolerance thresholds:
+
+| Result type | Tolerance | Notes |
+|-------------|-----------|-------|
+| Integer counts | Exact match | Row counts, group sizes |
+| Point estimates | \|diff\| < 0.01 (absolute) OR < 0.001% (relative) | Use stricter when estimates are small |
+| Standard errors | \|diff\| < 0.05 OR < 0.01% relative | Different finite-sample corrections are acceptable if documented |
+| P-values | Same significance conclusion at 1/5/10% | Exact p-values may differ across implementations |
+| Confidence intervals | Overlap by >99% of interval width | Not just point equality |
+
+### Stata-to-R Translation Trap Table
+Known systematic differences that produce real numeric discrepancies:
+
+| Issue | Stata behavior | R equivalent | Fix |
+|-------|----------------|--------------|-----|
+| Cluster SE df adjustment | Uses g-1 (groups minus 1) | `feols` uses g-1 by default; `lm_robust` varies | Use `feols` in R, not `lm_robust` with default |
+| `areg` absorbed FE dof | Subtracts N_absorbed from residual df | `feols` handles automatically | Switch from `areg` to `reghdfe`/`feols` |
+| Probit MFX | `margins, dydx(*)` = average marginal effect | `margins::margins()` or manual AME computation | Verify using AME, not marginal at mean |
+| Multi-way clustering | `reghdfe` Cameron-Gelbach-Miller | `feols` multiway: `vcov = ~id+time` | Formulas differ; document which is used |
+| Bootstrap sampling | `bsample` with `set seed` | `set.seed` before `boot()` or manual bootstrap | Seed must be set identically in both |
+| Wild cluster bootstrap | `boottest` (Roodman) | `fwildclusterboot` (Fischer) | Different algorithms; expect SE-level (not exact) agreement |
+| Time-series operators | `L.` / `D.` operators | `dplyr::lag()` with explicit group | Verify panel lag handles unbalanced panels identically |
+| Balanced panel enforcement | `xtset` warns, `xtbalance` required | `is.pbalanced()` check | Unbalanced panels produce different within estimators |
+
+### Anti-patterns
+- 🔴 Manually editing generated tables (breaks automation trail)
+- 🔴 `qui regress` without `eststo` in a loop (results not captured)
+- 🔴 `save` without `compress` (file size; use `saveold` for v12 compatibility if needed)
+- 🔴 `use data.dta, clear` at top of do-file without checking working directory first
+- 🔴 Cross-language replication using the same base code (defeats the orthogonality purpose)
+
 ## Environment Management
 
 ### Conda (Recommended for Python/R Mixed Projects)

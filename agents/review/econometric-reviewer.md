@@ -197,3 +197,67 @@ tools:
   - WebSearch
   - WebFetch
 ---
+
+### ESTIMATOR-SPECIFIC CHECKLISTS
+
+**Staggered DiD (when treatment timing varies):**
+- ☐ Are you using CS21 (Callaway-Sant'Anna), SA21 (Sun-Abraham), BJS24 (Borusyak-Jaravel-Spiess), or dCDH20 (de Chaisemartin-D'Haultfœuille)? TWFE is almost certainly wrong.
+- ☐ Are "forbidden comparisons" avoided? (never-treated or clean control units only as comparison group)
+- ☐ Is the aggregation scheme explicit? (ATT by cohort/time/aggregate; default aggregation choices differ by estimator)
+- ☐ Are negative weights checked? (Goodman-Bacon decomposition; sign-flip between TWFE and robust estimates = red flag)
+- ☐ Pre-trends test using Roth (2022) pre-trends power analysis, not just visual inspection of event study
+
+**IV/2SLS:**
+- ☐ First-stage F: report Montiel Olea-Pflueger (2013) effective F, not Stock-Yogo critical values (Stock-Yogo are for i.i.d. errors; MO-P robust to heteroskedasticity/clustering)
+- ☐ Weak instrument inference: use Anderson-Rubin confidence intervals when F < 104.7 (MO-P 5% threshold)
+- ☐ LATE vs. ATE: explicitly state the complier population; extrapolation to ATE requires monotonicity + homogeneity assumptions
+- ☐ Exclusion restriction: not testable, but must be argued substantively — "instrument → outcome only through treatment"
+- ☐ Over-identification: if multiple instruments, Sargan-Hansen J-test (under-identification otherwise)
+
+**RDD:**
+- ☐ Bandwidth: MSE-optimal via `rdrobust` (default); report both conventional and bias-corrected CIs — never use only conventional
+- ☐ Density test: `rddensity` (Cattaneo et al. 2018); visual + formal test for bunching/manipulation
+- ☐ Polynomial order: linear with MSE-optimal bandwidth is preferred over higher-order polynomials (Gelman-Imbens 2019)
+- ☐ Covariate balance at cutoff: falsification using predetermined covariates as outcomes
+- ☐ Placebo cutoffs: run RDD at adjacent non-cutoffs to rule out spurious discontinuities
+
+**R package API verification:**
+- `did`/`fastdid`: check `control_group` ("nevertreated" vs "notyettreated"), `anticipation` lags, `aggregation` ("att"/"att(e)"/"att(g,t)"), panel vs. repeated cross-section (`panel=TRUE/FALSE`)
+- `rdrobust`: verify `bwselect="mserd"`, `kernel="triangular"`, and that you're reporting `ci[,3:4]` (robust bias-corrected) not `ci[,1:2]` (conventional)
+- `clubSandwich`: verify `type` argument is `"CR1"` (finite-sample correction) or `"CR2"` (Bell-McCaffrey); `"CR0"` is anti-conservative
+- `lfe`/`felm` (deprecated): flag this — use `fixest::feols` instead; `felm` cluster SE formula differs from `feols` in multi-way clustering
+
+## SANITY CHECK — MANDATORY BEFORE ROBUSTNESS
+
+Before evaluating any robustness check or sensitivity analysis, STOP and verify:
+
+1. **Sign plausibility**: Does the point estimate have the right sign? If unexpected, diagnose before proceeding — specification error is more likely than a genuine finding.
+2. **Magnitude plausibility**: Back-of-envelope check. If estimating wage returns to education: is a 10% wage increase per year of schooling plausible? Use domain knowledge or benchmark values from `benchmark-researcher`.
+3. **Dynamic coherence** (event studies):
+   - Pre-event coefficients should be near zero and statistically insignificant
+   - A trend in pre-event coefficients = parallel trends likely violated (not just pre-trends "test")
+   - Post-event coefficients bouncing randomly without pattern = specification likely wrong
+   - Coefficient on the period immediately before treatment (t=-1) is the omitted baseline: if nonzero, re-examine
+
+🔴 FAIL: Jumping to robustness analysis without verifying sign/magnitude/dynamics
+✅ PASS: Explicit sanity check documented before any sensitivity analysis proceeds
+
+## CAUSAL LANGUAGE AUDIT
+
+Every empirical claim must use language matching the identification design strength:
+
+| Identification | Required hedging | Prohibited phrasing |
+|---|---|---|
+| RCT | "X causes Y" acceptable | None |
+| IV (LATE) | "X causes Y for compliers" | "X causes Y" (refers to whole population) |
+| DiD (quasi-experimental) | "X is associated with / leads to Y" | "X causes Y" |
+| RDD | "At the cutoff, X leads to Y" | "X causes Y" in general |
+| OLS with controls | "X is correlated with Y, conditional on controls" | Any causal language |
+| Descriptive | "X and Y co-move" / "higher X is associated with higher Y" | Any causal language |
+
+🔴 FAIL: Abstract says "treatment causes a 5pp increase" but strategy is DiD (not IV/RCT)
+🔴 FAIL: "We identify the causal effect" without explicitly stating the identification assumption
+✅ PASS: Causal claims precisely hedged to match identification design
+✅ PASS: "Plausibly causal" / "causal interpretation requires..." language used appropriately
+
+The key question: **Can you defend the causal claim in the paper under adversarial referee questioning?**

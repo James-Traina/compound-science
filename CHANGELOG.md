@@ -4,6 +4,17 @@ All notable changes to compound-science are documented here.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/). Versioning follows [Semantic Versioning](https://semver.org/).
 
+## [0.4.2] - 2026-03-09
+
+### Added
+- **`econometric-reviewer` agent**: method-specific checklists for staggered DiD (CS21/SA21/BJS24/dCDH20, forbidden comparisons, Goodman-Bacon decomposition), IV/2SLS (Montiel Olea-Pflueger effective F, Anderson-Rubin CIs, LATE vs ATE distinction), RDD (rdrobust MSE-optimal bandwidth, rddensity, Gelman-Imbens polynomial guidance, placebo cutoffs), and R package API gotchas (`did`/`fastdid`, `rdrobust`, `clubSandwich`, `felm` deprecation). Also adds mandatory sanity check gate (sign/magnitude/dynamics plausibility before any robustness discussion) and explicit causal language audit (hedging must match identification design strength)
+- **`journal-referee` agent**: journal-specific calibration profiles for 11 journals: Top-5/General Interest (AER, ECMA, JPE, QJE, REStud) with referee culture notes; Applied/Policy (AEJ-Applied, AEJ-Policy, JHR, JHE, RAND, JPubE)
+- **`numerical-auditor` agent**: cross-language replication protocol — R/Stata/Python orthogonality of hallucination errors, 6-decimal-place tolerance thresholds, language-specific trap table, discrepancy classification (EXACT/NUMERICAL/EQUIVALENT/DISCREPANT)
+- **`reproducible-pipelines` skill**: Stata-to-R tolerance threshold table (integers = exact, point estimates < 0.01, SEs < 0.05) and trap table (8 known systematic discrepancy sources: clustering df, `areg` vs `feols`, bootstrap seed, probit MFX, multi-way clustering, wild cluster bootstrap, time-series operators, panel balance)
+- **New skill: `data-acquisition`** — FRED API (800k+ series, vintage/ALFRED real-time data, built-in transformations, GeoFRED) and World Bank API (240+ cross-national indicators), with curated series dictionaries, panel assembly best practices, and missingness auditing. Fills a genuine gap: no prior skill covered programmatic macroeconomic data access
+- **New skill: `referee-response`** — Structured author response workflow: comment classification (7 types), point-by-point format templates (accept/partial/decline), identification challenge protocol with 7 robustness response types, journal-specific tone calibration, cover letter template, multi-round revision tracking. Fills an ecosystem-wide gap — no existing tool covered response drafting
+- **New command: `/deepen-plan`** — Enriches a research plan by spawning parallel specialist agents (literature-scout, identification-critic, benchmark-researcher, methods-explorer) with targeted research questions, then synthesizes findings back as `### Research Insights` subsections with `⚠️` flags for urgent items
+
 ## [0.4.1] - 2026-03-09
 
 ### Added

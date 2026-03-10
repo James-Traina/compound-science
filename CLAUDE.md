@@ -27,6 +27,7 @@ Use `/lfg` to chain all four steps automatically, or `/slfg` for parallel swarm 
 - `/replicate` — Build and verify AEA-compliant replication packages with dependency audit and pipeline verification
 - `/visualize` — Generate publication-quality research visualization code: event studies, RD plots, coefficient plots, power curves
 - `/stress-test` — Run sensitivity analysis on causal estimates: Oster bounds, specification curve, breakdown frontier
+- `/deepen-plan` — Enrich a research plan with parallel literature, identification, benchmark, and methods research
 
 ## Agents
 
@@ -72,6 +73,8 @@ Use `/lfg` to chain all four steps automatically, or `/slfg` for parallel swarm 
 - `project-setup` — Configure compound-science.local.md for project-specific settings
 - `submission-guide` — Pre-submission checklists, journal-specific formatting for 20+ journals, referee response strategy
 - `empirical-playbook` — Method selection decision tree, diagnostics by method, power analysis, reporting standards
+- `data-acquisition` — FRED and World Bank API access: time series, vintage data, cross-national panels
+- `referee-response` — Draft structured author responses to peer review
 
 ## Ambient Hooks
 

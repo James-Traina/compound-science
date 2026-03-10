@@ -225,3 +225,72 @@ tools:
   - WebSearch
   - WebFetch
 ---
+
+## JOURNAL-SPECIFIC CALIBRATION
+
+Before beginning the review, identify the target journal and calibrate expectations accordingly:
+
+### General Interest / Top-5
+
+**American Economic Review (AER)**
+- Breadth matters: "Would a labor economist care about this IO paper?" If answer is no, recommend field journal.
+- Contribution must be clear in Abstract: one sentence on what this paper adds to economics
+- Policy relevance expected even for theory papers; welfare implications required
+- Referee culture: slow, thorough, 2-3 rounds common; major revisions rarely rejected if authors are responsive
+
+**Econometrica (ECMA)**
+- Rigor is the primary criterion, not importance
+- If empirical: formal asymptotic theory for the estimator is expected (not just citing prior work)
+- If theoretical: existence proofs, uniqueness conditions, comparative statics all required
+- Formal welfare analysis typically expected; informal welfare arguments insufficient
+- Referee culture: rejection-heavy; "interesting but not for ECMA" is a common referee decision
+
+**Journal of Political Economy (JPE)**
+- Mechanism is king: a well-identified reduced-form result without economic mechanism will not succeed
+- Deep narrative alongside identification: what does this tell us about human behavior or economic equilibrium?
+- Theory + empirics integration expected at all levels; pure reduced-form is increasingly difficult
+- Referee culture: elite taste, idiosyncratic; editor judgment heavily shapes outcomes
+
+**Quarterly Journal of Economics (QJE)**
+- Clever identification is explicitly valued: "how did you find this?" is the first question
+- Narrative matters: papers must be readable and compelling, not just correct
+- Big question framing: research question should be important to non-economists
+- Referee culture: fast decisions (relatively); desk rejection common for insufficient cleverness
+
+**Review of Economic Studies (REStud)**
+- More methodologically pluralist than AER/ECMA/JPE/QJE
+- Strong on structural methods and formal econometrics
+- Younger-author friendly; emerging scholars have succeeded here
+- Referee culture: willing to publish technically sophisticated work that top-5 find too narrow
+
+### Applied/Policy Fields
+
+**American Economic Journal: Applied Economics (AEJ-Applied)**
+- Flagship applied micro venue; clean identification required
+- Less emphasis on mechanism than JPE, more on careful identification + external validity
+- Policy implications required; abstract should mention application
+
+**American Economic Journal: Economic Policy (AEJ-Policy)**
+- Policy evaluation focus; institutional knowledge matters
+- Government programs, public economics, regulatory effects
+- Mechanism secondary to credible identification of policy effect
+
+**Journal of Human Resources (JHR)**
+- Workhorse journal for labor/education/health empirical work
+- Clean TWFE DiD was once sufficient — now staggered DiD methods required
+- Data description requirements strict; replication focus
+
+**Journal of Health Economics (JHE)**
+- Health outcomes primary; economic framework secondary
+- Reduced-form causality acceptable without deep economic model
+- Instrumental variables for health behaviors standard
+
+**RAND Journal of Economics (RAND)**
+- IO focus: markets, contracts, competition, regulation
+- Structural IO well-represented; BLP-style demand estimation home
+- Sufficient sample size for identification less scrutinized than at general journals
+
+**Journal of Public Economics (JPubE)**
+- Public finance, taxation, government programs
+- Natural experiments in tax policy, program evaluation standard
+- Less emphasis on methodological novelty than on clean identification of public economics quantities

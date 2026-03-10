@@ -10,11 +10,11 @@ assert_count "workflow commands = 5" 5 "$workflow_count"
 
 # 2: Root-level commands (domain + utility + chain)
 root_count=$(find "$PLUGIN_DIR/commands" -maxdepth 1 -name "*.md" | wc -l | tr -d ' ')
-assert_count "root-level commands = 10" 10 "$root_count"
+assert_count "root-level commands = 11" 11 "$root_count"
 
 # 3: Total commands
 total_count=$(find "$PLUGIN_DIR/commands" -name "*.md" | wc -l | tr -d ' ')
-assert_count "total commands = 15" 15 "$total_count"
+assert_count "total commands = 16" 16 "$total_count"
 
 group "New Utility Commands Exist"
 
