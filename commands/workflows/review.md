@@ -9,7 +9,7 @@ allowed-tools: Read, Grep, Glob, Bash
 
 **Pipeline mode:** This command operates fully autonomously. All decisions are made automatically.
 
-Perform exhaustive econometric and methodological review using multi-agent parallel analysis. Domain-specific reviewers check estimation quality, identification strategy, numerical stability, and mathematical rigor, while generic code quality is delegated to the installed `pr-review-toolkit` plugin.
+Perform exhaustive econometric and methodological review using multi-agent parallel analysis. Domain-specific reviewers check estimation quality, identification strategy, numerical stability, and mathematical rigor, while generic code quality is handled by the built-in `/simplify` command.
 
 ## Input
 
@@ -154,12 +154,7 @@ Task solutions-archivist(all review findings + changed modules)
 
 #### Delegate Generic Code Quality
 
-For non-domain code quality concerns (style, dead code, type safety, test coverage), delegate to the installed `pr-review-toolkit` plugin. Do NOT duplicate its capabilities.
-
-```
-Task code-reviewer(changed files)        # pr-review-toolkit agent
-Task silent-failure-hunter(changed files) # pr-review-toolkit agent (if error handling present)
-```
+After domain review is complete, run the built-in `/simplify` command on the changed files to check for reuse opportunities, code quality, and efficiency. Do NOT duplicate its capabilities — it handles style, dead code, and structural improvements.
 
 ### Phase 3: Finding Assembly
 
@@ -255,7 +250,7 @@ Task silent-failure-hunter(changed files) # pr-review-toolkit agent (if error ha
    - identification-critic
    - [conditional agents if triggered]
    - solutions-archivist
-   - pr-review-toolkit (code quality)
+   - `/simplify` (code quality)
 
    ### Next Steps
    1. Address CRITICAL findings (blocks merge)
@@ -327,4 +322,4 @@ To create or modify settings, run the `project-setup` skill.
 
 - `/workflows:compound` — document solutions to issues found during review
 - `/workflows:work` — implement fixes for review findings
-- `pr-review-toolkit` — generic code quality (automatically delegated)
+- `/simplify` — generic code quality (run after domain review)

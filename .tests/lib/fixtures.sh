@@ -96,6 +96,35 @@ fixture_full_project() {
   echo "$dir"
 }
 
+# Fixture: Python project with Snakemake pipeline
+fixture_python_pipeline() {
+  local dir
+  dir=$(fixture_dir "python-pipeline")
+  echo "statsmodels>=0.14" > "$dir/requirements.txt"
+  cat > "$dir/Snakefile" << 'EOF'
+rule all:
+    input: "results/estimates.csv"
+EOF
+  echo "$dir"
+}
+
+# Fixture: Bayesian project with Stan files
+fixture_bayesian_project() {
+  local dir
+  dir=$(fixture_dir "bayesian")
+  printf 'pymc\narviz\ncmdstanpy\n' > "$dir/requirements.txt"
+  touch "$dir/model.stan"
+  echo "$dir"
+}
+
+# Fixture: R Bayesian project with brms
+fixture_r_bayesian() {
+  local dir
+  dir=$(fixture_dir "r-bayesian")
+  printf 'Package: mypackage\nImports: brms, tidyverse\n' > "$dir/DESCRIPTION"
+  echo "$dir"
+}
+
 # Fixture: project with .local.md config
 fixture_with_local_config() {
   local dir

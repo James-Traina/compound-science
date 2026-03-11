@@ -14,7 +14,7 @@ HAS_PIPELINE=false
 
 # Python econometrics
 for f in "$PROJECT_DIR/requirements.txt" "$PROJECT_DIR/pyproject.toml" "$PROJECT_DIR/setup.py"; do
-  if [ -f "$f" ] && grep -qiE "statsmodels|linearmodels|pyblp|econtools|doubleml|causalml|dowhy" "$f" 2>/dev/null; then
+  if [ -f "$f" ] && grep -qiE "statsmodels|linearmodels|pyblp|econtools|doubleml|causalml|dowhy|pymc|numpyro|cmdstanpy" "$f" 2>/dev/null; then
     ESTIMATION_LANG="python"
     PROJECT_TYPE="empirical"
     break
@@ -23,7 +23,7 @@ done
 
 # R econometrics (check dependency files for econometrics packages)
 for f in "$PROJECT_DIR/DESCRIPTION" "$PROJECT_DIR/renv.lock"; do
-  if [ -f "$f" ] && grep -qiE "fixest|lfe|AER|plm|ivreg|did|rdrobust|Synth|estimatr|sandwich|bacondecomp" "$f" 2>/dev/null; then
+  if [ -f "$f" ] && grep -qiE "fixest|lfe|AER|plm|ivreg|did|rdrobust|Synth|estimatr|sandwich|bacondecomp|brms|rstan|rstanarm" "$f" 2>/dev/null; then
     ESTIMATION_LANG="R"
     PROJECT_TYPE="empirical"
     break
@@ -92,15 +92,15 @@ elif [ -f "$PROJECT_DIR/compound-science.local.md" ]; then
   MSG="$MSG Settings loaded from compound-science.local.md."
 fi
 
-# Suggest available tools based on project type
+# Describe what's active based on project type
 if [ "$PROJECT_TYPE" = "empirical" ] || [ "$PROJECT_TYPE" = "empirical-paper" ]; then
-  MSG="$MSG Available: \`/estimate\`, \`/simulate\`, \`/identify\`, \`/workflows:plan\`."
+  MSG="$MSG Econometric review, identification, and methodology agents are active."
 elif [ "$PROJECT_TYPE" = "paper" ]; then
-  MSG="$MSG Available: \`/identify\`, \`/workflows:brainstorm\`, \`/workflows:plan\`."
+  MSG="$MSG Identification and methodology agents are active."
 fi
 
 if [ "$HAS_PIPELINE" = true ]; then
-  MSG="$MSG Pipeline detected — \`pipeline-validator\` and \`reproducibility-checker\` agents available."
+  MSG="$MSG Pipeline reproducibility checks are active."
 fi
 
 if [ -n "$MSG" ]; then

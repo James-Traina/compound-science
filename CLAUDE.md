@@ -89,14 +89,36 @@ The plugin detects research context automatically through 7 hooks covering 13 do
 
 ## Integration
 
-This plugin works alongside: pr-review-toolkit (generic code review), commit-commands (git), document-skills (docs), context7 (framework docs), pyright-lsp (Python types). It does not duplicate their functionality.
+This plugin uses the built-in `/simplify` command for generic code quality checks. It works alongside optional companions: commit-commands (git), document-skills (docs), context7 (framework docs), pyright-lsp (Python types). No external plugins are required.
 
 ## Development
+
+### Directory Structure
+```
+.claude-plugin/   plugin.json manifest (must stay at repo root)
+agents/
+  review/         10 domain-specific review agents
+  research/       5 literature and data investigation agents
+  workflow/       5 process and coordination agents
+commands/
+  workflows/      5 workflow commands (brainstorm, plan, work, review, compound)
+  *.md            11 domain and utility commands
+skills/           16 skill directories (each has SKILL.md; 8 have references/)
+hooks/            hooks.json + session-start.sh
+docs/solutions/   reusable solutions by category (data, estimation, identification, numerical)
+.tests/           test suite (dev-only, hidden from users)
+.evals/           evaluation harness (dev-only, hidden from users)
+.github/workflows/ CI pipeline (JSON validation + test suite)
+```
 
 ### Testing
 - Run: `bash .tests/run-all.sh` (237 tests across 12 groups)
 - Selective: `bash .tests/run-all.sh 07` runs a single group; `--list` shows all groups
 - Reports are gitignored at `.tests/reports/`
+
+### CI
+- GitHub Actions runs on push/PR to `main` (`.github/workflows/ci.yml`)
+- Validates JSON (plugin.json, hooks.json) then runs full test suite
 
 ### Critical Invariants
 - **Flat repo structure**: `.claude-plugin/plugin.json` must be at repo root — not nested in a subdirectory. `claude plugin install` won't find it otherwise.

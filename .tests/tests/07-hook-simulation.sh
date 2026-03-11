@@ -90,7 +90,7 @@ result=$(run_session_init "$dir" "$SCRIPT")
 ptype=$(echo "$result" | cut -f1)
 output=$(echo "$result" | cut -f5-)
 [ "$ptype" = "empirical-paper" ] && pass "full → type=empirical-paper" || must_fix "full → type=empirical-paper" "got $ptype"
-echo "$output" | grep -q '/estimate' && pass "full → suggests /estimate" || must_fix "full → suggests /estimate" "missing"
+echo "$output" | grep -q 'agents are active' && pass "full → reports agents active" || must_fix "full → reports agents active" "missing"
 
 group "SessionStart — Config & Output"
 
@@ -100,11 +100,11 @@ result=$(run_session_init "$dir" "$SCRIPT")
 output=$(echo "$result" | cut -f5-)
 echo "$output" | grep -q 'Settings loaded' && pass "local config → detected" || must_fix "local config → detected" "output: $output"
 
-# 20: Full project suggests pipeline-validator
+# 20: Full project reports pipeline checks active
 dir=$(fixture_full_project)
 result=$(run_session_init "$dir" "$SCRIPT")
 output=$(echo "$result" | cut -f5-)
-echo "$output" | grep -q 'pipeline-validator' && pass "full → suggests pipeline-validator" || must_fix "full → suggests pipeline-validator" "missing"
+echo "$output" | grep -q 'Pipeline reproducibility' && pass "full → reports pipeline checks active" || must_fix "full → reports pipeline checks active" "missing"
 
 # Cleanup
 cleanup_fixtures
