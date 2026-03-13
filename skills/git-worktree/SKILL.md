@@ -244,7 +244,7 @@ bash ${CLAUDE_PLUGIN_ROOT}/skills/git-worktree/scripts/worktree-manager.sh clean
 3. If DIFFERENT branch than the review target → create a worktree automatically for isolated review
 ```
 
-The `research-coordinator` agent can help decide when parallel worktrees are appropriate versus sequential work on a single branch. Typical triggers: running alternative estimation specifications that each take hours, or isolating a risky numerical experiment (e.g., new optimizer settings) from your working results.
+The `workflow-coordinator` agent can help decide when parallel worktrees are appropriate versus sequential work on a single branch. Typical triggers: running alternative estimation specifications that each take hours, or isolating a risky numerical experiment (e.g., new optimizer settings) from your working results.
 
 ### `/workflows:work`
 

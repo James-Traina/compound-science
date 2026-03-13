@@ -132,6 +132,12 @@ echo "$desc" | grep -qiE 'configure|setup|local.md|review agent' \
   && pass "project-setup: domain keywords" \
   || must_fix "project-setup" "missing setup/configure keywords"
 
+# 16b: publication-output — table, figure, LaTeX, or stargazer
+desc=$(skill_desc "publication-output")
+echo "$desc" | grep -qiE 'table|figure|LaTeX|stargazer|publication' \
+  && pass "publication-output: domain keywords" \
+  || must_fix "publication-output" "missing table/figure/publication keywords"
+
 # ═══════════════════════════════════════════════════════════
 # Section B: Hook → Skill cross-references
 # Verify that skills referenced by UserPromptSubmit actually exist

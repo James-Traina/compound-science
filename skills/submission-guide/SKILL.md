@@ -106,50 +106,7 @@ Quick lookup:
 
 ### Response Letter Structure
 
-The response letter is the single most important document in the revision. A well-structured response dramatically increases the probability of acceptance.
-
-**Template structure:**
-
-```
-Dear [Editor name],
-
-Thank you for the opportunity to revise our manuscript "[Title]"
-(Manuscript #XXXX). We are grateful to you and the referees for
-constructive comments that have substantially improved the paper.
-
-Below we provide a detailed point-by-point response. For convenience:
-- Referee comments are in [italics / block quotes]
-- Our responses are in regular text
-- Page and line numbers refer to the revised manuscript
-- Changes in the manuscript are highlighted in [blue / tracked changes]
-
-[Summary of major changes — 1 paragraph, 3-5 sentences]
-
-RESPONSE TO REFEREE 1
-======================
-
-Major Comments
---------------
-
-1. [Referee comment, quoted verbatim or closely paraphrased]
-
-   [Your response]
-
-   [If applicable: "We have revised Section X (pp. Y-Z) to address
-   this point. Specifically, we now..."]
-
-Minor Comments
---------------
-
-1. [Comment]
-
-   [Response]
-
-RESPONSE TO REFEREE 2
-======================
-
-[Same structure]
-```
+The response letter is the most important document in the revision. Structure: Opening (thank editor and referees) → summary of major changes (3-5 sentences) → point-by-point responses organized by referee, with Major and Minor sections. Quote each referee comment, then respond with specific page/section references to changes in the revised manuscript. Use tracked changes or color highlighting. For the full template and formatting conventions, use the `referee-response` skill.
 
 ### Tone and Framing
 
@@ -178,17 +135,7 @@ RESPONSE TO REFEREE 2
 
 ### Response Matrix
 
-Track every referee comment in a spreadsheet or table:
-
-| Ref | # | Comment Summary | Category | Action | Status | Location |
-|-----|---|----------------|----------|--------|--------|----------|
-| R1 | 1 | Exclusion restriction not credible | Major / Identification | New falsification test | Done | Table A3, p.15 |
-| R1 | 2 | Sample period too short | Major / Data | Extended sample + robustness | Done | Section 3.2, Table 2 |
-| R2 | 1 | Compare to [Smith 2019] | Major / Literature | Added discussion + comparison | Done | Section 2, pp.4-5 |
-| R2 | 2 | Cluster at state level | Major / Inference | Added state-clustered SEs | Done | All tables |
-
-Categories: Identification, Data, Inference, Exposition, Literature, Robustness, Other.
-**Rule: every cell in the Status column must be filled before resubmission.**
+Track every referee comment in a table with columns: Ref | # | Comment Summary | Category | Action | Status | Location. Categories: Identification, Data, Inference, Exposition, Literature, Robustness. **Rule: every Status cell must be filled before resubmission.**
 
 ### Method-Specific Referee Concerns
 
@@ -198,31 +145,14 @@ For per-method concern tables (IV, DiD, Structural Estimation, RDD, Matching), i
 
 ### Track Changes Workflow
 
-```latex
-% In preamble, use latexdiff or manual markup:
-\usepackage{xcolor}
-\newcommand{\new}[1]{\textcolor{blue}{#1}}
-
-% Better: use latexdiff on the command line
-% latexdiff old.tex new.tex > diff.tex
-% pdflatex diff.tex
-% Produces PDF with additions in blue and deletions in red
-```
-
 ```bash
-# Tag each submission
-git tag -a v1-submitted -m "First submission to AER, 2024-01-15"
-git tag -a v1-r1-response -m "R&R response to AER referees, 2024-07-20"
-git tag -a v2-submitted -m "Revised submission to AER, 2024-07-22"
-
-# Generate diff between submissions
-latexdiff-git --git-path v1-submitted v2-submitted -- main.tex
+# Tag each submission and generate diff PDF
+git tag -a v1-submitted -m "First submission to AER"
+git tag -a v2-submitted -m "Revised submission"
+latexdiff old.tex new.tex > diff.tex && pdflatex diff.tex
 ```
 
-**Best practices:**
-- Generate the diff PDF from the previous submission vs the revision — editors expect this.
-- Reference page numbers from the **clean revised manuscript**, not the diff.
-- Keep a copy of the exact submitted version for each round (tag in git).
+Reference page numbers from the clean revised manuscript, not the diff. Editors expect a diff PDF alongside the clean revision.
 
 ### Multi-Round Revision Strategy
 

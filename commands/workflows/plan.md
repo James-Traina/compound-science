@@ -65,11 +65,11 @@ Decompose the research description to understand scope:
 Run these agents **in parallel** to gather local context:
 
 - Task methods-explorer(research_description)
-- Task solutions-archivist(research_description)
+- Search `docs/solutions/` for documented solutions that might apply (convergence fixes, data issues, specification errors)
 
 **What to look for:**
 - **Methods research:** existing estimation patterns, methodology used in this project, relevant packages and implementations
-- **Learnings:** documented solutions in `docs/solutions/` that might apply (convergence fixes, data issues, specification errors)
+- **Learnings:** documented solutions in `docs/solutions/` that might apply (see `compound-catalog` skill for search workflow)
 
 These findings inform the next step.
 
@@ -118,11 +118,7 @@ After all research steps complete, consolidate findings:
 
 ### 3. Specification Flow Analysis
 
-After planning the structure, run SpecFlow Analyzer to validate the research specification:
-
-- Task specification-analyzer(research_description, research_findings)
-
-Review analysis results and incorporate identified gaps or edge cases into the plan.
+After planning the structure, validate the research specification by checking the chain from model → estimator → code. Verify that model assumptions imply estimator requirements, objective function and moments match the methodology, and diagnostic tests exist for each testable identification assumption. If gaps are found, incorporate them as plan items.
 
 ### 4. Auto-Select Implementation Detail Level
 
@@ -401,6 +397,25 @@ Examples:
 - `docs/plans/2026-02-03-fix-blp-inner-loop-convergence-plan.md`
 - `docs/plans/2026-03-10-refactor-estimation-pipeline-extraction-plan.md`
 
+### 6. Parallel Research Enrichment (A LOT plans only)
+
+For **A LOT** detail level plans, enrich the plan by spawning parallel specialist agents against the plan's key decisions:
+
+- **literature-scout**: "Given this plan, identify 3-5 missing citations, recent methods advances (post-2022) that complement the approach, and the 1-2 most important prior applications of this identification strategy."
+- **identification-critic**: "Given this plan, identify the weakest link in the identification argument, any unstated regularity conditions, and whether the estimator correctly targets the stated estimand."
+- **methods-explorer**: "Given this plan, identify the best software implementation (package, version, known bugs), computational considerations, and one alternative estimator that may be more robust."
+
+Launch all agents simultaneously. For each section the agents comment on, add a `### Research Insights` subsection:
+
+```
+### Research Insights
+**Literature** (literature-scout): [2-3 sentences]
+**Identification** (identification-critic): [2-3 sentences]
+**Methods** (methods-explorer): [2-3 sentences]
+```
+
+Flag items requiring immediate attention with a warning marker. Update the saved plan file with the enriched content.
+
 ## Post-Generation
 
 After writing the plan file, display:
@@ -430,6 +445,6 @@ Automatically proceed to `/workflows:work` if invoked from `/lfg` or `/slfg`.
 
 - `/workflows:work` — implement the plan
 - `/workflows:brainstorm` — explore alternatives before committing
-- `specification-analyzer` agent — for detailed spec-to-code flow analysis
+- `econometric-reviewer` agent — for specification flow analysis (model → estimator → code)
 
 NEVER CODE! Just research and write the plan.

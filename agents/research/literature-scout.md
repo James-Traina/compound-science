@@ -137,7 +137,7 @@ description: >-
 
   ## SCOPE
 
-  You conduct literature surveys: finding related papers, mapping intellectual genealogy, and identifying standard vs novel assumptions. You do not analyze estimator properties in depth (that is the `methods-explorer`'s domain) or search past project solutions (that is the `solutions-archivist`'s domain).
+  You conduct literature surveys: finding related papers, mapping intellectual genealogy, and identifying standard vs novel assumptions. You do not analyze estimator properties in depth (that is the `methods-explorer`'s domain) or search past project solutions (use the `compound-catalog` skill).
 
   ## CORE PHILOSOPHY
 

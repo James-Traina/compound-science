@@ -100,7 +100,7 @@ for m in d['hooks']['PostToolUse']:
 " 2>/dev/null || echo "")
 
 ptu_missing=""
-for term in "Python" "R estimation" "Stata" "Julia" "simulation-designer" "mathematical-prover" "bib" "Makefile" "results-verifier" "specification-analyzer"; do
+for term in "Python" "R estimation" "Stata" "Julia" "simulation-designer" "mathematical-prover" "bib" "Makefile" "results-verifier" "econometric-reviewer"; do
   if ! echo "$ptu_text" | grep -qi "$term"; then
     ptu_missing="$ptu_missing $term"
   fi
@@ -123,31 +123,32 @@ for m in d['hooks']['Stop']:
 " 2>/dev/null); then
   must_fix "Stop prompt extraction" "python3 failed — check HOOKS_FILE"
 else
-  # 17: Stop checks critical completeness conditions (SE, seeds, sensitivity, commands)
+  # 17: Stop checks cross-cutting completeness conditions (v0.5: SEs and seeds moved to agent-scoped hooks)
+  # Stop now covers: merge validation, results saved, sensitivity, replication, diagnostics, DiD, IV
   stop_missing=""
-  for term in "standard error" "seed" "sensitiv" "/diagnose"; do
+  for term in "merge" "sensitiv" "replication" "diagnostic"; do
     if ! echo "$stop_text" | grep -qi "$term"; then
       stop_missing="$stop_missing $term"
     fi
   done
   if [ -z "$stop_missing" ]; then
-    pass "Stop checks critical conditions (SE, seeds, sensitivity, commands)"
+    pass "Stop checks cross-cutting conditions (merge, sensitivity, replication, diagnostics)"
   else
-    must_fix "Stop checks critical conditions" "missing:$stop_missing"
+    must_fix "Stop checks cross-cutting conditions" "missing:$stop_missing"
   fi
 
-  # 17a: Stop prompt contains BLOCKING RULES section (items 1-4 only)
+  # 17a: Stop prompt contains BLOCKING RULES section
   if echo "$stop_text" | grep -q "BLOCKING RULES"; then
     pass "Stop prompt has BLOCKING RULES section"
   else
     must_fix "Stop prompt has BLOCKING RULES section" "missing — blocking contract undocumented"
   fi
 
-  # 17b: Stop prompt explicitly marks items 5-8 as suggestion-only (cannot block)
-  if echo "$stop_text" | grep -qE "Items 5-8|items 5-8|suggestion.only|MUST NOT block"; then
-    pass "Stop prompt marks items 5-8 as suggestion-only"
+  # 17b: Stop prompt explicitly marks non-blocking items as suggestion-only (cannot block)
+  if echo "$stop_text" | grep -qE "Items [2-9]|items [2-9]|suggestion.only|MUST NOT block"; then
+    pass "Stop prompt marks non-blocking items as suggestion-only"
   else
-    must_fix "Stop prompt marks items 5-8 as suggestion-only" "missing — at-most-once blocking contract not enforced"
+    must_fix "Stop prompt marks non-blocking items as suggestion-only" "missing — at-most-once blocking contract not enforced"
   fi
 
   # 17c: Stop prompt specifies JSON response schema (decision/reason/systemMessage)

@@ -320,4 +320,4 @@ dvc fetch --run-cache          # Prefetch cached stage outputs
 | Results tables copy-pasted into paper | Tables get stale when estimates change | Generate LaTeX tables directly from estimation code |
 | Pipeline only tested by the author | Missing implicit dependencies | Have a co-author or RA run from scratch; or use CI |
 
-The `pipeline-validator` agent can audit pipelines for these anti-patterns automatically, and the `reproducibility-checker` agent can verify replication packages before submission.
+The `reproducibility-auditor` agent can audit pipelines for these anti-patterns and verify replication packages before submission.

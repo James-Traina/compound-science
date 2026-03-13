@@ -175,6 +175,6 @@ Automatically proceed to `/workflows:plan` if invoked from `/lfg` or `/slfg`.
 
 - `/workflows:plan` — proceed with the chosen approach
 - `literature-scout` agent — for deeper literature search on a specific method
-- `benchmark-researcher` agent — for calibration targets and empirical moments
+- `methods-explorer` agent — for deep dives into estimator properties and software implementations
 
 NEVER CODE! Just explore and document methodological decisions.

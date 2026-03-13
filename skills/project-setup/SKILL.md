@@ -89,7 +89,7 @@ review_agents:
   - econometric-reviewer
   - numerical-auditor
   - identification-critic
-  - pipeline-validator
+  - reproducibility-auditor
 plan_review_agents:
   - econometric-reviewer
   - identification-critic
@@ -149,7 +149,7 @@ review_agents:
   - econometric-reviewer
   - numerical-auditor
   - identification-critic
-  - pipeline-validator
+  - reproducibility-auditor
 
 # Agents for /workflows:plan review phase
 plan_review_agents:
@@ -172,7 +172,7 @@ data_sensitivity: public
 
 # Agents to exclude from default review set
 # exclude_review_agents:
-#   - pipeline-validator
+#   - reproducibility-auditor
 ---
 
 # Research Context
@@ -200,7 +200,7 @@ Review agents:    4 configured
                   econometric-reviewer
                   numerical-auditor
                   identification-critic
-                  pipeline-validator
+                  reproducibility-auditor
 Plan agents:      2 configured
                   econometric-reviewer
                   identification-critic
@@ -244,13 +244,12 @@ All agents that can be configured in `review_agents` or `plan_review_agents`:
 | `literature-scout` | Finds related methods, papers, prior applications | Literature review |
 | `methods-explorer` | Deep-dives into specific methods, compares alternatives | Method selection |
 | `data-detective` | Profiles data, checks quality, validates merges | Data preparation |
-| `solutions-archivist` | Searches past solutions in `docs/solutions/` | Recurring problems |
+| (use `compound-catalog` skill) | Searches past solutions in `docs/solutions/` | Recurring problems |
 
 **Workflow agents:**
 | Agent | Role | Best for |
 |---|---|---|
-| `pipeline-validator` | Validates reproducible pipelines (seeds, paths, deps) | Pipeline code |
-| `reproducibility-checker` | Pre-submission reproducibility verification | Replication packages |
+| `reproducibility-auditor` | Validates pipelines and pre-submission reproducibility verification | Pipeline code, replication packages |
 
 ### Project Type Behavior
 
@@ -304,7 +303,7 @@ review_override:
   - numerical-auditor
   - identification-critic
   - journal-referee
-  - pipeline-validator
+  - reproducibility-auditor
 
 # Override for /estimate only
 estimate_override:
@@ -326,7 +325,7 @@ review_agents:
 conditional_agents:
   journal-referee:
     when: "*.tex files exist or docs/paper/ directory exists"
-  pipeline-validator:
+  reproducibility-auditor:
     when: "Makefile or Snakefile or dvc.yaml exists"
   mathematical-prover:
     when: "proof or derivation files detected"

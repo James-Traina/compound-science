@@ -7,32 +7,31 @@ AI-powered research tools for quantitative social science: structural econometri
 **Plan → Work → Review → Compound → Repeat**
 
 1. `/workflows:brainstorm` — Explore research approaches with methods-explorer and literature-scout agents
-2. `/workflows:plan` — Create detailed implementation plans (auto-selects MINIMAL / MORE / A LOT detail)
+2. `/workflows:plan` — Create detailed implementation plans (auto-selects MINIMAL / MORE / A LOT detail; includes parallel agent enrichment for complex plans)
 3. `/workflows:work` — Execute the plan with quality gates and convergence monitoring
 4. `/workflows:review` — Multi-agent parallel review (econometric-reviewer, numerical-auditor, identification-critic, journal-referee)
 5. `/workflows:compound` — Extract reusable solutions into docs/solutions/ by category
 
-Use `/lfg` to chain all four steps automatically, or `/slfg` for parallel swarm execution.
+Use `/lfg` to chain all five steps automatically, or `/slfg` for parallel swarm execution.
 
-## Domain Commands
+## Commands
 
-- `/estimate` — Run a structural estimation pipeline: data validation → identification → estimation → standard errors → robustness → results
-- `/simulate` — Design and run Monte Carlo studies: DGP → parameters → simulation → bias/RMSE/coverage → tables
-- `/identify` — Formalize an identification argument: target parameter → model → derivation → regularity conditions → estimation link
+### Canonical (7)
+- `/workflows:brainstorm`, `/workflows:plan`, `/workflows:work`, `/workflows:review`, `/workflows:compound` — the core research workflow
+- `/estimate` — Thin wrapper: routes to `/workflows:work` with estimation pipeline context from `empirical-playbook`
+- `/replicate` — Thin wrapper: routes to `reproducibility-auditor` agent
 
-## Utility Commands
+### Chain (2)
+- `/lfg` — Sequential: plan → work → review → compound
+- `/slfg` — Parallel swarm variant of `/lfg`
 
-- `/diagnose` — Run diagnostic battery on estimation results: specification tests, instrument checks, residual analysis, model fit
-- `/tabulate` — Generate publication-ready tables: regression results, summary statistics, Monte Carlo output
-- `/replicate` — Build and verify AEA-compliant replication packages with dependency audit and pipeline verification
-- `/visualize` — Generate publication-quality research visualization code: event studies, RD plots, coefficient plots, power curves
-- `/stress-test` — Run sensitivity analysis on causal estimates: Oster bounds, specification curve, breakdown frontier
-- `/deepen-plan` — Enrich a research plan with parallel literature, identification, benchmark, and methods research
+### Deprecated stubs (7)
+`/simulate`, `/identify`, `/diagnose`, `/tabulate`, `/visualize`, `/stress-test`, `/deepen-plan` — each redirects to the agent or skill that now handles its function.
 
 ## Agents
 
-### Review (10) — domain-specific code review and methodology verification
-- `econometric-reviewer` — Reviews identification strategy, endogeneity, standard errors, asymptotic properties
+### Review (9) — domain-specific code review and methodology verification
+- `econometric-reviewer` — Reviews identification, inference, standard errors, calibration strategy, specification flow (model → estimator → code)
 - `mathematical-prover` — Verifies proof steps, completeness, regularity conditions, fixed-point arguments
 - `numerical-auditor` — Checks floating-point stability, convergence, RNG seeding, matrix conditioning
 - `identification-critic` — Evaluates identification argument completeness, exclusion restrictions, support conditions
@@ -40,24 +39,18 @@ Use `/lfg` to chain all four steps automatically, or `/slfg` for parallel swarm 
 - `simulation-designer` — Design simulation studies: DGPs, sample sizes, replications, metrics
 - `process-architect` — Formalize data generating processes from structural models
 - `equilibrium-analyst` — Verify equilibrium existence, uniqueness, stability, comparative statics
-- `calibration-assessor` — Reviews calibration/moment-matching strategy, parameter identification, sensitivity to targets
 - `results-verifier` — Audits reported results against code output: tables, figures, text consistency
 
-### Research (5) — literature and data investigation
+### Research (3) — literature and data investigation
 - `literature-scout` — Systematic search for related methods, seminal papers, prior applications
-- `methods-explorer` — Deep dive into estimator properties, computational considerations, software implementations
+- `methods-explorer` — Estimator properties, computational tradeoffs, software implementations, benchmark parameters and calibration targets
 - `data-detective` — Data quality investigation: distributions, missingness, duplicates, panel structure
-- `solutions-archivist` — Search docs/solutions/ for past methodological solutions
-- `benchmark-researcher` — Researches calibration targets, stylized facts, reference parameter values from the literature
 
-### Workflow (5) — process, reproducibility, and coordination
-- `pipeline-validator` — Validate reproducible pipelines: no manual steps, seeds set, versions pinned
-- `reproducibility-checker` — Pre-submission replication package verification
-- `specification-analyzer` — Analyze specification flow from model → estimator → code
-- `research-coordinator` — Coordinate multi-agent research workflows, manage handoffs between phases
-- `progress-tracker` — Track research progress, maintain running checklist of completed/pending steps
+### Workflow (2) — process, reproducibility, and coordination
+- `reproducibility-auditor` — Structural and functional checks for reproducible pipelines and replication packages
+- `workflow-coordinator` — Multi-agent workflow coordination, dispatch, triage, and progress tracking
 
-## Skills
+## Skills (17)
 
 - `structural-modeling` — NFXP, MPEC, BLP, dynamic discrete choice, auction models
 - `causal-inference` — IV/2SLS/GMM, DiD, RDD, synthetic control, matching
@@ -66,30 +59,51 @@ Use `/lfg` to chain all four steps automatically, or `/slfg` for parallel swarm 
 - `identification-proofs` — Formal identification arguments: target parameter → model → rank conditions → regularity conditions
 - `bayesian-estimation` — MCMC, Stan/PyMC/Numpyro, prior elicitation, MCMC diagnostics, Bayesian structural models
 - `reproducible-pipelines` — Makefile/Snakemake/DVC, Stata pipelines, environment management, replication standards
-- `strategy-brainstorm` — Structured research brainstorming techniques
-- `compound-catalog` — Solution documentation by category (estimation, data, numerical, methodology)
-- `git-worktree` — Parallel branches for concurrent estimation runs
-- `swarm-orchestration` — Multi-agent parallel orchestration patterns
-- `project-setup` — Configure compound-science.local.md for project-specific settings
+- `empirical-playbook` — Method selection, diagnostics by method, power analysis, estimation pipeline, sensitivity analysis
+- `publication-output` — Publication-quality tables and figures: stargazer-style tables, event study plots, RD plots, specification curves
 - `submission-guide` — Pre-submission checklists, journal-specific formatting for 20+ journals, referee response strategy
-- `empirical-playbook` — Method selection decision tree, diagnostics by method, power analysis, reporting standards
+- `compound-catalog` — Solution documentation and search by category (estimation, data, numerical, methodology)
 - `data-acquisition` — FRED and World Bank API access: time series, vintage data, cross-national panels
 - `referee-response` — Draft structured author responses to peer review
+- `strategy-brainstorm` — Structured research brainstorming techniques
+- `swarm-orchestration` — Multi-agent parallel orchestration patterns
+- `project-setup` — Configure compound-science.local.md for project-specific settings
+- `git-worktree` — Parallel branches for concurrent estimation runs
+
+## Domain Signal → Agent Routing
+
+When compaction drops context, use this table to route research questions:
+
+| Signal | Primary Agent | Skill |
+|--------|--------------|-------|
+| Identification, instruments, exclusion, endogeneity | `identification-critic` | `causal-inference` |
+| Estimation, SEs, convergence, calibration | `econometric-reviewer` | `empirical-playbook` |
+| Proof, theorem, regularity conditions | `mathematical-prover` | `identification-proofs` |
+| Floating-point, Hessian, conditioning, MCMC diagnostics | `numerical-auditor` | `bayesian-estimation` |
+| Simulation, DGP, Monte Carlo, power | `simulation-designer` | `empirical-playbook` |
+| Equilibrium, Nash, entry, auction | `equilibrium-analyst` | `game-theory` |
+| Data quality, merge, panel, missing | `data-detective` | — |
+| Literature, citations, related work | `literature-scout` | — |
+| Estimator choice, packages, benchmarks | `methods-explorer` | `structural-modeling` |
+| Pipeline, seeds, versions, replication | `reproducibility-auditor` | `reproducible-pipelines` |
+| Tables, figures, LaTeX output | `results-verifier` | `publication-output` |
+| Journal, referee, submission, R&R | `journal-referee` | `submission-guide` |
+| Workflow coordination, next steps | `workflow-coordinator` | `swarm-orchestration` |
 
 ## Ambient Hooks
 
-The plugin detects research context automatically through 7 hooks covering 13 domain categories:
+7 hooks covering 14 domain categories:
 - **SessionStart** — Detects project type (empirical/paper), estimation language, data/pipeline presence
-- **UserPromptSubmit** — Injects domain context across 13 categories. Trigger words include: `estimate`, `identify`, `GMM`, `Monte Carlo`, `prove`, `equilibrium`, `Makefile`, `merge`, `diagnostic`, `tabulate`, `replication`, `Oster bounds`, `convergence`
-- **PostToolUse** — Fires on Write/Edit. Triggers include: Python with `statsmodels`/`pyblp`/`scipy.optimize`, R with `fixest`/`did`, Stata `.do` files, `.tex` with `\begin{table}` or `\begin{theorem}`, `Makefile`/`Snakefile`, Bayesian code with `pymc`/`stan`/`numpyro`/`brms`
-- **Stop** — Checks 8 completeness conditions. Blocks (at most once) for: missing standard errors after estimation, unseeded simulations, unstated regularity conditions, unvalidated merges. Suggests (non-blocking): `/tabulate`, `/stress-test`, `/replicate`, `/workflows:compound`
-- **PreCompact** — Preserves 10 categories of research state before context compaction (including software environment versions and failed approaches)
-- **PreToolUse** — Guards bash commands. Warns on: `python estimate.py` without `--seed`, absolute paths like `/Users/.../data.csv`, `pip install pandas` without `==version`, `dvc repro`/`snakemake` without seed configuration
-- **SubagentStop** — Suggests next steps using severity routing: critical findings (convergence, identification) get immediate actions, presentation findings get suggestions. Multi-critical prioritization: identification failure → numerical instability → wrong SEs → robustness. Uses pattern: `[agent]: [finding] → [action]`
+- **UserPromptSubmit** — Injects domain context across 14 categories (Haiku classifier)
+- **PostToolUse** — Fires on Write/Edit for research artifacts: estimation code, proofs, pipelines, Bayesian code (Haiku classifier)
+- **Stop** — Cross-cutting completeness checks: unvalidated merges (blocking), sensitivity analysis, replication package, DiD pre-trends, IV first-stage (suggestions). Domain-specific checks (SEs, seeds, regularity conditions) are scoped to agent frontmatter (Sonnet)
+- **PreCompact** — Preserves 10 categories of research state before context compaction
+- **PreToolUse** — Guards bash commands: unseeded estimation scripts, absolute paths, unversioned pip install
+- **SubagentStop** — Severity-routed next steps: identification failure → numerical instability → wrong SEs → robustness
 
 ## Integration
 
-This plugin uses the built-in `/simplify` command for generic code quality checks. It works alongside optional companions: commit-commands (git), document-skills (docs), context7 (framework docs), pyright-lsp (Python types). No external plugins are required.
+Works alongside optional companions: commit-commands (git), document-skills (docs), context7 (framework docs), pyright-lsp (Python types). No external plugins are required.
 
 ## Development
 
@@ -97,13 +111,13 @@ This plugin uses the built-in `/simplify` command for generic code quality check
 ```
 .claude-plugin/   plugin.json manifest (must stay at repo root)
 agents/
-  review/         10 domain-specific review agents
-  research/       5 literature and data investigation agents
-  workflow/       5 process and coordination agents
+  review/         9 domain-specific review agents
+  research/       3 literature and data investigation agents
+  workflow/       2 process and coordination agents
 commands/
   workflows/      5 workflow commands (brainstorm, plan, work, review, compound)
-  *.md            11 domain and utility commands
-skills/           16 skill directories (each has SKILL.md; 8 have references/)
+  *.md            11 commands (2 wrappers + 2 chain + 7 deprecated stubs)
+skills/           17 skill directories (each has SKILL.md; 9 have references/)
 hooks/            hooks.json + session-start.sh
 docs/solutions/   reusable solutions by category (data, estimation, identification, numerical)
 .tests/           test suite (dev-only, hidden from users)
@@ -112,7 +126,7 @@ docs/solutions/   reusable solutions by category (data, estimation, identificati
 ```
 
 ### Testing
-- Run: `bash .tests/run-all.sh` (237 tests across 12 groups)
+- Run: `bash .tests/run-all.sh`
 - Selective: `bash .tests/run-all.sh 07` runs a single group; `--list` shows all groups
 - Reports are gitignored at `.tests/reports/`
 
@@ -121,12 +135,11 @@ docs/solutions/   reusable solutions by category (data, estimation, identificati
 - Validates JSON (plugin.json, hooks.json) then runs full test suite
 
 ### Critical Invariants
-- **Flat repo structure**: `.claude-plugin/plugin.json` must be at repo root — not nested in a subdirectory. `claude plugin install` won't find it otherwise.
-- **Version bumping required for updates**: Claude Code caches plugins; users only get updates if `version` in `plugin.json` is incremented. Current version is tracked in `.claude-plugin/plugin.json`.
+- **Flat repo structure**: `.claude-plugin/plugin.json` must be at repo root — not nested in a subdirectory.
+- **Version bumping required for updates**: Claude Code caches plugins; users only get updates if `version` in `plugin.json` is incremented.
 - **Hook wrapper format**: `hooks.json` requires the `{"description":"...","hooks":{...}}` envelope. Missing the outer wrapper silently disables all hooks.
-- **Dev-only dirs are hidden**: `.tests/` and `.evals/` start with `.` so they don't appear in the default file tree for users who install the plugin. Reports go to `.tests/reports/` (gitignored).
-- **grep -P unavailable on macOS**: Use `python3 -c "import re; ..."` for Perl-compatible regex. All QA scripts avoid `grep -P`.
-- **QA self-scanning exclusions**: When the plugin root is the repo root, content greps must use `--exclude-dir=.tests,.evals,.ralph,.serena,.git,.claude` to avoid false positives from test fixtures.
+- **Dev-only dirs are hidden**: `.tests/` and `.evals/` start with `.` so they don't appear in the default file tree for users who install the plugin.
+- **grep -P unavailable on macOS**: Use `python3 -c "import re; ..."` for Perl-compatible regex.
 - **Chain command frontmatter**: `/lfg` and `/slfg` use `disable-model-invocation: true` so they delegate to sub-commands without an extra model call.
 
 ## Domain Keywords

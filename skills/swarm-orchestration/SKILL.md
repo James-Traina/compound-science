@@ -71,11 +71,11 @@ Task({
 
 **Built-in:** `Bash`, `Explore` (read-only, fast), `Plan` (read-only), `general-purpose` (all tools)
 
-**compound-science review agents:** `econometric-reviewer`, `mathematical-prover`, `numerical-auditor`, `identification-critic`, `journal-referee`, `simulation-designer`, `process-architect`, `equilibrium-analyst`, `calibration-assessor`, `results-verifier`
+**compound-science review agents:** `econometric-reviewer`, `mathematical-prover`, `numerical-auditor`, `identification-critic`, `journal-referee`, `simulation-designer`, `process-architect`, `equilibrium-analyst`, `results-verifier`
 
-**compound-science research agents:** `literature-scout`, `methods-explorer`, `data-detective`, `solutions-archivist`, `benchmark-researcher`
+**compound-science research agents:** `literature-scout`, `methods-explorer`, `data-detective`
 
-**compound-science workflow agents:** `pipeline-validator`, `reproducibility-checker`, `specification-analyzer`, `research-coordinator`, `progress-tracker`
+**compound-science workflow agents:** `reproducibility-auditor`, `workflow-coordinator`
 
 Plugin agents use prefix format: `compound-science:review:econometric-reviewer`, `compound-science:research:literature-scout`, etc.
 

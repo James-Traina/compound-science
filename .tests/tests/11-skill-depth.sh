@@ -7,7 +7,7 @@ SKILLS_DIR="$PLUGIN_DIR/skills"
 
 group "Content Depth"
 
-# 1: All 14 skills have >=100 lines
+# 1: All 17 skills have >=100 lines
 all_long=true
 for skill in "${SKILLS[@]}"; do
   f="$SKILLS_DIR/$skill/SKILL.md"
@@ -17,9 +17,9 @@ for skill in "${SKILLS[@]}"; do
     must_fix "skill $skill >= 100 lines" "got ${lines:-0} lines"
   fi
 done
-if $all_long; then pass "all 16 skills have >= 100 lines"; fi
+if $all_long; then pass "all 17 skills have >= 100 lines"; fi
 
-# 2: All 14 skills have >=3 ## section headers
+# 2: All 17 skills have >=3 ## section headers
 all_headers=true
 for skill in "${SKILLS[@]}"; do
   headers=$(grep -c '^## ' "$SKILLS_DIR/$skill/SKILL.md" 2>/dev/null) || headers=0
@@ -28,9 +28,9 @@ for skill in "${SKILLS[@]}"; do
     must_fix "skill $skill >= 3 sections" "got $headers sections"
   fi
 done
-if $all_headers; then pass "all 16 skills have >= 3 section headers"; fi
+if $all_headers; then pass "all 17 skills have >= 3 section headers"; fi
 
-# 3: All 14 skills have code examples
+# 3: All 17 skills have code examples
 all_code=true
 for skill in "${SKILLS[@]}"; do
   codeblocks=$(grep -c '```' "$SKILLS_DIR/$skill/SKILL.md" 2>/dev/null) || codeblocks=0
@@ -39,9 +39,9 @@ for skill in "${SKILLS[@]}"; do
     must_fix "skill $skill has code examples" "got $codeblocks backtick-fence markers"
   fi
 done
-if $all_code; then pass "all 16 skills have code examples"; fi
+if $all_code; then pass "all 17 skills have code examples"; fi
 
-# 4: All 14 skills have >=500 words
+# 4: All 17 skills have >=500 words
 all_words=true
 for skill in "${SKILLS[@]}"; do
   f="$SKILLS_DIR/$skill/SKILL.md"
@@ -51,7 +51,7 @@ for skill in "${SKILLS[@]}"; do
     must_fix "skill $skill >= 500 words" "got ${words:-0} words"
   fi
 done
-if $all_words; then pass "all 16 skills have >= 500 words"; fi
+if $all_words; then pass "all 17 skills have >= 500 words"; fi
 
 group "Trigger Quality"
 
@@ -136,6 +136,7 @@ get_skill_terms() {
     swarm-orchestration)    echo "parallel|teammate" ;;
     data-acquisition)       echo "FRED|World Bank|fredapi" ;;
     referee-response)       echo "referee|R&R|revision" ;;
+    publication-output)     echo "table|figure|LaTeX|stargazer" ;;
   esac
 }
 
@@ -151,7 +152,7 @@ done
 group "Integration"
 
 # 21: All skills reference at least one agent name
-AGENT_PATTERN="econometric-reviewer|mathematical-prover|numerical-auditor|identification-critic|journal-referee|simulation-designer|process-architect|equilibrium-analyst|calibration-assessor|results-verifier|literature-scout|methods-explorer|data-detective|solutions-archivist|benchmark-researcher|pipeline-validator|reproducibility-checker|specification-analyzer|research-coordinator|progress-tracker"
+AGENT_PATTERN="econometric-reviewer|mathematical-prover|numerical-auditor|identification-critic|journal-referee|simulation-designer|process-architect|equilibrium-analyst|results-verifier|literature-scout|methods-explorer|data-detective|reproducibility-auditor|workflow-coordinator"
 
 ref_count=0
 for skill in "${SKILLS[@]}"; do
@@ -159,12 +160,12 @@ for skill in "${SKILLS[@]}"; do
     ref_count=$((ref_count + 1))
   fi
 done
-if [ "$ref_count" -eq 16 ]; then
-  pass "all skills reference at least one agent ($ref_count/16)"
-elif [ "$ref_count" -ge 12 ]; then
-  should_fix "all skills reference an agent" "$ref_count/16 skills reference agents"
+if [ "$ref_count" -eq 17 ]; then
+  pass "all skills reference at least one agent ($ref_count/17)"
+elif [ "$ref_count" -ge 13 ]; then
+  should_fix "all skills reference an agent" "$ref_count/17 skills reference agents"
 else
-  must_fix "all skills reference an agent" "only $ref_count/16 skills reference agents"
+  must_fix "all skills reference an agent" "only $ref_count/17 skills reference agents"
 fi
 
 # 22: No skill exceeds 2000 lines (bloat guard)

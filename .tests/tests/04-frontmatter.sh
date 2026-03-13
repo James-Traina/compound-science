@@ -72,16 +72,20 @@ for file in "$PLUGIN_DIR"/commands/*.md "$PLUGIN_DIR"/commands/workflows/*.md; d
 done
 if $all_desc; then pass "all commands have description"; fi
 
-# 7: Domain and utility commands have argument-hint
+# 7: Full commands have argument-hint (stubs and wrappers excluded)
+# v0.5: 7 deprecated stubs + 2 thin wrappers are excluded from this check
+STUB_COMMANDS="simulate identify diagnose tabulate visualize stress-test deepen-plan"
+WRAPPER_COMMANDS="estimate replicate"
 all_hints=true
 for cmd in estimate simulate identify diagnose tabulate replicate visualize stress-test; do
+  case "$STUB_COMMANDS $WRAPPER_COMMANDS" in *"$cmd"*) continue ;; esac
   file="$PLUGIN_DIR/commands/$cmd.md"
   if [ -f "$file" ] && ! grep -q '^argument-hint:' "$file"; then
     all_hints=false
     must_fix "command $cmd has argument-hint" "domain/utility commands need argument-hint"
   fi
 done
-if $all_hints; then pass "all domain/utility commands have argument-hint"; fi
+if $all_hints; then pass "all full commands have argument-hint (stubs/wrappers excluded)"; fi
 
 group "Frontmatter — Chain Commands"
 
@@ -160,20 +164,24 @@ if $all_prefix; then pass "all workflow commands have workflows: prefix"; fi
 
 group "Frontmatter — Content Depth"
 
-# 15: Domain/utility commands have Pipeline mode statement
+# 15: Full commands have Pipeline mode statement (stubs/wrappers excluded)
+STUB_COMMANDS="simulate identify diagnose tabulate visualize stress-test deepen-plan"
+WRAPPER_COMMANDS="estimate replicate"
 all_pipeline=true
 for cmd in estimate simulate identify diagnose tabulate replicate visualize stress-test; do
+  case "$STUB_COMMANDS $WRAPPER_COMMANDS" in *"$cmd"*) continue ;; esac
   file="$PLUGIN_DIR/commands/$cmd.md"
   if [ -f "$file" ] && ! grep -q 'Pipeline mode' "$file"; then
     all_pipeline=false
     must_fix "command $cmd has Pipeline mode statement" "missing pipeline mode"
   fi
 done
-if $all_pipeline; then pass "all domain/utility commands have Pipeline mode"; fi
+if $all_pipeline; then pass "all full commands have Pipeline mode (stubs/wrappers excluded)"; fi
 
-# 16: Domain/utility commands have phases (Phase/### Phase)
+# 16: Full commands have phases (stubs/wrappers excluded)
 all_phases=true
 for cmd in estimate simulate identify diagnose tabulate replicate visualize stress-test; do
+  case "$STUB_COMMANDS $WRAPPER_COMMANDS" in *"$cmd"*) continue ;; esac
   file="$PLUGIN_DIR/commands/$cmd.md"
   phase_count=$(grep -c '### Phase\|## Phase\|Phase [0-9]' "$file" 2>/dev/null) || phase_count=0
   if [ "$phase_count" -lt 3 ]; then
@@ -181,7 +189,7 @@ for cmd in estimate simulate identify diagnose tabulate replicate visualize stre
     must_fix "command $cmd has >=3 phases" "found $phase_count"
   fi
 done
-if $all_phases; then pass "all domain/utility commands have >=3 phases"; fi
+if $all_phases; then pass "all full commands have >=3 phases (stubs/wrappers excluded)"; fi
 
 # 17: All agents have examples section
 all_examples=true

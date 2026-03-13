@@ -18,16 +18,44 @@ assert_count "total commands = 16" 16 "$total_count"
 
 group "New Utility Commands Exist"
 
-# 4-8: Each new command exists and has content
+# 4-8: Each command exists (stubs/wrappers are allowed to be short; only full commands need depth)
+# v0.5: 7 deprecated stubs + 2 thin wrappers are excluded from depth checks
+STUB_COMMANDS="simulate identify diagnose tabulate visualize stress-test deepen-plan"
+WRAPPER_COMMANDS="estimate replicate"
 for cmd in diagnose tabulate replicate visualize stress-test; do
   file="$PLUGIN_DIR/commands/$cmd.md"
   if [ -f "$file" ]; then
     lines=$(wc -l < "$file" | tr -d ' ')
-    if [ "$lines" -ge 100 ]; then
-      pass "command $cmd exists ($lines lines)"
-    else
-      must_fix "command $cmd has depth" "only $lines lines"
-    fi
+    case "$STUB_COMMANDS" in
+      *"$cmd"*)
+        # Stub: just verify it exists and is short
+        if [ "$lines" -le 20 ]; then
+          pass "command $cmd exists as deprecated stub ($lines lines)"
+        else
+          should_fix "command $cmd is a stub" "$lines lines — expected <=20 for a stub"
+        fi
+        ;;
+      *)
+        case "$WRAPPER_COMMANDS" in
+          *"$cmd"*)
+            # Wrapper: verify it exists and is thin
+            if [ "$lines" -le 30 ]; then
+              pass "command $cmd exists as thin wrapper ($lines lines)"
+            else
+              should_fix "command $cmd is a wrapper" "$lines lines — expected <=30 for a wrapper"
+            fi
+            ;;
+          *)
+            # Full command: check for depth
+            if [ "$lines" -ge 100 ]; then
+              pass "command $cmd exists ($lines lines)"
+            else
+              must_fix "command $cmd has depth" "only $lines lines"
+            fi
+            ;;
+        esac
+        ;;
+    esac
   else
     must_fix "command $cmd exists" "file not found"
   fi
@@ -35,20 +63,23 @@ done
 
 group "Command Structure"
 
-# 9: All domain/utility commands have Input Document section
+# 9: Full commands have Input Document section (stubs/wrappers excluded)
+WRAPPER_COMMANDS="estimate replicate"
 all_input=true
 for cmd in estimate simulate identify diagnose tabulate replicate visualize stress-test; do
+  case "$STUB_COMMANDS $WRAPPER_COMMANDS" in *"$cmd"*) continue ;; esac
   file="$PLUGIN_DIR/commands/$cmd.md"
   if [ -f "$file" ] && ! grep -qi 'Input Document\|input\|If no input' "$file"; then
     all_input=false
     must_fix "command $cmd has input handling" "missing input section"
   fi
 done
-if $all_input; then pass "all domain/utility commands handle input"; fi
+if $all_input; then pass "all full commands handle input (stubs/wrappers excluded)"; fi
 
-# 10: All domain/utility commands have multiple phases
+# 10: Full commands have multiple phases (stubs/wrappers excluded)
 all_phases=true
 for cmd in estimate simulate identify diagnose tabulate replicate visualize stress-test; do
+  case "$STUB_COMMANDS $WRAPPER_COMMANDS" in *"$cmd"*) continue ;; esac
   file="$PLUGIN_DIR/commands/$cmd.md"
   phase_count=$(grep -cE '### Phase|## Phase' "$file" 2>/dev/null) || phase_count=0
   if [ "$phase_count" -lt 3 ]; then
@@ -56,7 +87,7 @@ for cmd in estimate simulate identify diagnose tabulate replicate visualize stre
     must_fix "command $cmd has >=3 phases" "found $phase_count"
   fi
 done
-if $all_phases; then pass "all domain/utility commands have >=3 phases"; fi
+if $all_phases; then pass "all full commands have >=3 phases (stubs/wrappers excluded)"; fi
 
 # 11: Chain commands are minimal (delegate only)
 for chain in lfg slfg; do
@@ -71,46 +102,46 @@ done
 
 group "Command Agent References"
 
-# 13: /estimate references econometric-reviewer
-if grep -q 'econometric-reviewer' "$PLUGIN_DIR/commands/estimate.md" 2>/dev/null; then
-  pass "/estimate references econometric-reviewer"
+# 13: /estimate wrapper references a skill or /workflows:work
+if grep -qE 'empirical-playbook|/workflows:work' "$PLUGIN_DIR/commands/estimate.md" 2>/dev/null; then
+  pass "/estimate wrapper references empirical-playbook or /workflows:work"
 else
-  must_fix "/estimate references econometric-reviewer" "missing"
+  must_fix "/estimate wrapper references skill/workflow" "missing"
 fi
 
-# 14: /simulate references simulation-designer
+# 14: /simulate stub references simulation-designer
 if grep -q 'simulation-designer' "$PLUGIN_DIR/commands/simulate.md" 2>/dev/null; then
-  pass "/simulate references simulation-designer"
+  pass "/simulate stub references simulation-designer"
 else
-  must_fix "/simulate references simulation-designer" "missing"
+  must_fix "/simulate stub references simulation-designer" "missing"
 fi
 
-# 15: /identify references identification-critic
-if grep -q 'identification-critic' "$PLUGIN_DIR/commands/identify.md" 2>/dev/null; then
-  pass "/identify references identification-critic"
+# 15: /identify stub references identification-critic or identification-proofs
+if grep -qE 'identification-critic|identification-proofs' "$PLUGIN_DIR/commands/identify.md" 2>/dev/null; then
+  pass "/identify stub references identification component"
 else
-  must_fix "/identify references identification-critic" "missing"
+  must_fix "/identify stub references identification component" "missing"
 fi
 
-# 16: /diagnose references econometric-reviewer or numerical-auditor
-if grep -qE 'econometric-reviewer|numerical-auditor' "$PLUGIN_DIR/commands/diagnose.md" 2>/dev/null; then
-  pass "/diagnose references review agents"
+# 16: /diagnose stub references an agent or skill
+if grep -qE 'econometric-reviewer|numerical-auditor|empirical-playbook' "$PLUGIN_DIR/commands/diagnose.md" 2>/dev/null; then
+  pass "/diagnose stub references review component"
 else
-  must_fix "/diagnose references review agents" "should reference econometric-reviewer or numerical-auditor"
+  should_fix "/diagnose stub references review component" "no agent/skill reference found"
 fi
 
-# 17: /replicate references pipeline-validator or reproducibility-checker
-if grep -qE 'pipeline-validator|reproducibility-checker' "$PLUGIN_DIR/commands/replicate.md" 2>/dev/null; then
+# 17: /replicate references reproducibility-auditor
+if grep -qE 'reproducibility-auditor' "$PLUGIN_DIR/commands/replicate.md" 2>/dev/null; then
   pass "/replicate references workflow agents"
 else
-  must_fix "/replicate references workflow agents" "should reference pipeline-validator or reproducibility-checker"
+  must_fix "/replicate references workflow agents" "should reference reproducibility-auditor"
 fi
 
-# 18: /stress-test references identification-critic
-if grep -qE 'identification-critic|econometric-reviewer' "$PLUGIN_DIR/commands/stress-test.md" 2>/dev/null; then
-  pass "/stress-test references review agents"
+# 18: /stress-test stub references an agent or skill
+if grep -qE 'identification-critic|econometric-reviewer|empirical-playbook' "$PLUGIN_DIR/commands/stress-test.md" 2>/dev/null; then
+  pass "/stress-test stub references review component"
 else
-  must_fix "/stress-test references review agents" "should reference identification-critic or econometric-reviewer"
+  should_fix "/stress-test stub references review component" "no agent/skill reference found"
 fi
 
 group "Command Naming"

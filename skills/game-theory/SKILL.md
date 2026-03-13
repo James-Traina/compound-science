@@ -24,226 +24,98 @@ Skip when:
 - The game is a well-known IO model with standard estimation code (pyblp covers BLP demand; see `structural-modeling`)
 
 ## Where to Start
-- **Choosing equilibrium concept?** See [Framework Overview](#framework-overview)
+
+- **Choosing equilibrium concept?** See [Equilibrium Concept Routing](#equilibrium-concept-routing) below, then `references/equilibrium-concepts.md` for definitions and formulas
 - **Computing equilibria?** See `references/equilibrium-computation.md`
 - **Estimating an IO model?** See `references/io-applications.md`
-- **Facing multiple equilibria?** See [The Multiple Equilibria Problem](#the-multiple-equilibria-problem)
-- **Confused about identification?** See [Identification in Games](#identification-in-games)
+- **Estimation code and diagnostics?** See `references/estimation-diagnostics.md`
+- **Facing multiple equilibria?** See [Multiple Equilibria Summary](#multiple-equilibria-summary) below, then `references/multiple-equilibria.md` for selection rules and set identification
+- **Identification argument?** See [Identification Summary](#identification-summary) below, then `references/identification-in-games.md` for exclusion restrictions and rank conditions
 
 ---
 
-## Framework Overview
-
-### Static Games of Complete Information
-
-**Normal form:** A game is defined by (N, {S_i}, {u_i}) — N players, strategy sets S_i, payoff functions u_i(s_1, ..., s_N).
-
-**Nash equilibrium:** A strategy profile s* such that no player can profitably deviate:
-```
-u_i(s_i*, s_{-i}*) >= u_i(s_i, s_{-i}*)   for all i, all s_i ∈ S_i
-```
-
-**Dominant strategies:** s_i* dominates s_i' if u_i(s_i*, s_{-i}) > u_i(s_i', s_{-i}) for all s_{-i}. Dominant strategy equilibria are robust — they do not require beliefs about opponents.
-
-**Mixed strategies:** When no pure-strategy Nash equilibrium exists (or multiple exist), players randomize. A mixed Nash equilibrium requires each player to be indifferent over all strategies in their support. Computing mixed equilibria is more demanding computationally and creates the equilibrium selection problem for estimation.
-
-**Relevance for IO:** Most empirical entry and conduct models are static complete-information games. The workhorse examples are Bresnahan-Reiss (1991) and Berry (1992).
-
-### Dynamic Games: Extensive Form and SPE
-
-**Extensive form:** Represents the sequential structure of a game — who moves when, what they observe, what actions are available.
-
-**Subgame perfect equilibrium (SPE):** Computed by backward induction. A Nash equilibrium that is also an equilibrium in every proper subgame. Eliminates non-credible threats.
-
-```
-Terminal nodes → payoffs
-         ↑
-Last-mover's optimal actions (given payoffs)
-         ↑
-Second-to-last mover's optimal actions (given last mover's best responses)
-         ...
-         ↑
-First mover's optimal action
-```
-
-**Markov perfect equilibrium (MPE):** The standard refinement for dynamic oligopoly games (Ericson-Pakes 1995, Pakes-McGuire 1994). Strategies depend only on the current payoff-relevant state, not full histories. This tractability is essential for empirical work — MPE reduces the strategy space to Markov strategies indexed by a state variable.
-
-**Key difference from single-agent dynamics:** In MPE, each firm's continuation value depends on *competitors' strategies*, so the inner loop must solve a system of coupled Bellman equations simultaneously, not one agent's problem in isolation.
-
-### Incomplete Information: Bayesian Nash Equilibrium
-
-**Bayesian game:** Players have private types θ_i drawn from distributions F_i (the type space). A type summarizes private information — cost, quality, value, capability.
-
-**Bayesian Nash equilibrium (BNE):** A profile of strategies s_i*(θ_i) such that each player maximizes expected utility given their type and beliefs about opponents' types and strategies:
-```
-s_i*(θ_i) ∈ argmax E_{θ_{-i}} [u_i(s_i, s_{-i}*(θ_{-i}), θ_i, θ_{-i})]
-```
-
-**Why it matters empirically:** Auctions are the canonical Bayesian game — bidders have private values (IPV framework) or affiliated signals (mineral rights model). Entry models can be cast as either complete or incomplete information, with very different empirical implications (Bajari, Hong, Ryan 2010).
-
-**Complete vs. incomplete information in entry:**
-
-| Feature | Complete Information | Incomplete Information |
-|---------|---------------------|----------------------|
-| Equilibrium concept | Nash (pure or mixed) | Bayesian Nash (in thresholds) |
-| Multiple equilibria | Severe | Often unique in monotone strategies |
-| Identification | Harder (selection rule needed) | Easier (equilibrium pins down behavior) |
-| Standard reference | Berry (1992), Bresnahan-Reiss (1991) | Seim (2006), Bajari-Hong-Ryan (2010) |
-
-### Repeated Games: Folk Theorem and Collusion
-
-In infinitely repeated games, cooperation can be sustained as a subgame perfect equilibrium even when one-shot incentives favor defection — the folk theorem.
-
-**Grim trigger strategy:** Cooperate in every period; switch to Nash reversion forever after any defection. Cooperation is sustainable when:
-```
-π_collude / (1 - δ) >= π_deviate + δ * π_Nash / (1 - δ)
-```
-Solving: `δ >= (π_deviate - π_collude) / (π_deviate - π_Nash)`
-
-**Empirical relevance:** The Rotemberg-Saloner (1986) model and Green-Porter (1984) provide structural foundations for testing collusion. Empirical work (Porter 1983, Ellison 1994) estimates threshold discount factors and tests whether observed conduct is consistent with Nash reversion strategies.
-
-**Key implication for conduct testing:** Repeated game models predict that collusion is harder to sustain when: (1) discount factor is lower, (2) deviation gains are higher, (3) detection lag is longer. These comparative statics generate testable restrictions.
-
----
-
-## Structural IO Applications: Overview
-
-For full implementation code, see `references/io-applications.md`.
-
-### Entry Models
-
-Entry models are the canonical empirical application of game theory in IO. Observed market structure (number of entrants) must be consistent with Nash equilibrium, but multiple equilibria may exist. Three main approaches:
-
-**Bresnahan-Reiss (1991)** exploits variation in market size to estimate how competitive conduct changes with the number of firms. The N-th firm enters only if the market is large enough; threshold ratios S_N*/S_{N-1}* > 1 indicate market power. Estimation uses ordered probit on observed firm counts.
-
-**Berry (1992)** extends to asymmetric firms. An ordering restriction (firms enter in order of their profitability index) selects a unique equilibrium, achieving point identification. Estimated by MLE with equilibrium constraints.
-
-**Ciliberto-Tamer (2009)** drops the equilibrium selection assumption. The model is set-identified: the identified set contains all parameter values consistent with *some* Nash equilibrium selection. Estimation uses moment inequalities; confidence regions require Chernozhukov-Hong-Tamer (2007) or Romano-Shaikh subsampling.
-
-### Conduct Testing
-
-Conduct testing asks what game firms are actually playing. The standard approach estimates a conduct parameter θ ∈ [0,1] nesting Bertrand (θ=0), Cournot (θ=1/N), and joint monopoly (θ=1) from the markup equation `p_j - mc_j = -θ * (∂Q_j/∂p_j)^{-1} * Q_j`. In the BLP framework, add a supply side with cost shifters (input prices, factor costs) as instruments. Use the Rivers-Vuong (2002) non-nested test to choose between conduct specifications.
-
-### Bargaining Models
-
-Bargaining models are the standard for vertical IO with bilateral negotiation. The generalized Nash bargaining solution maximizes `(u_1 - d_1)^β * (u_2 - d_2)^{1-β}`, where d_i are disagreement payoffs and β is the bargaining weight (Horn-Wolinsky 1988). The bargaining weight β is identified from variation in outside options — prices should respond to outside option shifts in proportion to (1-β). Applications include medical device markets (Grennan 2013) and cable TV (Crawford-Yurukoglu 2012). The Rubinstein (1982) alternating-offers game provides strategic micro-foundations; its unique SPE converges to Nash bargaining as discount factors approach 1.
-
-### Auctions
-
-Auction models embed the Bayesian game framework directly. In first-price sealed-bid auctions under IPV, the unique symmetric BNE bid function is `b*(v) = E[v_{(N-1)} | v_{(N-1)} < v]`; GPV (Guerre-Perrigne-Vuong 2000) inverts this relationship nonparametrically to recover the private value distribution from observed bids. Second-price and ascending auctions have dominant strategies under IPV (bid true value), simplifying identification. Common value and affiliated value settings require separating signal distributions from the common value — substantially harder. Full auction estimation code is in the `structural-modeling` skill; the game-theoretic foundations are here.
-
----
-
-## The Multiple Equilibria Problem
-
-The multiple equilibria problem is the central identification challenge in empirical games. When a game has more than one equilibrium, the econometrician needs an additional assumption to determine which equilibrium is played — or must relax point identification.
-
-### Why Multiple Equilibria Arise
-
-**Coordination games:** Multiple equilibria by design (Stag Hunt, Battle of the Sexes). Players coordinate on one of several Pareto-ranked equilibria.
-
-**Entry games:** The game in which firms simultaneously decide whether to enter can have equilibria where firm A enters and B stays out, B enters and A stays out, or both enter — all consistent with Nash. The observed outcome depends on unmodeled coordination mechanisms.
-
-**Symmetric games:** Any symmetric game has a symmetric Nash equilibrium (players randomize identically), but may also have asymmetric equilibria.
-
-### Equilibrium Selection Approaches
-
-| Selection Rule | Basis | Applicability |
-|---------------|-------|--------------|
-| Risk dominance (Harsanyi-Selten 1988) | Robustness to opponents' mixing | 2x2 games; computationally difficult for large games |
-| Payoff dominance | Pareto ranking of equilibria | Only applies when one NE Pareto-dominates all others |
-| Trembling-hand perfect (Selten 1975) | Robustness to small mistakes | Refines away weakly dominated strategies |
-| Sequential rationality (Kreps-Wilson) | Consistency at off-path information sets | Extensive-form games |
-| Quantal Response Equilibrium (McKelvey-Palfrey) | Bounded rationality, logistic choice | Generates unique equilibrium; testable |
-| Ordered equilibrium (Berry 1992) | Exogenous ordering by profitability | Entry games with asymmetric firms |
-
-**Quantal Response Equilibrium (QRE):** Firms respond probabilistically — more profitable strategies are played more often, but not with certainty. QRE is indexed by a precision parameter λ → ∞ (QRE converges to Nash), making it useful for equilibrium selection via model fit.
+## Quick Start: Nash Equilibrium Computation
 
 ```python
-def quantal_response_equilibrium(payoff_matrix, lambda_param=2.0, tol=1e-10, max_iter=5000):
-    n = payoff_matrix.shape[0]
-    p = np.ones(n) / n
-    for _ in range(max_iter):
-        eu = payoff_matrix @ p
-        log_p_new = lambda_param * eu - (lambda_param * eu).max()
-        p_new = np.exp(log_p_new) / np.exp(log_p_new).sum()
-        if np.max(np.abs(p_new - p)) < tol:
-            return p_new
-        p = p_new
-    raise RuntimeError("QRE iteration did not converge")
+import nashpy as nash
+import numpy as np
+
+# Define a 2-player game: row player payoffs A, column player payoffs B
+A = np.array([[3, 0], [5, 1]])  # e.g., Prisoner's Dilemma
+B = A.T                          # Symmetric game
+game = nash.Game(A, B)
+
+# Find ALL Nash equilibria via support enumeration
+for i, (sr, sc) in enumerate(game.support_enumeration()):
+    print(f"NE {i+1}: row={sr.round(3)}, col={sc.round(3)}")
 ```
 
-### Set Identification (Ciliberto-Tamer Bounds)
+For larger games, extensive-form games, or QRE computation, see `references/equilibrium-computation.md`.
 
-When no selection rule is imposed, the model is set-identified. The sharp identified set contains all parameter values θ such that the observed data is consistent with *some* equilibrium selection mechanism under θ.
+## Equilibrium Concept Routing
 
-**Practical approach:**
-1. For each θ on a grid, compute all Nash equilibria of the game
-2. Check whether the observed outcome distribution can be rationalized as a mixture of Nash equilibria
-3. The identified set = {θ : observed distribution ∈ convex hull of Nash outcome distributions}
+| Information Structure | Timing | Concept | Refinement | Key Reference |
+|----------------------|--------|---------|------------|--------------|
+| Complete | Simultaneous | Nash equilibrium | Dominant strategy, trembling-hand perfect | — |
+| Complete | Sequential | Subgame perfect equilibrium (SPE) | Backward induction | — |
+| Complete | Repeated | SPE with trigger strategies | Folk theorem, Nash reversion | Green-Porter (1984) |
+| Complete | Dynamic (states) | Markov perfect equilibrium (MPE) | Strategies depend only on payoff-relevant state | Ericson-Pakes (1995) |
+| Incomplete (private types) | Simultaneous | Bayesian Nash equilibrium (BNE) | Monotone strategies, threshold equilibria | — |
+| Incomplete | Sequential | Perfect Bayesian equilibrium (PBE) | Sequential rationality + Bayesian updating | Kreps-Wilson |
 
-**Inference:** Use Chernozhukov, Hong, Tamer (2007) for confidence regions, or Romano-Shaikh (2010) subsampling. These are more demanding computationally than point-identified models.
+**Decision tree:**
+1. Do players have private information? → Yes: BNE framework. No: Nash/SPE.
+2. Is the game sequential? → Yes: SPE (backward induction) or MPE (dynamic states). No: simultaneous Nash.
+3. Is the game repeated? → Yes: folk theorem applies; collusion may be sustainable.
+4. Are there multiple equilibria? → See [Multiple Equilibria Summary](#multiple-equilibria-summary).
 
-### Using Multiplicity as Identifying Variation
-
-A clever alternative: exploit the fact that different markets may play different equilibria, and use observable correlates of equilibrium selection as instruments (Sweeting 2009, Ellickson-Misra 2011). This requires a model of equilibrium selection, but allows point identification of structural parameters.
+For detailed definitions, formulas, and the complete-vs-incomplete information comparison table, see `references/equilibrium-concepts.md`.
 
 ---
 
-## Identification in Games
+## Multiple Equilibria Summary
 
-### The Core Challenge
+The central identification challenge in empirical games. Three resolution strategies:
 
-In single-agent models, identification of preferences is straightforward: variation in the agent's choice environment traces out the preference parameters. In games, observed behavior reflects the *interaction* of preferences and equilibrium play. Separating these is the identification problem in games.
+| Strategy | Approach | Trade-off | Key Reference |
+|----------|----------|-----------|--------------|
+| **Impose selection rule** | Order firms by profitability; pick unique NE | Point identification, but selection rule is an assumption | Berry (1992) |
+| **Set identification** | Accept all NE-consistent parameters | No selection assumption, but wider confidence regions | Ciliberto-Tamer (2009) |
+| **Exploit multiplicity** | Use correlates of equilibrium selection as instruments | Point identification with weaker assumptions | Sweeting (2009) |
+| **QRE** | Bounded rationality generates unique equilibrium | Testable, but imposes logistic choice structure | McKelvey-Palfrey |
 
-**Two sources of endogeneity:**
-1. **Strategic complementarities/substitutes:** Firm i's action affects firm j's optimal action, creating a simultaneity problem
-2. **Correlated unobservables:** Common market-level shocks (ξ) affect all firms' profits, creating spurious correlation in actions
+For the full selection rule comparison table, QRE implementation code, and Ciliberto-Tamer bounds procedure, see `references/multiple-equilibria.md`.
 
-### Exclusion Restrictions in Games
+---
 
-The standard approach: firm-specific instruments that affect firm i's profitability but not firm j's:
+## Identification Summary
 
-```
-π_i(enter) = f(X_m, Z_i, ε_i) - competitive_effects(N_{-i})
-π_j(enter) = f(X_m, Z_j, ε_j) - competitive_effects(N_{-i})
-```
+Two sources of endogeneity distinguish games from single-agent models: (1) strategic complementarities/substitutes create simultaneity, and (2) correlated unobservables create spurious correlation in actions.
 
-Here Z_i (firm i's cost, distance to market, regulatory history) are excluded from j's profit equation. Variation in Z_i shifts firm i's entry decision, which then acts as an instrument for firm j's strategic response.
+**Resolution:** Firm-specific instruments Z_i (cost, distance, regulatory history) excluded from rival j's profit equation. Variation in Z_i shifts firm i's entry, which instruments for j's strategic response.
 
-**Formal rank condition (Bajari-Hong-Ryan 2010):** The Jacobian of the equilibrium best-response system with respect to exogenous variables must have full rank at the true parameter value. Failures occur when:
-- All firms face the same instruments (no within-market variation)
-- Competitive effects are zero (no strategic interaction — reduces to single-agent problem)
-- Instruments are weak (modest first-stage relevance)
+**Rank condition (Bajari-Hong-Ryan 2010):** The Jacobian of the best-response system w.r.t. exogenous variables must have full rank. Fails when all firms share the same instruments, competitive effects are zero, or instruments are weak.
 
-### Separating Preferences from Equilibrium Behavior
+**Conduct parameter identification:** Cost shifters must shift supply independently of demand (standard simultaneous equations condition). The conduct parameter θ is identified from the curvature of the markup-quantity relationship.
 
-**Two-step approaches:**
-1. **Reduced form first:** Estimate best-response functions or conditional choice probabilities from data (nonparametrically if possible)
-2. **Structural second:** Map the estimated reduced-form objects back to structural parameters
+For the full treatment — exclusion restriction formulas, two-step estimation logic, competitive effect identification, and conduct rank condition failure modes — see `references/identification-in-games.md`.
 
-This logic underlies Hotz-Miller CCP estimation in dynamic games and the Bajari-Hong-Ryan approach for static games.
+---
 
-**Identification of competitive effects:** Competitive effects (how rivals' entry affects own profit) are identified from cross-firm variation in profitability:
+## Structural IO Applications: Routing
 
-```
-Cov(entry_j, entry_i | X_m, Z_i, Z_j) ≠ 0
+For full model specifications, estimation code, and references, see `references/io-applications.md` and `references/estimation-diagnostics.md`.
 
-identified from: variation in Z_j conditional on Z_i and X_m
-```
-
-If Z_j is a valid firm j-specific instrument, its effect on entry_j, controlling for entry_i, identifies the competitive effect on firm i.
-
-### Rank Conditions for Conduct Parameters
-
-In conduct testing, the conduct parameter θ is identified if demand and cost curves shift independently — the standard simultaneous equations rank condition. Specifically:
-
-**Berry-Levinsohn-Pakes identification of conduct:** Cost shifters (input prices, factor costs) shift the supply equation without shifting demand, tracing out the demand curve and pinning down markups. The conduct parameter is identified from the curvature of the markup-quantity relationship.
-
-**Potential failure modes:**
-- Cost shifters correlated with demand shocks (instruments are endogenous)
-- Cost shifters only shift the level of costs, not the shape of the markup-quantity relationship (rank failure)
-- Products are homogeneous (quantity competition and price competition are identical: Kreps-Scheinkman 1983)
+| Application | Model Class | Estimation | Reference File |
+|-------------|------------|------------|---------------|
+| Market structure (symmetric firms) | Bresnahan-Reiss ordered probit | MLE | `io-applications.md` |
+| Entry (asymmetric firms) | Berry ordered equilibrium | MLE with equilibrium constraints | `io-applications.md` |
+| Entry (multiple equilibria) | Ciliberto-Tamer partial identification | Moment inequalities | `io-applications.md` |
+| Conduct testing | BLP supply side + markup equation | GMM + Rivers-Vuong test | `io-applications.md` |
+| Vertical bargaining | Generalized Nash bargaining (Horn-Wolinsky) | GMM with outside option instruments | `io-applications.md` |
+| Procurement/first-price auctions | BNE bidding + GPV inversion | Nonparametric | `io-applications.md` |
+| Dynamic oligopoly | MPE (Ericson-Pakes) | CCP two-step (Bajari-Benkard-Levin) | `estimation-diagnostics.md` |
+| Collusion sustainability | Repeated game + trigger strategies | Threshold discount factor | `equilibrium-concepts.md` |
 
 ---
 
@@ -311,6 +183,9 @@ In conduct testing, the conduct parameter θ is identified if demand and cost cu
 ## Reference Files
 
 Read these when implementing a specific model type:
+- `references/equilibrium-concepts.md` — Detailed definitions and formulas for Nash, BNE, SPE, MPE, mixed strategies, repeated games, folk theorem, complete-vs-incomplete information comparison
 - `references/equilibrium-computation.md` — Computing Nash, BNE, and SPE: best response iteration, support enumeration, Gambit solver integration, linear complementarity, dynamic programming
-- `references/io-applications.md` — Entry models (Bresnahan-Reiss, Ciliberto-Tamer), conduct testing (Bresnahan 1982, markup test), BLP-style IO demand, auctions (first-price, ascending, common value), bargaining (Nash, Rubinstein), matching markets
-- `references/estimation-diagnostics.md` — Estimation code (SMM, MSL, BBL, MPEC), convergence diagnostics, model fit tests, counterfactual simulation
+- `references/multiple-equilibria.md` — Selection rules (risk dominance, QRE, ordered equilibrium), QRE implementation code, Ciliberto-Tamer set identification procedure, multiplicity-as-variation
+- `references/identification-in-games.md` — Exclusion restrictions, rank conditions (Bajari-Hong-Ryan), two-step estimation logic, competitive effect identification, conduct parameter identification and failure modes
+- `references/io-applications.md` — Entry models (Bresnahan-Reiss, Berry, Ciliberto-Tamer), conduct testing (BLP supply, Rivers-Vuong), bargaining (Nash, Rubinstein), auction foundations
+- `references/estimation-diagnostics.md` — Estimation code (MLE, two-step, MPEC, moment inequalities), convergence diagnostics, model fit tests, equilibrium verification

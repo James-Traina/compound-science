@@ -143,7 +143,7 @@ fi
 group "Cross-Component Wiring"
 
 # 14: All prompt hooks reference >=1 agent name that exists in agents/
-AGENT_NAMES=("econometric-reviewer" "mathematical-prover" "numerical-auditor" "identification-critic" "journal-referee" "simulation-designer" "process-architect" "equilibrium-analyst" "calibration-assessor" "results-verifier" "literature-scout" "methods-explorer" "data-detective" "solutions-archivist" "benchmark-researcher" "pipeline-validator" "reproducibility-checker" "specification-analyzer" "research-coordinator" "progress-tracker")
+AGENT_NAMES=("econometric-reviewer" "mathematical-prover" "numerical-auditor" "identification-critic" "journal-referee" "simulation-designer" "process-architect" "equilibrium-analyst" "results-verifier" "literature-scout" "methods-explorer" "data-detective" "reproducibility-auditor" "workflow-coordinator")
 export AGENT_NAMES_STR="${AGENT_NAMES[*]}"
 
 # Check each prompt hook references at least one agent
@@ -179,7 +179,8 @@ if event in d['hooks']:
 done
 if $all_ref; then pass "all prompt hooks reference existing agents"; fi
 
-# 15: UserPromptSubmit mentions all 5 utility commands
+# 15: UserPromptSubmit mentions agents/skills that replaced utility commands
+# v0.5: Utility commands are now deprecated stubs. UPS routes to agents/skills instead.
 ups_prompt=$(python3 -c "
 import json, os
 d = json.load(open(os.environ['HOOKS_FILE']))
@@ -190,15 +191,16 @@ for m in d['hooks']['UserPromptSubmit']:
 " 2>/dev/null || echo "")
 
 util_ok=true
-for cmd in "/diagnose" "/tabulate" "/replicate" "/visualize" "/stress-test"; do
-  if ! echo "$ups_prompt" | grep -q "$cmd"; then
+# Check that UPS references the skills/agents that replaced the utility commands
+for component in "empirical-playbook" "publication-output" "identification-critic" "simulation-designer" "reproducibility-auditor"; do
+  if ! echo "$ups_prompt" | grep -q "$component"; then
     util_ok=false
   fi
 done
 if $util_ok; then
-  pass "UserPromptSubmit mentions all 5 utility commands"
+  pass "UserPromptSubmit mentions replacement agents/skills for utility commands"
 else
-  must_fix "UserPromptSubmit mentions utility commands" "missing one or more of /diagnose /tabulate /replicate /visualize /stress-test"
+  must_fix "UserPromptSubmit mentions replacement components" "missing one or more of empirical-playbook/publication-output/identification-critic/simulation-designer/reproducibility-auditor"
 fi
 
 # 16: PostToolUse mentions >=3 distinct agent names
@@ -221,24 +223,26 @@ else
   must_fix "PostToolUse mentions >= 3 agents" "got $agent_count"
 fi
 
-# 17: Stop prompt mentions >=2 command names
-cmd_count=$(python3 -c "
-import json, os
+# 17: Stop prompt mentions >=2 component names (agents, skills, or commands)
+# v0.5: Stop hook routes to agents/skills rather than slash commands
+component_count=$(python3 -c "
+import json, re, os
 d = json.load(open(os.environ['HOOKS_FILE']))
-cmds = ['/estimate','/simulate','/identify','/diagnose','/tabulate','/replicate','/visualize','/stress-test','/workflows:']
 text = ''
 for m in d['hooks']['Stop']:
     for h in m['hooks']:
         if h['type'] == 'prompt':
             text += h['prompt']
-found = sum(1 for c in cmds if c in text)
-print(found)
+# Count backtick-quoted component names plus /workflows: references
+components = set(re.findall(r'\x60([a-z]+-[a-z-]+)\x60', text))
+workflows = set(re.findall(r'/workflows:\w+', text))
+print(len(components) + len(workflows))
 " 2>/dev/null || echo "0")
 
-if [ "$cmd_count" -ge 2 ]; then
-  pass "Stop prompt mentions >= 2 commands ($cmd_count)"
+if [ "$component_count" -ge 2 ]; then
+  pass "Stop prompt mentions >= 2 components ($component_count)"
 else
-  must_fix "Stop mentions >= 2 commands" "got $cmd_count"
+  must_fix "Stop mentions >= 2 components" "got $component_count"
 fi
 
 group "Structural Integrity"

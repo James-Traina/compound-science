@@ -187,4 +187,5 @@ SKILLS=(
   "empirical-playbook"
   "data-acquisition"
   "referee-response"
+  "publication-output"
 )

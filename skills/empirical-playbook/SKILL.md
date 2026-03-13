@@ -6,7 +6,7 @@ description: >-
 
 # Applied Micro Toolkit
 
-Comprehensive reference for applied microeconomic research design: method selection, estimator comparison, standard diagnostics, inference frameworks, common pitfalls, reporting standards, and power analysis. Covers the full landscape from design-based to model-based approaches.
+Reference for applied micro research design: method selection, diagnostics, inference, pitfalls, reporting standards, and power analysis.
 
 ## When to Use This Skill
 
@@ -147,15 +147,11 @@ For implementation details and diagnostic code by method, see the `causal-infere
 | Examples | Experiments, RCTs, RDD, DiD, natural experiments | Structural models, matching, cross-sectional surveys |
 | Advantages | Transparent; does not require outcome model | More powerful; extends to complex settings |
 
-**Design-based is appropriate when:** Treatment assignment mechanism is known or plausibly approximated (experiments, lotteries, cutoff rules).
-
-**Model-based is appropriate when:** Random sampling from a population is a reasonable assumption, or interest is in population parameters beyond the specific sample.
-
-**Hybrid:** Design-based identification + model-based inference (natural experiment + asymptotic SEs) is the standard in applied micro. Doubly robust methods (AIPW) combine both.
+Design-based is appropriate when the assignment mechanism is known (experiments, lotteries, cutoffs). Model-based when random sampling is reasonable. The standard in applied micro is hybrid: design-based identification + model-based inference. Doubly robust methods (AIPW) combine both.
 
 ## Power Analysis
 
-A study needs to be powered before data collection. The key quantity is the Minimum Detectable Effect (MDE) — the smallest effect detectable with 80% power at alpha = 0.05.
+The key quantity is the Minimum Detectable Effect (MDE) — the smallest effect detectable with 80% power at alpha = 0.05.
 
 **Quick MDE formula (equal groups, two-sided test):**
 
@@ -225,15 +221,11 @@ A "bad control" is a variable that is itself an outcome of treatment. Conditioni
 
 ### Forbidden Regressions
 
-| Mistake | Why It Is Wrong | Correct Approach |
-|---------|----------------|-----------------|
-| Manual first-stage with OLS second stage | Standard errors in second stage are wrong | Use a proper 2SLS command (`ivreg2`, `ivregress`, `IV2SLS`) |
-| Nonlinear first stage plugged into linear second stage | Not a valid IV estimator; not consistent | Use linear first stage for 2SLS; use control function approach if nonlinear |
-| Residual inclusion without proper correction | Generated regressors; naive SEs wrong | Bootstrap the entire two-step procedure |
+Never plug a manual first-stage into an OLS second stage (SEs are wrong — use proper 2SLS). Never use a nonlinear first stage with linear second stage (not consistent — use control function). Never include generated regressors without bootstrapping the full two-step procedure.
 
 ## Integration
 
-For full minimum reporting standards (method-specific checklists for IV, DiD, RDD, SC, Matching) and complete power analysis code, see `references/reporting-standards.md`.
+For full minimum reporting standards (method-specific checklists for IV, DiD, RDD, SC, Matching) and complete power analysis code, see `references/reporting-standards.md`. For sensitivity analysis procedures (Oster bounds, Conley bounds, breakdown frontiers, specification curves), see `references/sensitivity-analysis.md`.
 
 **Agents:**
 

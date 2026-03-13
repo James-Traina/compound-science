@@ -81,7 +81,7 @@ These encode vague knowledge — parameters are unlikely to be astronomically la
 
 When the literature provides benchmark values, use them as prior means with SD reflecting plausible variation:
 
-1. Use the `benchmark-researcher` agent to find reference parameter values
+1. Use the `methods-explorer` agent to find reference parameter values
 2. Set prior mean to the benchmark: e.g., price elasticity of -1.2 from literature
 3. Set prior SD to cover the plausible range: if literature range is [-0.5, -2.0], use Normal(-1.2, 0.4) so that the range is roughly within 2 SDs
 4. Verify with a prior predictive check that implied observables are plausible
@@ -188,8 +188,8 @@ For Bayesian structural models (BLP, dynamic discrete choice, hierarchical DiD) 
 **Agents to invoke alongside Bayesian estimation:**
 
 - `numerical-auditor`: Review MCMC convergence diagnostics — R-hat, ESS, divergences. Report format should include all five convergence metrics.
-- `calibration-assessor`: Review prior elicitation strategy, sensitivity analysis, and whether priors are consistent with identification. Use for prior predictive checks and moment-matching to literature targets.
-- `benchmark-researcher`: Find literature calibration targets to set informative prior means. Ask for point estimates and uncertainty ranges, not just means.
+- `econometric-reviewer`: Review prior elicitation strategy, sensitivity analysis, and whether priors are consistent with identification. Use for prior predictive checks and moment-matching to literature targets.
+- `methods-explorer`: Find literature calibration targets to set informative prior means. Ask for point estimates and uncertainty ranges, not just means.
 - `results-verifier`: Verify that reported posterior means, credible intervals, and model comparison statistics match the actual ArviZ/Stan output.
 
 **Related skills:**

@@ -187,15 +187,15 @@ grep -qiE 'pymc|numpyro|cmdstanpy|brms|arviz' "$PTU" \
 
 group "Stop — Completeness Conditions"
 
-# 26: Missing SEs (W1, W3, W6, W9, W14, W16, W19)
-grep -qiE 'standard error' "$STP" \
-  && pass "condition 1 missing SEs" \
-  || must_fix "condition 1 missing SEs" "missing keyword"
+# 26: v0.5: SEs moved to agent-scoped Stop hooks — check Stop covers sensitivity/robustness instead
+grep -qiE 'sensitiv|robustness' "$STP" \
+  && pass "condition 1 sensitivity/robustness check" \
+  || must_fix "condition 1 sensitivity/robustness" "missing keyword"
 
-# 27: Unseeded simulation (W4, W19)
-grep -qiE 'seed.*reproducibility|reproducibility.*seed' "$STP" \
-  && pass "condition 2 unseeded simulation" \
-  || must_fix "condition 2 unseeded simulation" "missing keyword"
+# 27: v0.5: Seeds moved to agent-scoped Stop hooks — check Stop covers reproducible location
+grep -qiE 'reproducible|saved|replication' "$STP" \
+  && pass "condition 2 results reproducibility" \
+  || must_fix "condition 2 results reproducibility" "missing keyword"
 
 # 28: Unstated regularity conditions (W5)
 grep -qiE 'regularity' "$STP" \
@@ -316,15 +316,15 @@ grep -qF 'numerical-auditor' "$PTU" \
   && pass "PTU Bayesian → numerical-auditor agent" \
   || must_fix "PTU Bayesian → numerical-auditor" "not referenced"
 
-# 49: PTU Bayesian → references calibration-assessor
-grep -qF 'calibration-assessor' "$PTU" \
-  && pass "PTU Bayesian → calibration-assessor agent" \
-  || must_fix "PTU Bayesian → calibration-assessor" "not referenced"
+# 49: PTU Bayesian → references econometric-reviewer (absorbed calibration-assessor)
+grep -qF 'econometric-reviewer' "$PTU" \
+  && pass "PTU Bayesian → econometric-reviewer agent" \
+  || must_fix "PTU Bayesian → econometric-reviewer" "not referenced"
 
-# 50: Stop → references /diagnose
-grep -qF '/diagnose' "$STP" \
-  && pass "Stop → references /diagnose command" \
-  || must_fix "Stop → /diagnose" "not referenced"
+# 50: Stop → references a diagnostic/review component (v0.5: /diagnose removed, replaced by agents/skills)
+grep -qiE 'empirical-playbook|econometric-reviewer|data-detective|diagnostic' "$STP" \
+  && pass "Stop → references diagnostic component" \
+  || must_fix "Stop → diagnostic component" "not referenced"
 
 # ── Cleanup ──
 rm -rf "$TMPD"

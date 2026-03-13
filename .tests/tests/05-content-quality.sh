@@ -93,9 +93,13 @@ for file in "$PLUGIN_DIR"/agents/*/*.md; do
 done
 if $all_deep; then pass "all agents have >=50 lines"; fi
 
-# 9: All domain/utility commands have >100 lines
+# 9: Full commands have >100 lines (stubs/wrappers excluded)
+# v0.5: 7 deprecated stubs + 2 thin wrappers are excluded from depth checks
+STUB_COMMANDS="simulate identify diagnose tabulate visualize stress-test deepen-plan"
+WRAPPER_COMMANDS="estimate replicate"
 all_deep=true
 for cmd in estimate simulate identify diagnose tabulate replicate visualize stress-test; do
+  case "$STUB_COMMANDS $WRAPPER_COMMANDS" in *"$cmd"*) continue ;; esac
   file="$PLUGIN_DIR/commands/$cmd.md"
   if [ -f "$file" ]; then
     lines=$(wc -l < "$file" | tr -d ' ')
@@ -105,7 +109,7 @@ for cmd in estimate simulate identify diagnose tabulate replicate visualize stre
     fi
   fi
 done
-if $all_deep; then pass "all domain/utility commands have >=100 lines"; fi
+if $all_deep; then pass "all full commands have >=100 lines (stubs/wrappers excluded)"; fi
 
 # 10: All skills have >50 lines
 all_deep=true
@@ -124,27 +128,29 @@ if $all_deep; then pass "all skills have >=50 lines"; fi
 
 group "Output Format Sections"
 
-# 11: Domain/utility commands have Output Format section
+# 11: Full commands have Output Format section (stubs/wrappers excluded)
 all_output=true
 for cmd in estimate simulate identify diagnose tabulate replicate visualize stress-test; do
+  case "$STUB_COMMANDS $WRAPPER_COMMANDS" in *"$cmd"*) continue ;; esac
   file="$PLUGIN_DIR/commands/$cmd.md"
   if [ -f "$file" ] && ! grep -qi 'Output Format\|Output\|output' "$file"; then
     all_output=false
     must_fix "command $cmd has output section" "missing output format"
   fi
 done
-if $all_output; then pass "all domain/utility commands document output"; fi
+if $all_output; then pass "all full commands document output (stubs/wrappers excluded)"; fi
 
-# 12: Domain/utility commands have Routes To section
+# 12: Full commands have Routes To section (stubs/wrappers excluded)
 all_routes=true
 for cmd in estimate simulate identify diagnose tabulate replicate visualize stress-test; do
+  case "$STUB_COMMANDS $WRAPPER_COMMANDS" in *"$cmd"*) continue ;; esac
   file="$PLUGIN_DIR/commands/$cmd.md"
   if [ -f "$file" ] && ! grep -qi 'Routes To\|routes' "$file"; then
     all_routes=false
     should_fix "command $cmd has routes section" "missing routes to"
   fi
 done
-if $all_routes; then pass "all domain/utility commands have routes"; fi
+if $all_routes; then pass "all full commands have routes (stubs/wrappers excluded)"; fi
 
 group "Emoji Consistency"
 

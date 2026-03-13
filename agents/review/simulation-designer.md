@@ -1,5 +1,9 @@
 ---
 name: simulation-designer
+hooks:
+  Stop:
+    - type: prompt
+      prompt: "After simulation-designer completes, check: were random seeds set for reproducibility? Was the DGP documented? Were metrics pre-specified (bias, RMSE, coverage)? If seeds are missing, suggest setting them before running."
 description: >-
   Designs Monte Carlo simulation studies for evaluating estimator finite-sample properties. Use when you need to design a simulation to compare estimators, calculate power for a research design, evaluate size and coverage of confidence intervals, set up a parameter grid for sensitivity analysis, or structure code for running and tabulating simulation results.
 

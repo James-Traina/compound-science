@@ -186,7 +186,7 @@ For GPU-accelerated structural estimation (JIT compilation, autodiff, vmap for s
 - `numerical-auditor` — Systematic convergence review: gradient norms, conditioning, tolerance sensitivity
 - `process-architect` — Formalize data generating processes from structural models
 - `equilibrium-analyst` — Verify equilibrium existence, uniqueness, stability, comparative statics
-- `calibration-assessor` — Reviews moment-matching strategy, parameter identification, sensitivity to targets
+- `econometric-reviewer` — Reviews moment-matching strategy, parameter identification, sensitivity to targets
 - `/estimate` — Full estimation pipeline with quality gates
 - `/simulate` — Design and run Monte Carlo studies for structural estimators
 

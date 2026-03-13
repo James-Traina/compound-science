@@ -6,13 +6,9 @@ description: >-
 
 # compound-catalog Skill
 
-**Purpose:** Automatically document solved research problems to build searchable institutional knowledge with category-based organization. Each problem is filed under a research domain category and linked to the specialist agent best equipped to handle similar issues in the future.
+**Purpose:** Document solved research problems as searchable institutional knowledge. Each problem is filed under a domain category and linked to a specialist agent. This is the primary knowledge accumulation mechanism — each Plan → Work → Review → Compound cycle should produce solution docs.
 
-## Overview
-
-This skill captures problem solutions immediately after confirmation, creating structured documentation that serves as a searchable knowledge base for future sessions. It is the primary knowledge accumulation mechanism in the compound workflow — each cycle of Plan → Work → Review → Compound should produce solution documents that make the next cycle faster.
-
-**Organization:** Single-file architecture — each problem documented as one markdown file in its symptom category directory (e.g., `docs/solutions/estimation-issues/weak-instruments-iv-20250225.md`). Files use YAML frontmatter for metadata and searchability.
+**Organization:** One markdown file per problem in its category directory (e.g., `docs/solutions/estimation-issues/weak-instruments-iv-20250225.md`), with YAML frontmatter for searchability.
 
 ---
 
@@ -27,7 +23,7 @@ Six categories cover the research domain. Each maps to a specialist agent for ro
 | `numerical-issues/` | Floating-point precision, matrix conditioning, gradient accuracy, overflow/underflow, quadrature errors | `numerical-auditor` |
 | `methodology-issues/` | Specification errors, robustness failures, wrong estimator choice, misapplied methods, invalid assumptions | `methods-explorer` |
 | `derivation-issues/` | Proof gaps, incorrect regularity conditions, wrong limiting distributions, missing edge cases in arguments | `mathematical-prover` |
-| `replication-issues/` | Reproducibility failures, missing dependencies, broken pipelines, seed mismatches, environment drift | `pipeline-validator` |
+| `replication-issues/` | Reproducibility failures, missing dependencies, broken pipelines, seed mismatches, environment drift | `reproducibility-auditor` |
 
 ### Category Detection Rules
 
@@ -80,26 +76,11 @@ Extract from conversation history:
 - Data characteristics relevant to the problem (sample size, panel structure, missingness)
 - Whether the fix is general or specific to this dataset/model
 
-**If critical context is missing** (component, exact error, or resolution steps), infer from the conversation. If genuinely ambiguous, document with a `[needs-clarification]` tag rather than blocking.
+If critical context is missing, infer from conversation. If genuinely ambiguous, use a `[needs-clarification]` tag.
 
 ### Step 3: Check Existing Docs
 
-Search `docs/solutions/` for similar issues:
-
-```bash
-# Search by error message keywords
-grep -r "exact error phrase" docs/solutions/
-
-# Search by category
-ls docs/solutions/[category]/
-```
-
-**If similar issue found:**
-- If same root cause → update the existing doc with new context (add "Also seen in:" section)
-- If different root cause with similar symptom → create new doc with cross-reference to the similar one
-- If unclear → create new doc (prefer separate documents over ambiguous merges)
-
-**If no similar issue found:** proceed directly to Step 4.
+Search `docs/solutions/` for similar issues (`grep -r "keyword" docs/solutions/`). If same root cause → update existing doc. If different root cause with similar symptom → create new doc with cross-reference. If no match → proceed to Step 4.
 
 ### Step 4: Generate Filename
 
@@ -194,7 +175,7 @@ related_docs: []                            # Cross-references (populated in Ste
 | `missing_seed` | Random seed not set or not propagated |
 | `path_dependency` | Absolute paths or machine-specific config |
 
-**Validation:** Verify all required fields are present and enum values match. If a problem doesn't fit existing enums, use the closest match and add a `notes` field explaining the deviation.
+If a problem doesn't fit existing enums, use the closest match and add a `notes` field.
 
 ### Step 6: Create Documentation
 
@@ -317,7 +298,7 @@ assert first_stage.diagnostics['f.stat'].stat > 10, "Weak instruments"
 
 ## Post-Documentation Actions
 
-After successful documentation, auto-select the most appropriate next action:
+After documentation, auto-select the next action:
 
 1. **If invoked by `/workflows:compound`** → return control to the compound workflow
 2. **If 3+ similar issues exist** → auto-create the pattern entry, then continue
@@ -343,100 +324,57 @@ Solution documented:
 **Invoked by:**
 - `/workflows:compound` command (primary interface)
 - Auto-detection of confirmation phrases in conversation
-- `solutions-archivist` agent references this skill's output for searching past solutions
 
-**Agent routing:**
-When a new problem is encountered, `solutions-archivist` searches `docs/solutions/` by category. The `specialist_agent` field in frontmatter tells the system which agent to consult for similar problems:
+**Agent routing by category:**
+When a past solution is found, the `specialist_agent` field in frontmatter tells which agent to consult:
 - `estimation-issues/` → `econometric-reviewer`
 - `data-issues/` → `data-detective`
 - `numerical-issues/` → `numerical-auditor`
 - `methodology-issues/` → `methods-explorer`
 - `derivation-issues/` → `mathematical-prover`
-- `replication-issues/` → `pipeline-validator`
+- `replication-issues/` → `reproducibility-auditor`
 
 ---
 
-## Search Patterns
+## Searching Past Solutions
 
-To find past solutions, use these search strategies:
+Before investigating a new problem from scratch, search existing solutions. This replaces the previous `solutions-archivist` agent with a self-service workflow.
 
-```bash
-# By category
-ls docs/solutions/estimation-issues/
-ls docs/solutions/numerical-issues/
+**When to search:** Before starting any non-trivial debugging, when a user reports a problem that sounds familiar, or when an agent encounters a known problem type.
 
-# By error message
-grep -r "convergence" docs/solutions/
-grep -r "singular" docs/solutions/numerical-issues/
+**Search workflow:**
 
-# By package
-grep -r "pyblp" docs/solutions/ --include="*.md"
-grep -r "linearmodels" docs/solutions/estimation-issues/
-
-# By tag in frontmatter
-grep -r "tags:.*bootstrap" docs/solutions/
-grep -r "tags:.*weak-instruments" docs/solutions/
-
-# By severity
-grep -r "severity: critical" docs/solutions/
-
-# By specialist agent
-grep -r "specialist_agent: econometric-reviewer" docs/solutions/
-```
-
----
-
-## Example Scenario
-
-**User:** "The BLP estimation finally converges — the issue was starting values."
-
-**Skill activates:**
-
-1. **Detect confirmation:** "finally converges" triggers auto-invoke
-2. **Gather context:**
-   - Component: BLP demand estimation for cereal market
-   - Symptom: `pyblp.Problem.solve()` returns non-convergence after 1000 iterations, objective jumps
-   - Failed attempts: Increased `maxiter` (didn't help), tried different optimization methods (BFGS, L-BFGS-B)
-   - Solution: Used logit estimates as starting values for sigma (random coefficients), scaled starting values for Pi
-   - Root cause: Default zero starting values too far from solution; contraction mapping oscillates
-3. **Check existing:** No similar BLP convergence doc found
-4. **Generate filename:** `blp-convergence-cereal-demand-20250225.md`
-5. **Validate YAML:**
-   ```yaml
-   component: "BLP demand estimation"
-   date: 2025-02-25
-   problem_type: estimation_convergence
-   category: estimation-issues
-   symptoms:
-     - "pyblp.Problem.solve() returns non-convergence after 1000 iterations"
-     - "Objective function value oscillates between iterations"
-   root_cause: poor_starting_values
-   severity: high
-   estimation_method: blp
-   language: python
-   packages: [pyblp, numpy]
-   tags: [convergence, blp, starting-values, demand-estimation, random-coefficients]
-   specialist_agent: econometric-reviewer
-   related_docs: []
+1. **Identify the symptom category** — use the Category Detection Rules above to classify by root cause
+2. **Search by category directory:**
+   ```bash
+   ls docs/solutions/estimation-issues/
+   ls docs/solutions/numerical-issues/
    ```
-6. **Create documentation:** `docs/solutions/estimation-issues/blp-convergence-cereal-demand-20250225.md`
-7. **Cross-reference:** None needed (first BLP issue documented)
+3. **Search by keywords** (error messages, packages, tags):
+   ```bash
+   grep -r "convergence" docs/solutions/
+   grep -r "pyblp" docs/solutions/ --include="*.md"
+   grep -r "tags:.*weak-instruments" docs/solutions/
+   grep -r "severity: critical" docs/solutions/
+   ```
+4. **If a match is found:** Read the solution doc, check if root cause matches, apply the documented fix. If partially applicable, reference it when documenting the new solution.
+5. **If no match:** Proceed with investigation, then document the solution using the 7-step process above.
+6. **Route to specialist:** Use the `specialist_agent` field from matching docs to determine which agent should handle the current problem.
 
-**Output:**
-```
-Solution documented:
-  docs/solutions/estimation-issues/blp-convergence-cereal-demand-20250225.md
-  Category:  estimation-issues → Agent: econometric-reviewer
-  Severity:  high
-```
+**Tip:** Search `docs/solutions/patterns/common-patterns.md` first — if the symptom matches a known pattern, skip straight to the documented fix.
+
+---
+
+## Example
+
+**User says** "The BLP estimation finally converges — the issue was starting values." → Skill detects confirmation → gathers context (BLP demand, pyblp non-convergence, logit starting values fixed it) → checks existing docs → creates `docs/solutions/estimation-issues/blp-convergence-cereal-demand-20250225.md` with validated YAML frontmatter → routes to `econometric-reviewer`.
 
 ---
 
 ## Anti-Patterns
 
-- **Documenting trivial fixes** — a missing import or typo doesn't need a solution doc
+- **Documenting trivial fixes** — typos and missing imports don't need solution docs
 - **Vague descriptions** — "fixed the model" is not searchable; include exact errors and code
-- **Wrong category** — classify by root cause, not symptom (a convergence failure caused by data issues goes in `data-issues`, not `estimation-issues`)
-- **No code examples** — always include before/after code showing the fix
-- **Skipping cross-references** — if a similar issue exists, link them; this is how patterns emerge
-- **Over-documenting** — one doc per problem; don't create separate docs for each debugging step
+- **Wrong category** — classify by root cause, not symptom
+- **No code examples** — always include before/after code
+- **Skipping cross-references** — link similar issues; this is how patterns emerge

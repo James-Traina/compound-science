@@ -191,26 +191,41 @@ else
   must_fix "PostToolUse references >=3 agents" "found $ptu_agents"
 fi
 
-# 12: UserPromptSubmit references at least 3 commands
-ups_cmds=$(python3 -c "
+# 12: UserPromptSubmit references at least 3 skills (v0.5: commands removed from UPS, skills are the routing targets)
+ups_skills=$(python3 -c "
 import json, re, os
 d = json.load(open(os.environ['HOOKS_FILE']))
 for m in d['hooks']['UserPromptSubmit']:
     for h in m['hooks']:
         if h['type'] == 'prompt':
-            cmds = set(re.findall(r'/(estimate|simulate|identify|diagnose|tabulate|replicate|visualize|stress-test)', h['prompt']))
-            print(len(cmds))
+            skills = set(re.findall(r'\x60([\w-]+)\x60\s+skill', h['prompt']))
+            print(len(skills))
 " 2>/dev/null || echo "0")
-if [ "$ups_cmds" -ge 3 ]; then
-  pass "UserPromptSubmit references $ups_cmds commands"
+if [ "$ups_skills" -ge 3 ]; then
+  pass "UserPromptSubmit references $ups_skills skills"
 else
-  must_fix "UserPromptSubmit references >=3 commands" "found $ups_cmds"
+  # Fallback: check that UPS references at least 3 backtick-quoted component names
+  ups_components=$(python3 -c "
+import json, re, os
+d = json.load(open(os.environ['HOOKS_FILE']))
+for m in d['hooks']['UserPromptSubmit']:
+    for h in m['hooks']:
+        if h['type'] == 'prompt':
+            names = set(re.findall(r'\x60([a-z]+-[a-z-]+)\x60', h['prompt']))
+            print(len(names))
+" 2>/dev/null || echo "0")
+  if [ "$ups_components" -ge 3 ]; then
+    pass "UserPromptSubmit references $ups_components component names"
+  else
+    must_fix "UserPromptSubmit references >=3 components" "found $ups_components"
+  fi
 fi
 
 group "Cross-References — New Commands"
 
-# 13-14: New commands reference existing agents
-for cmd in diagnose stress-test; do
+# 13-14: Non-stub commands reference existing agents (stubs excluded)
+# v0.5: diagnose and stress-test are now deprecated stubs — check workflow commands instead
+for cmd in workflows/review workflows/work; do
   file="$PLUGIN_DIR/commands/$cmd.md"
   if [ -f "$file" ]; then
     agent_refs=$(grep -oE '`[a-z]+-[a-z-]+`' "$file" 2>/dev/null | tr -d '`' | sort -u || true)
@@ -222,15 +237,16 @@ for cmd in diagnose stress-test; do
       fi
     done
     if $found; then
-      pass "command $cmd references valid agents"
+      pass "command $(basename $cmd) references valid agents"
     else
-      should_fix "command $cmd references agents" "no agent references found"
+      should_fix "command $(basename $cmd) references agents" "no agent references found"
     fi
   fi
 done
 
-# 15-16: New commands reference skills
-for cmd in replicate visualize; do
+# 15-16: Non-stub commands reference skills (stubs excluded)
+# v0.5: replicate and visualize are now stubs/wrappers — check estimate and replicate wrappers
+for cmd in estimate replicate; do
   file="$PLUGIN_DIR/commands/$cmd.md"
   if [ -f "$file" ]; then
     skill_refs=$(grep -oE '`[a-z]+-[a-z-]+`' "$file" 2>/dev/null | tr -d '`' | sort -u || true)

@@ -179,7 +179,7 @@ Based on the problem category, optionally invoke a specialized agent to review t
 | `methodology-issues/` | `methods-explorer` | Methodological completeness, alternatives |
 | `derivation-issues/` | `mathematical-prover` | Proof correctness, regularity conditions |
 | `data-issues/` | `data-detective` | Data handling best practices |
-| `replication-issues/` | `reproducibility-checker` | Reproducibility completeness |
+| `replication-issues/` | `reproducibility-auditor` | Reproducibility completeness |
 
 Launch the matching agent(s) to verify the documented solution is correct and complete. If the agent finds issues, update the documentation file.
 
@@ -270,7 +270,7 @@ This creates a compounding knowledge system for research methodology:
 
 1. First time you solve "ill-conditioned Hessian in BLP" → Research and debug (2 hours)
 2. Document the solution → `docs/solutions/numerical-issues/blp-hessian.md` (5 min)
-3. Next time similar issue occurs → Quick lookup via `solutions-archivist` (2 min)
+3. Next time similar issue occurs → Quick lookup via `compound-catalog` skill (2 min)
 4. Knowledge compounds → Research team gets faster at diagnosing and fixing estimation problems
 
 The feedback loop:
@@ -298,7 +298,7 @@ Or invoke directly: `/workflows:compound [brief context]`
 ## Routes To
 
 - `compound-catalog` skill — knowledge capture and indexing
-- `solutions-archivist` agent — searches docs/solutions/ for past patterns
+- `compound-catalog` skill — searches docs/solutions/ for past patterns
 - `/workflows:review` — review code changes after fixing an issue
 
 ## Applicable Specialized Agents
@@ -316,7 +316,7 @@ Based on problem category, these agents enhance and verify documentation:
 
 ### Rigor & Reproducibility
 - **mathematical-prover**: Checks derivation-issue solutions for proof correctness
-- **reproducibility-checker**: Validates replication-issue solutions
+- **reproducibility-auditor**: Validates replication-issue solutions
 
 ### Configuration
 Customize which review agents run by editing `compound-science.local.md` or invoking the `project-setup` skill.
