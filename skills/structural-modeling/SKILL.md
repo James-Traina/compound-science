@@ -188,7 +188,7 @@ For GPU-accelerated structural estimation (JIT compilation, autodiff, vmap for s
 - `equilibrium-analyst` — Verify equilibrium existence, uniqueness, stability, comparative statics
 - `econometric-reviewer` — Reviews moment-matching strategy, parameter identification, sensitivity to targets
 - `/estimate` — Full estimation pipeline with quality gates
-- `/simulate` — Design and run Monte Carlo studies for structural estimators
+- `simulation-designer` agent — Design and run Monte Carlo studies for structural estimators
 
 ## Additional References
 

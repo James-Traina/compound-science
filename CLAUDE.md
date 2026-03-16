@@ -25,8 +25,8 @@ Use `/lfg` to chain all five steps automatically, or `/slfg` for parallel swarm 
 - `/lfg` — Sequential: plan → work → review → compound
 - `/slfg` — Parallel swarm variant of `/lfg`
 
-### Deprecated stubs (7)
-`/simulate`, `/identify`, `/diagnose`, `/tabulate`, `/visualize`, `/stress-test`, `/deepen-plan` — each redirects to the agent or skill that now handles its function.
+### Deprecated stubs (7) — compatibility layer, will be removed in v0.6
+`/simulate`, `/identify`, `/diagnose`, `/tabulate`, `/visualize`, `/stress-test`, `/deepen-plan` — each redirects to the agent or skill that now handles its function. These exist only for muscle memory; use the canonical commands and agents directly.
 
 ## Agents
 

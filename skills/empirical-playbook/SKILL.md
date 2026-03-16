@@ -234,9 +234,9 @@ For full minimum reporting standards (method-specific checklists for IV, DiD, RD
 - `simulation-designer`: Designs power simulations for nonstandard study designs
 - `journal-referee`: Reviews whether the empirical strategy meets journal standards
 
-**Commands:**
+**Cross-references:**
 
-- `/identify`: Formalize an identification argument for the chosen method
-- `/diagnose`: Run the full diagnostic battery for the estimated specification
-- `/stress-test`: Run sensitivity analysis (Oster bounds, specification curve, breakdown frontier)
-- `/tabulate`: Format regression tables and diagnostic output for publication
+- `identification-proofs` skill: Formalize an identification argument for the chosen method
+- `references/diagnostic-battery.md`: Run the full diagnostic battery for the estimated specification
+- `references/sensitivity-analysis.md`: Run sensitivity analysis (Oster bounds, specification curve, breakdown frontier)
+- `publication-output` skill: Format regression tables and diagnostic output for publication

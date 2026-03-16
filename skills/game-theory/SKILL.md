@@ -124,7 +124,7 @@ For full model specifications, estimation code, and references, see `references/
 - Use `equilibrium-analyst` agent to verify equilibrium existence, uniqueness, and stability properties before reporting results
 - Use `structural-modeling` skill for the estimation machinery (GMM, MLE, NFXP, MPEC) when the game-theoretic structure is already set up
 - Use `identification-critic` agent to stress-test the game-theoretic identification argument — exclusion restrictions, rank conditions, separability assumptions
-- Use the `/identify` command to formalize the full identification argument: target parameter → model → equilibrium concept → moment conditions → rank condition
+- Use the `identification-critic` agent (or `identification-proofs` skill) to formalize the full identification argument: target parameter → model → equilibrium concept → moment conditions → rank condition
 - Use `simulation-designer` agent to design Monte Carlo studies verifying identification and estimator performance in your specific game
 
 ---

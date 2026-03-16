@@ -215,14 +215,14 @@ Create `compound-science.local.md` in your project's `.claude/` directory to con
 
 ## Integration
 
-This plugin handles domain-specific research methodology. It uses the built-in `/simplify` command for generic code quality checks during `/workflows:review`. No other plugins are required.
+This plugin handles domain-specific research methodology. No other plugins are required.
 
 It works well alongside these optional companion plugins if you have them installed:
 
 | Plugin | What it provides | How compound-science benefits |
 |--------|-----------------|-------------------------------|
 | `commit-commands` | Git commit/push/PR | Workflow commands use git for version-tagging submissions |
-| `document-skills` | PDF, XLSX, DOCX export | Results export from `/tabulate` and `/replicate` |
+| `document-skills` | PDF, XLSX, DOCX export | Results export from `publication-output` skill and `/replicate` |
 | `context7` | Up-to-date framework docs | Library documentation lookup for estimation packages |
 | `pyright-lsp` | Python type checking | Type validation in estimation code |
 

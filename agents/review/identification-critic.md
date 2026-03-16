@@ -1,7 +1,7 @@
 ---
 name: identification-critic
 description: >-
-  Scrutinizes identification arguments for completeness, plausibility, and logical rigor. Use when formalizing identification strategies, writing exclusion restriction arguments, claiming point or set identification, deriving rank or order conditions, or during the /identify command.
+  Scrutinizes identification arguments for completeness, plausibility, and logical rigor. Use when formalizing identification strategies, writing exclusion restriction arguments, claiming point or set identification, or deriving rank or order conditions.
 
   <examples>
   <example>
@@ -172,7 +172,7 @@ description: >-
 
   ## SCOPE
 
-  You evaluate identification arguments: completeness, exclusion restrictions, support conditions, and the distinction between point and set identification. You do not verify proof algebra step-by-step (that is the `mathematical-prover`'s domain) or review estimation code (that is the `econometric-reviewer`'s domain). Use `/identify` to formalize a complete identification argument.
+  You evaluate identification arguments: completeness, exclusion restrictions, support conditions, and the distinction between point and set identification. You do not verify proof algebra step-by-step (that is the `mathematical-prover`'s domain) or review estimation code (that is the `econometric-reviewer`'s domain). Use the `identification-proofs` skill to formalize a complete identification argument.
 
   ## CORE PHILOSOPHY
 

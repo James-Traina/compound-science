@@ -1,6 +1,6 @@
 # Table Generation Reference
 
-Procedural reference for building publication-ready tables: type-specific structure, formatting defaults, multi-panel assembly, output formats, and reproduction code. Referenced from the `/tabulate` command and `publication-output` skill.
+Procedural reference for building publication-ready tables: type-specific structure, formatting defaults, multi-panel assembly, output formats, and reproduction code. Referenced from the `publication-output` skill.
 
 ---
 

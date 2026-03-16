@@ -122,7 +122,7 @@ Causal ML nests traditional estimators: DML with linear nuisance = OLS (Frisch-W
 
 **Agents:** `econometric-reviewer` (post-estimation review), `identification-critic` (IV/PLIV assumptions), `numerical-auditor` (convergence, seeding), `results-verifier` (table/code consistency), `simulation-designer` (Monte Carlo validation).
 
-**Commands:** `/stress-test` (specification curve over ML choices), `/diagnose` (nuisance R², overlap, calibration), `/simulate` (synthetic data with known CATE).
+**Cross-references:** `empirical-playbook` skill → `sensitivity-analysis.md` (specification curve over ML choices), `empirical-playbook` skill → `diagnostic-battery.md` (nuisance R², overlap, calibration), `simulation-designer` agent (synthetic data with known CATE).
 
 **Relationship to `causal-inference` skill:** Use `causal-inference` to establish identification; use `causal-ml` for implementation with high-dimensional controls or when heterogeneity is primary. Complements, not substitutes.
 

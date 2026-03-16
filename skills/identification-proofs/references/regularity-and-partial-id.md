@@ -54,4 +54,4 @@ With interval-censored data — $Y \in [Y_L, Y_U]$ — the regression coefficien
 
 ### Connection to Sensitivity Analysis
 
-Partial identification and sensitivity analysis are related: Oster (2019) bounds on treatment effects under proportional selection on observables are equivalent to characterizing the identified set under a restriction on the degree of selection. The `/stress-test` command implements Oster bounds and related sensitivity exercises. Both approaches answer the same question: "How much can the unidentified component vary, and what does that imply for the parameter?"
+Partial identification and sensitivity analysis are related: Oster (2019) bounds on treatment effects under proportional selection on observables are equivalent to characterizing the identified set under a restriction on the degree of selection. The `empirical-playbook` skill (`sensitivity-analysis.md`) covers Oster bounds and related sensitivity exercises. Both approaches answer the same question: "How much can the unidentified component vary, and what does that imply for the parameter?"

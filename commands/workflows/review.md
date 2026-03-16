@@ -1,7 +1,7 @@
 ---
 name: workflows:review
 description: Run multi-agent econometric review on estimation code, identification arguments, and research artifacts
-argument-hint: "<PR number, branch name, plan reference, or latest>"
+argument-hint: "<file paths, directory, plan reference, PR number, or empty for auto-detect>"
 allowed-tools: Read, Grep, Glob, Bash
 ---
 
@@ -9,13 +9,11 @@ allowed-tools: Read, Grep, Glob, Bash
 
 **Pipeline mode:** This command operates fully autonomously. All decisions are made automatically.
 
-Perform exhaustive econometric and methodological review using multi-agent parallel analysis. Domain-specific reviewers check estimation quality, identification strategy, numerical stability, and mathematical rigor, while generic code quality is handled by the built-in `/simplify` command.
+Perform exhaustive econometric and methodological review using multi-agent parallel analysis. Domain-specific reviewers check estimation quality, identification strategy, numerical stability, and mathematical rigor.
 
 ## Input
 
 <review_target> #$ARGUMENTS </review_target>
-
-**If no input is provided:** Review the current branch against the default branch. If on the default branch with no changes, look for the most recent PR and review that.
 
 ## Execution Workflow
 
@@ -23,39 +21,27 @@ Perform exhaustive econometric and methodological review using multi-agent paral
 
 1. **Determine Review Target**
 
-   ```bash
-   # Detect review target type
-   if [[ "$ARGUMENTS" =~ ^[0-9]+$ ]]; then
-     echo "TARGET=pr:$ARGUMENTS"
-   elif [[ "$ARGUMENTS" =~ ^http ]]; then
-     echo "TARGET=url:$ARGUMENTS"
-   elif [[ -n "$ARGUMENTS" ]]; then
-     echo "TARGET=branch:$ARGUMENTS"
-   else
-     echo "TARGET=current-branch"
-   fi
+   The review is artifact-centric: it reviews research files (estimation code, proofs, pipelines, data scripts), not git metadata. Determine the target in priority order:
+
+   - **File paths or directories** (e.g., `estimation.py`, `src/models/`, `proof.tex`) → review those artifacts directly
+   - **Plan reference** (e.g., `plan-3`) → find the plan in `docs/plans/`, review files it references
+   - **PR number** → fetch file list with `gh pr view --json files`
+   - **Empty** → auto-detect: scan the project for estimation code, proofs, pipeline files, and data scripts. If git shows recent changes, include those.
+
+2. **Classify Artifacts**
+
+   Scan the target files and classify by type:
+
    ```
-
-   - **PR number** → fetch metadata with `gh pr view --json title,body,files,commits`
-   - **Branch name** → diff against default branch
-   - **Empty** → diff current branch against default branch
-   - **Plan reference** → find the plan in `docs/plans/`, identify related branch/commits
-
-2. **Fetch Changed Files and Classify Artifacts**
-
-   ```bash
-   # Get changed files
-   git diff --name-only $default_branch...HEAD
-
-   # Classify artifacts
-   # estimation_code: *.py with statsmodels/scipy.optimize/pyblp/linearmodels imports
-   #                  *.R with fixest/lfe/AER/gmm imports
-   #                  *.jl with Optim/NLsolve imports
-   # simulation_code: Monte Carlo loops, DGP code, bias/RMSE computation
-   # proofs:          *.tex with theorem/proof environments, *.md with derivation sections
-   # pipeline_files:  Makefile, Snakefile, dvc.yaml, *.do
-   # data_code:       data loading, cleaning, merge operations
-   # generic_code:    everything else (utilities, configs, scripts)
+   estimation_code: *.py with statsmodels/scipy.optimize/pyblp/linearmodels imports
+                    *.R with fixest/lfe/AER/gmm imports
+                    *.jl with Optim/NLsolve imports
+                    *.do with reg/ivregress/gmm commands
+   simulation_code: Monte Carlo loops, DGP code, bias/RMSE computation
+   proofs:          *.tex with theorem/proof environments, *.md with derivation sections
+   pipeline_files:  Makefile, Snakefile, dvc.yaml, master.do
+   data_code:       data loading, cleaning, merge operations
+   output_files:    tables/*, figures/*, *.csv result files
    ```
 
    This classification drives which domain reviewers to launch.
@@ -152,10 +138,6 @@ Load skill: compound-catalog
   → Flag matches as "Known Pattern" with links to solution docs
 ```
 
-#### Delegate Generic Code Quality
-
-After domain review is complete, run the built-in `/simplify` command on the changed files to check for reuse opportunities, code quality, and efficiency. Do NOT duplicate its capabilities — it handles style, dead code, and structural improvements.
-
 ### Phase 3: Finding Assembly
 
 **Wait for all Phase 2 agents to complete before proceeding.**
@@ -168,7 +150,7 @@ After domain review is complete, run the built-in `/simplify` command on the cha
 
    | Severity | Criteria | Action |
    |----------|----------|--------|
-   | **CRITICAL** | Incorrect identification argument, biased estimator, wrong standard errors, numerical instability producing wrong results, missing convergence check | Must fix before merge |
+   | **CRITICAL** | Incorrect identification argument, biased estimator, wrong standard errors, numerical instability producing wrong results, missing convergence check | Must fix before proceeding |
    | **WARNING** | Suboptimal estimation approach, missing robustness check, incomplete diagnostics, weak instruments not flagged, reproducibility gap | Should fix |
    | **NOTE** | Style improvements, alternative approaches worth considering, minor efficiency gains, documentation gaps | Nice to have |
 
@@ -212,8 +194,7 @@ After domain review is complete, run the built-in `/simplify` command on the cha
    ```markdown
    ## Econometric Review Complete
 
-   **Review Target:** [PR/branch description]
-   **Branch:** [branch-name]
+   **Review Target:** [files/directory/plan reviewed]
 
    ### Estimation Assessment
    | Dimension | Status |
@@ -226,7 +207,7 @@ After domain review is complete, run the built-in `/simplify` command on the cha
    | Rigor | [status] |
 
    ### Findings Summary
-   - **CRITICAL:** [count] — must fix before merge
+   - **CRITICAL:** [count] — must fix before proceeding
    - **WARNING:** [count] — should fix
    - **NOTE:** [count] — suggestions
 
@@ -250,10 +231,9 @@ After domain review is complete, run the built-in `/simplify` command on the cha
    - identification-critic
    - [conditional agents if triggered]
    - compound-catalog (solution search)
-   - `/simplify` (code quality)
 
    ### Next Steps
-   1. Address CRITICAL findings (blocks merge)
+   1. Address CRITICAL findings (must fix before proceeding)
    2. Address WARNING findings (recommended)
    3. Run `/workflows:compound` to document any novel solutions
    ```
@@ -322,4 +302,3 @@ To create or modify settings, run the `project-setup` skill.
 
 - `/workflows:compound` — document solutions to issues found during review
 - `/workflows:work` — implement fixes for review findings
-- `/simplify` — generic code quality (run after domain review)

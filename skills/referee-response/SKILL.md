@@ -144,4 +144,4 @@ This becomes the foundation for a round-2 response letter that can say "as discu
 
 ## Scope
 
-Use this skill when preparing responses to referee reports. For simulating what referees will say before submission, use the `journal-referee` agent. For pre-submission stress-testing of robustness, use `/stress-test`.
+Use this skill when preparing responses to referee reports. For simulating what referees will say before submission, use the `journal-referee` agent. For pre-submission stress-testing of robustness, use the `empirical-playbook` skill (`sensitivity-analysis.md`).

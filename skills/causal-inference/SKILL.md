@@ -213,9 +213,9 @@ For propensity score estimation, IPW/Hajek estimators, and manual AIPW implement
 
 - `econometric-reviewer` — Reviews identification strategy, standard errors, and asymptotic properties
 - `identification-critic` — Evaluates exclusion restrictions, support conditions, and identification completeness
-- `/identify` — Formalize an identification argument end-to-end
+- `identification-critic` agent / `identification-proofs` skill — Formalize an identification argument end-to-end
 - `/estimate` — Run a full estimation pipeline with diagnostics
-- `/stress-test` — Oster bounds, specification curve, breakdown frontier for robustness
+- `empirical-playbook` skill (`sensitivity-analysis.md`) — Oster bounds, specification curve, breakdown frontier for robustness
 
 ## Additional References
 

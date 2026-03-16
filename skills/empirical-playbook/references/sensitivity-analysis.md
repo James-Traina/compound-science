@@ -1,6 +1,6 @@
 # Applied Micro Toolkit: Sensitivity Analysis
 
-Procedural reference for stress-testing causal estimates. Covers baseline extraction, Oster bounds, Conley bounds, breakdown frontiers, specification curves, and additional sensitivity methods. Load this when running `/stress-test` or when a referee asks "how robust is this result?"
+Procedural reference for stress-testing causal estimates. Covers baseline extraction, Oster bounds, Conley bounds, breakdown frontiers, specification curves, and additional sensitivity methods. Load this for sensitivity analysis or when a referee asks "how robust is this result?"
 
 ---
 

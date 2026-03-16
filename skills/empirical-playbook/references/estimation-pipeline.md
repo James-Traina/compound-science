@@ -85,7 +85,7 @@ If issues are present but non-critical (moderate missingness, outliers, minor ty
                - Stronger instruments
                - Alternative identification strategy
                - Partial identification / bounds approach
-               - Dispatch to /identify for formal identification argument
+               - Dispatch to `identification-critic` agent for formal identification argument
    ```
 
 ### GATE: Identification

@@ -358,7 +358,7 @@ Workflow commands read `compound-science.local.md` at startup:
 3. **`/workflows:work`** — reads `estimation_language` for code generation defaults
 4. **`/workflows:compound`** — reads all settings for solution documentation routing
 5. **`/estimate`** — reads `estimation_language` and any `estimate_override` agents
-6. **`/simulate`** — reads `estimation_language` for simulation code generation
+6. **`simulation-designer` agent** — reads `estimation_language` for simulation code generation
 7. **SessionStart hook** — reads `project_type` to set environment context
 
 If no `compound-science.local.md` exists, commands use defaults for `empirical-paper` with `python`.

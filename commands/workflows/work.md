@@ -406,4 +406,3 @@ Before creating PR, verify:
 
 - `/workflows:review` — review the implementation
 - `/workflows:compound` — document solutions discovered during implementation
-- `/diagnose` — run diagnostics on estimation results

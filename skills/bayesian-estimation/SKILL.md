@@ -197,11 +197,11 @@ For Bayesian structural models (BLP, dynamic discrete choice, hierarchical DiD) 
 - `structural-modeling`: Frequentist counterpart — NFXP, MPEC, BLP, dynamic discrete choice. Use Bayesian skills on top of the structural model framework when small samples or hierarchical structure warrants it.
 - `causal-inference`: For reduced-form causal methods. Bayesian DiD and RD designs follow the same identification logic; the Bayesian layer adds partial pooling and uncertainty propagation.
 
-**Commands that extend naturally to Bayesian context:**
+**Extensions to Bayesian context:**
 
-- `/diagnose`: Convergence diagnostics (R-hat, ESS, divergences) are a subset of the full diagnostic battery
-- `/simulate`: Prior predictive simulation is a special case of the Monte Carlo simulation workflow
-- `/stress-test`: Prior sensitivity analysis (vary prior SD 0.5x and 2x) is a natural robustness check for Bayesian models
+- `empirical-playbook` skill (`diagnostic-battery.md`): Convergence diagnostics (R-hat, ESS, divergences) are a subset of the full diagnostic battery
+- `simulation-designer` agent: Prior predictive simulation is a special case of the Monte Carlo simulation workflow
+- `empirical-playbook` skill (`sensitivity-analysis.md`): Prior sensitivity analysis (vary prior SD 0.5x and 2x) is a natural robustness check for Bayesian models
 
 ---
 
