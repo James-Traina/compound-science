@@ -1,5 +1,8 @@
 ---
 name: methods-explorer
+effort: medium
+maxTurns: 12
+skills: [structural-modeling, empirical-playbook]
 description: >-
   Conducts deep analysis of specific econometric and statistical methods, comparing estimator properties, software implementations, and computational tradeoffs. Also researches benchmark parameter values, calibration targets, and stylized facts from the literature. Use when choosing between estimation approaches, evaluating an estimator's properties, finding software packages for a method, understanding computational considerations for structural estimation, or sourcing calibration targets and reference parameter values.
 

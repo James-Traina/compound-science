@@ -1,7 +1,8 @@
 ---
 name: structural-modeling
+argument-hint: "<model type or estimation problem>"
 description: >-
-  Guide for implementing structural econometric models. Use when the user is building, estimating, or debugging structural models — including BLP demand estimation, dynamic discrete choice, auction models, or any workflow involving moment conditions, nested fixed-point algorithms, or MPEC formulations. Triggers on "structural model", "moment conditions", "NFXP", "MPEC", "BLP", "random coefficients", "dynamic discrete choice", "CCP", "Rust model", "auction estimation", "GMM objective", "inner loop", "contraction mapping", or convergence/starting value problems in optimization-based estimation.
+  This skill covers structural econometric models. Use when the user is building, estimating, or debugging structural models — including BLP demand estimation, dynamic discrete choice, auction models, or any workflow involving moment conditions, nested fixed-point algorithms, or MPEC formulations. Triggers on "structural model", "moment conditions", "NFXP", "MPEC", "BLP", "random coefficients", "dynamic discrete choice", "CCP", "Rust model", "auction estimation", "GMM objective", "inner loop", "contraction mapping", or convergence/starting value problems in optimization-based estimation.
 ---
 
 # Structural Modeling
@@ -21,7 +22,7 @@ Use when the user is:
 
 Skip when:
 - The task is reduced-form causal inference (use `causal-inference` skill)
-- The task is pure simulation design (use `simulation-designer` agent)
+- The task is pure simulation design (use `numerical-auditor` agent)
 - The user just needs standard regression (statsmodels/linearmodels suffice)
 
 ## Quick Reference: Structural Methods
@@ -184,11 +185,10 @@ For GPU-accelerated structural estimation (JIT compilation, autodiff, vmap for s
 ## Integration with compound-science
 
 - `numerical-auditor` — Systematic convergence review: gradient norms, conditioning, tolerance sensitivity
-- `process-architect` — Formalize data generating processes from structural models
-- `equilibrium-analyst` — Verify equilibrium existence, uniqueness, stability, comparative statics
+- `numerical-auditor` — DGP formalization, Monte Carlo studies, convergence review
+- `identification-critic` — Verify equilibrium existence, uniqueness, stability, comparative statics
 - `econometric-reviewer` — Reviews moment-matching strategy, parameter identification, sensitivity to targets
 - `/estimate` — Full estimation pipeline with quality gates
-- `simulation-designer` agent — Design and run Monte Carlo studies for structural estimators
 
 ## Additional References
 

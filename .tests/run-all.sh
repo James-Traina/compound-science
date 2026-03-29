@@ -75,6 +75,7 @@ echo "╚═══════════════════════�
 echo ""
 
 # Count results from this run's shared report in one pass
+total_pass=0 total_fail=0 total_warn=0 total_skip=0
 read -r total_pass total_fail total_warn total_skip < <(awk '
   /^\[PASS\]/{p++} /^\[FAIL\]/{f++} /^\[WARN\]/{w++} /^\[SKIP\]/{s++}
   END{print p+0, f+0, w+0, s+0}
@@ -121,7 +122,7 @@ echo ""
 # When running the full suite, verify test count is not below expected (catches crashed scripts).
 # Note: legitimate test failures inflate the count above EXPECTED_TOTAL (each must_fix adds a
 # test but the summary pass is suppressed), so only a count below the floor signals a crash.
-EXPECTED_TOTAL=309
+EXPECTED_TOTAL=241
 if [ $# -eq 0 ] && [ "$total_all" -lt "$EXPECTED_TOTAL" ]; then
   echo "  ✗ TOTAL MISMATCH: expected >=$EXPECTED_TOTAL tests, got $total_all"
   echo "    A test script may have crashed mid-run. Check each group individually."

@@ -10,6 +10,8 @@ Empirical research in economics involves a lot of repeated pattern-matching: fig
 
 The plugin intercepts your workflow and surfaces relevant expertise without you having to ask. When you write estimation code, it suggests the econometric-reviewer. When a session ends without standard errors being discussed, it flags it. When you open a project, it detects your estimation language and data structure. The idea is that you focus on the research question, not the checklist.
 
+This plugin does not write papers, generate datasets, or replace your judgment. It catches common methodology mistakes and keeps solutions findable for next time.
+
 ## How it works
 
 The core loop is **Plan → Work → Review → Compound → Repeat**.
@@ -20,21 +22,19 @@ The core loop is **Plan → Work → Review → Compound → Repeat**.
 
 3. **Review** (`/workflows:review`): Domain-specific review agents examine your work in parallel. The econometric-reviewer checks identification. The numerical-auditor checks floating-point stability and gradient accuracy. The identification-critic evaluates your exclusion restrictions. The journal-referee tries to find reasons to reject the paper. The econometric-reviewer, for instance, knows to ask about Montiel Olea-Pflueger effective F rather than Stock-Yogo, and about clustered wild bootstrap for staggered DiD, not just generic clustering.
 
-4. **Compound** (`/workflows:compound`): Solutions get documented into `docs/solutions/` by category (identification, estimation, numerical, methodology). Future sessions search this via the compound-catalog skill. The knowledge base grows as the project does.
+4. **Compound** (`/workflows:compound`): Solutions get documented into `docs/solutions/` by category (identification, estimation, numerical, methodology). Future sessions search this via the solution schema. The knowledge base grows as the project does.
 
 Run `/lfg [task]` to chain all four steps automatically. Run `/slfg [task]` to parallelize review and compound with agent swarms.
 
 ### Ambient hooks
 
-Seven ambient hooks run without being invoked.
+Five ambient hooks run without being invoked.
 
 - When you **open a session**, the plugin scans your project for `.py`/`.R`/`.do` files, `Makefile`/`Snakemake`/`DVC`, `data/` directories, and `.tex` files, then configures itself for your language, project type, and data setup.
 
 - When you **submit a prompt**, the plugin classifies it across 14 domain categories and adds relevant context to the response. If you ask "is this estimate large?", it notes that you should first confirm whether your identification assumptions hold — evaluating magnitudes before validating the design is a common mistake.
 
-- When you **write code**, the plugin reads what you wrote and suggests a relevant agent. Write a file with `fixest` or `did`, and it surfaces the econometric-reviewer. Write a `.tex` file with `\begin{theorem}`, and it suggests the mathematical-prover. Write a simulation without `set.seed`, and it flags the omission. Classification hooks use Haiku for fast routing.
-
-- When a **session ends**, the plugin checks completeness conditions. Cross-cutting checks (unvalidated merges, sensitivity analysis, replication package, DiD pre-trends, IV first-stage) run in the Stop hook. Domain-specific checks (missing SEs, unseeded simulations, unstated regularity conditions) are scoped to agent frontmatter on econometric-reviewer, simulation-designer, and mathematical-prover. The Stop hook uses Sonnet for deeper reasoning.
+- When a **session ends**, the plugin checks completeness conditions. Cross-cutting checks (unvalidated merges, unseeded scripts, unversioned pip, absolute paths, sensitivity analysis, replication package, DiD pre-trends, IV first-stage) run in the Stop hook. Agent-specific checks (missing SEs, unseeded simulations, unstated regularity conditions) run via the SubagentStop hook after econometric-reviewer, numerical-auditor, and mathematical-prover complete. The Stop hook uses Sonnet for deeper reasoning.
 
 ## Install
 
@@ -80,14 +80,6 @@ To update after a new release:
 /estimate run 2SLS with Bartik instruments
 /replicate build replication package for journal submission
 
-# These still work — they redirect to the appropriate agent or skill
-/simulate Monte Carlo for DiD with staggered adoption
-/identify formalize the identification argument for auction model
-/diagnose check my IV regression results
-/tabulate format regression table for AER submission
-/stress-test run Oster bounds on baseline estimate
-/visualize create event study plot with confidence intervals
-/deepen-plan enrich my research plan with specialist agent research
 ```
 
 ## Commands
@@ -102,7 +94,7 @@ These chain together into the Plan → Work → Review → Compound loop. Run th
 | `/workflows:plan` | Create an implementation plan. The plugin picks between MINIMAL (simple task), MORE (moderate complexity), and A LOT (new estimator, identification challenge, multiple robustness checks). Returns a plan you can edit before execution. |
 | `/workflows:work` | Execute the current plan with quality gates. Monitors convergence, routes problems to the relevant agent. |
 | `/workflows:review` | Run the four review agents in parallel: econometric-reviewer, numerical-auditor, identification-critic, journal-referee. Each returns a report with numbered findings and severity ratings. |
-| `/workflows:compound` | Extract methodological insights from the session into `docs/solutions/`. Creates searchable entries by category (identification arguments, convergence fixes, instrument choices) that future sessions can find via the compound-catalog skill. |
+| `/workflows:compound` | Extract methodological insights from the session into `docs/solutions/`. Creates searchable entries by category (identification arguments, convergence fixes, instrument choices) that future sessions can find via the solution schema. |
 
 ### Canonical commands (2)
 
@@ -118,39 +110,21 @@ These chain together into the Plan → Work → Review → Compound loop. Run th
 | `/lfg` | Chains brainstorm → plan → work → review → compound. Use for the full autonomous pipeline. |
 | `/slfg` | Same as `/lfg` but parallelizes review and compound using agent swarms. Faster when you have multiple reviewers queued. |
 
-### Deprecated stubs (7)
+## Agents (10)
 
-These commands still work but now redirect to the agent or skill that handles their function.
+Each agent runs as a specialized subagent with its own structured output format. Review agents return numbered findings with severity ratings (critical, must-fix, should-fix, suggestion). Research agents return structured reports with citations and follow-up questions. All review agents include confidence gating (suppress findings below 0.60), "what would change my mind" for every major finding, and a read-only auditor rule.
 
-| Command | Redirects to |
-|---------|-------------|
-| `/simulate` | `simulation-designer` agent |
-| `/identify` | `identification-proofs` skill |
-| `/diagnose` | `econometric-reviewer` agent |
-| `/tabulate` | `publication-output` skill |
-| `/visualize` | `publication-output` skill |
-| `/stress-test` | `empirical-playbook` skill (sensitivity analysis section) |
-| `/deepen-plan` | `/workflows:plan` with parallel agent enrichment |
-
-## Agents (14)
-
-Each agent runs as a specialized subagent with its own structured output format. Review agents return numbered findings with severity ratings (critical, must-fix, should-fix, suggestion). Research agents return structured reports with citations and follow-up questions. Three agents (econometric-reviewer, simulation-designer, mathematical-prover) have scoped Stop hooks in their frontmatter for domain-specific completeness checks.
-
-### Review agents (9)
+### Review agents (5)
 
 Invoked during `/workflows:review` or by ambient hooks when you write relevant code.
 
 | Agent | What it examines | When it's most useful |
 |-------|-----------------|----------------------|
-| `econometric-reviewer` | Identification strategy, endogeneity, standard errors, calibration strategy (moment selection, sensitivity to targets), specification flow (model → estimator → code). Instrument strength via Montiel Olea-Pflueger effective F. Has a scoped Stop hook for missing SEs. | After writing estimation code or completing a regression |
-| `mathematical-prover` | Proof step validity, assumption completeness, regularity condition sufficiency, fixed-point arguments, quantifier ordering. Has a scoped Stop hook for unstated regularity conditions. | Writing theory appendices, proving identification propositions, verifying contraction mapping arguments |
-| `numerical-auditor` | Floating-point stability (log-sum-exp, integration tolerances), convergence diagnostics (gradient norms, step sizes), RNG seeding, matrix conditioning, gradient accuracy | After structural estimation, simulation, or any numerical optimization |
-| `identification-critic` | Identification argument completeness — exclusion restrictions, support conditions, rank conditions, partial identification, observational equivalence | Before finalizing an empirical strategy or submitting |
+| `econometric-reviewer` | Identification strategy, endogeneity, standard errors, calibration strategy (moment selection, sensitivity to targets), specification flow (model → estimator → code), results verification (table accuracy, significance stars). Instrument strength via Montiel Olea-Pflueger effective F. | After writing estimation code or completing a regression |
+| `mathematical-prover` | Proof step validity, assumption completeness, regularity condition sufficiency, fixed-point arguments, quantifier ordering. | Writing theory appendices, proving identification propositions, verifying contraction mapping arguments |
+| `numerical-auditor` | Floating-point stability (log-sum-exp, integration tolerances), convergence diagnostics (gradient norms, step sizes), RNG seeding, matrix conditioning, gradient accuracy, simulation design (DGP correctness, sample sizes, metrics), DGP formalization from structural primitives | After structural estimation, simulation, or any numerical optimization |
+| `identification-critic` | Identification argument completeness — exclusion restrictions, support conditions, rank conditions, partial identification, observational equivalence, equilibrium existence/uniqueness/stability | Before finalizing an empirical strategy or submitting |
 | `journal-referee` | Adversarial peer review simulation: contribution relative to the literature, methodological concerns, robustness gaps, external validity, exposition. Calibrated for 11 journals (AER, ECMA, JPE, QJE, REStud, AEJ-Applied, AEJ-Policy, JHR, JHE, RAND, JPubE) | Before submitting, or to stress-test a draft before an R&R response |
-| `simulation-designer` | DGP correctness (does the simulation reflect the theoretical model?), sample size adequacy, replication count, metric selection (bias vs RMSE vs coverage). Has a scoped Stop hook for unseeded simulations. | Designing or reviewing Monte Carlo studies |
-| `process-architect` | DGP formalization from structural primitives, equilibrium computation correctness, model completeness | Building structural IO models, entry games, or auction models |
-| `equilibrium-analyst` | Equilibrium existence (fixed-point conditions), uniqueness (Banach contraction, dominant strategy), stability (best-response dynamics), comparative statics | Specifying or solving game-theoretic models |
-| `results-verifier` | Reported results vs code output: table accuracy, in-text coefficient references, significance star consistency, N counts, fit measures | Before submission; catches errors that don't throw warnings |
 
 ### Research agents (3)
 
@@ -171,7 +145,7 @@ These coordinate processes and track state across long-running projects.
 | `reproducibility-auditor` | Structural and functional checks for reproducible pipelines and replication packages: no manual steps, no hardcoded paths, seeds set, package versions pinned, AEA Data Editor checklist compliance, table-to-code traceability. |
 | `workflow-coordinator` | Coordinates multi-agent workflows, manages dispatch and handoffs between phases, tracks progress from git history and file timestamps, synthesizes findings into a Coordination Summary. |
 
-## Skills (17)
+## Skills (10)
 
 Skills are domain knowledge references that load when you need them. Each has a lean `SKILL.md` with method selection guides and quick reference tables, plus a `references/` directory with full implementation code and API details. The idea is that you get a useful overview quickly and drill into the reference when you're implementing.
 
@@ -184,18 +158,11 @@ Skills are domain knowledge references that load when you need them. Each has a 
 | `identification-proofs` | Seven-step identification argument: target parameter → model primitives → source of variation → assumptions → identification result → regularity conditions → estimation link. Covers IFT approach, completeness conditions, LATE, RD identification, BLP inversion. |
 | `bayesian-estimation` | Stan, PyMC, NumPyro, brms from setup through MCMC diagnostics (R-hat, ESS, divergences), posterior inference (HDI, predictive checks, LOO-CV), and Bayesian structural models. |
 | `reproducible-pipelines` | Makefile and Snakemake patterns, DVC for large data, Stata pipelines (master.do, batch mode, ado versioning), environment management (conda/renv/Docker), random seed management, AEA replication standards. |
-| `empirical-playbook` | Method selection decision tree (what source of variation do you have?), within-method refinements (which DiD estimator given your timing and controls?), diagnostics by method, inference framework selection, power analysis, sensitivity analysis, minimum reporting standards. |
+| `empirical-playbook` | Method selection decision tree (what source of variation do you have?), within-method refinements (which DiD estimator given your timing and controls?), diagnostics by method, inference framework selection, power analysis, sensitivity analysis, minimum reporting standards, FRED/World Bank data acquisition. |
 | `publication-output` | Publication-quality tables and figures: stargazer-style regression tables, event study plots, RD plots, coefficient plots, specification curves, summary statistics tables, Monte Carlo output tables. Journal-specific formatting. |
-| `submission-guide` | Pre-submission checklists (manuscript, tables, figures, replication package, cover letter), journal-specific formatting for 20+ journals, referee response strategy, revision management. |
-| `strategy-brainstorm` | Structured brainstorming for methodology selection: parsimony-first thinking, literature survey questions, comparison to alternatives. |
-| `compound-catalog` | Solution documentation and search by category (estimation, data, numerical, methodology): how to write a solution entry, the `problem_type` taxonomy, frontmatter structure. Replaces the former solutions-archivist agent. |
-| `git-worktree` | Parallel worktrees for concurrent estimation runs and specification comparisons — useful when you need to run five robustness checks simultaneously without branch-switching overhead. |
-| `swarm-orchestration` | Multi-agent parallel orchestration patterns used by `/slfg`. How to structure parallel agent calls, synthesize heterogeneous outputs, handle conflicting findings. |
-| `project-setup` | Configuring `compound-science.local.md`: which agents to run by default, preferred estimation language, project type, data sensitivity level. |
-| `data-acquisition` | FRED API (800k+ economic series, vintage/ALFRED real-time data, built-in transformations) and World Bank API (240+ cross-national indicators), with series dictionaries, panel assembly guidance, and missingness auditing. |
-| `referee-response` | Author response workflow: comment classification (identification, data, inference, exposition, literature, robustness, other), point-by-point format templates, identification challenge protocol, journal-specific tone, multi-round revision tracking. |
+| `submission-guide` | Pre-submission checklists (manuscript, tables, figures, replication package, cover letter), journal-specific formatting for 20+ journals, referee response strategy and templates, revision management. |
 
-## Ambient Hooks (7)
+## Ambient Hooks (5)
 
 The plugin watches your session. Nothing to invoke.
 
@@ -203,15 +170,13 @@ The plugin watches your session. Nothing to invoke.
 |------|--------------|-------------|
 | **SessionStart** | Session opens | Scans for estimation scripts (`.py`, `.R`, `.do`, `.jl`), pipeline files (`Makefile`, `Snakemake`, `dvc.yaml`), data directories, and LaTeX files. Detects project type (empirical, paper, or empirical-paper), estimation language, and whether data and pipeline infrastructure exist. Loads `compound-science.local.md` if present. |
 | **UserPromptSubmit** | Every prompt | Classifies your prompt across 14 domain categories (Haiku classifier) and adds relevant context to the response. ESTIMATION prompts get econometric context. SIMULATION prompts get Monte Carlo guidance. PROOF prompts get formal structure advice. If you ask whether a coefficient is large before the identification design is validated, it applies Cunningham's norm: confirm the assumptions hold before evaluating magnitudes. |
-| **PostToolUse** | After file write/edit | Reads what you wrote and suggests the relevant agent (Haiku classifier). `fixest`/`did` → econometric-reviewer. `\begin{theorem}` → mathematical-prover. `pymc`/`stan`/`brms` → numerical-auditor for MCMC diagnostics. `Makefile`/`Snakemake` → reproducibility-auditor. `\begin{table}` → results-verifier. |
-| **Stop** | Session ends | Cross-cutting completeness checks (Sonnet): unvalidated data merge (blocking), sensitivity analysis, replication package, compound, DiD pre-trends, IV first-stage F via Montiel Olea-Pflueger (suggestions). Domain-specific checks (missing SEs, unseeded simulations, unstated regularity conditions) are scoped to agent frontmatter on econometric-reviewer, simulation-designer, and mathematical-prover. |
+| **Stop** | Session ends | Cross-cutting completeness checks (Sonnet): unvalidated data merge (blocking), unseeded scripts, unversioned pip, absolute paths, sensitivity analysis, replication package, DiD pre-trends, IV first-stage F via Montiel Olea-Pflueger (suggestions). |
 | **PreCompact** | Context compaction | Before the context window compresses, preserves 10 categories of research state: identification strategy, estimation results and convergence status, proof steps and regularity conditions, pipeline configuration, methodology decisions and rejections, sensitivity analysis results, diagnostic findings, submission status, software environment versions, and failed approaches. |
-| **PreToolUse** | Before Bash | Guards reproducibility. Warns on: running `python estimate.py` without `--seed`, absolute paths like `/Users/.../data.csv`, `pip install pandas` without `==version`, `dvc repro` or `snakemake` without seed configuration. |
-| **SubagentStop** | After any agent completes | Routes findings to the right next action. Critical findings (identification failure, numerical instability) get required actions. Suggestion-level findings get options. Priority order: identification failure → numerical instability → wrong SEs → robustness gaps. Format: `[agent]: [finding] → [action]`. |
+| **SubagentStop** | After any agent completes | Routes findings to the right next action. Critical findings (identification failure, numerical instability) get required actions. Includes agent-specific checks: SEs for econometric-reviewer, seeds for numerical-auditor, regularity conditions for mathematical-prover. Format: `[agent]: [finding] → [action]`. |
 
 ## Configuration
 
-Create `compound-science.local.md` in your project's `.claude/` directory to configure the plugin for your project. You can specify which review agents to run by default, your preferred estimation language, project type, and data sensitivity level. Run the `project-setup` skill for a guided walkthrough.
+Create `compound-science.local.md` in your project's `.claude/` directory to configure the plugin for your project. You can specify which review agents to run by default, your preferred estimation language, project type, and data sensitivity level.
 
 ## Integration
 
@@ -221,39 +186,47 @@ It works well alongside these optional companion plugins if you have them instal
 
 | Plugin | What it provides | How compound-science benefits |
 |--------|-----------------|-------------------------------|
-| `commit-commands` | Git commit/push/PR | Workflow commands use git for version-tagging submissions |
 | `document-skills` | PDF, XLSX, DOCX export | Results export from `publication-output` skill and `/replicate` |
 | `context7` | Up-to-date framework docs | Library documentation lookup for estimation packages |
 | `pyright-lsp` | Python type checking | Type validation in estimation code |
+
+> Git operations (commit, push, PR) use inline bash — no git plugin needed.
+
+### Recommended MCP Servers
+
+For the full research toolkit, add these MCP data servers:
+
+| Server | What it adds | Install |
+|--------|-------------|---------|
+| OpenEcon Data | FRED, World Bank, IMF, Eurostat, Comtrade data access | `claude mcp add --transport sse openecon-data https://data.openecon.io/mcp` |
+| Stata MCP | Live Stata execution from Claude Code (requires Stata 17+ license) | `claude mcp add --transport sse stata-mcp http://localhost:4000/mcp` |
 
 ## Component Counts
 
 | Category | Count |
 |----------|-------|
-| Agents | 14 (9 review + 3 research + 2 workflow) |
-| Commands | 9 canonical (5 workflow + 2 wrappers + 2 chain) + 7 deprecated stubs |
-| Skills | 17 |
-| Hooks | 7 |
-| **Total** | **47 active components** |
+| Agents | 10 (5 review + 3 research + 2 workflow) |
+| Skills | 20 (6 workflow + 2 chain + 2 wrappers + 10 domain knowledge) |
+| Hooks | 5 |
+| Output Styles | 1 |
+| **Total** | **36 components** |
 
 ## Layout
 
 ```
-.claude-plugin/   plugin.json (manifest), settings.json
-CHANGELOG.md      version history
+.claude-plugin/   plugin.json (manifest)
 agents/
   review/         econometric-reviewer, mathematical-prover, numerical-auditor,
-                  identification-critic, journal-referee, simulation-designer,
-                  process-architect, equilibrium-analyst, results-verifier
+                  identification-critic, journal-referee
   research/       literature-scout, methods-explorer, data-detective
   workflow/       reproducibility-auditor, workflow-coordinator
-commands/
-  workflows/      brainstorm, plan, work, review, compound
-  estimate, replicate, lfg, slfg
-  simulate*, identify*, diagnose*, tabulate*, visualize*, stress-test*, deepen-plan*
-                  (* = deprecated stubs that redirect)
-skills/           17 domain knowledge bases; 9 have references/ subdirs with detail
-hooks/            hooks.json (7 ambient hooks, 14 domain categories)
+skills/           20 skills (all entry points are skills — no commands/ directory)
+  workflows-*/    ideate, brainstorm, plan, work, review, compound
+  lfg/, slfg/     chain skills (automated multi-step)
+  estimate/, replicate/  wrapper skills (thin routing)
+  (10 domain knowledge skills)
+hooks/            hooks.json (5 ambient hooks, 14 domain categories)
+output-styles/    research-mode (equations, citations, statistical notation)
 .tests/           test suite (dev-only, gitignored reports)
 .evals/           evaluation harness (dev-only)
 ```

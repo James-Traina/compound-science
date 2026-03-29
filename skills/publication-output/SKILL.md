@@ -1,7 +1,8 @@
 ---
 name: publication-output
+argument-hint: "<table or figure type>"
 description: >-
-  Generate publication-quality tables and figures for academic research papers. Use when formatting regression results, summary statistics, Monte Carlo output, or research visualizations for LaTeX inclusion. Triggers on "table", "figure", "tabulate", "stargazer", "publication-ready", "LaTeX table", "event study plot", "coefficient plot", "RD plot", "power curve", "specification curve", "binscatter", "format results", "booktabs".
+  This skill covers publication-quality tables and figures for academic research papers. Use when formatting regression results, summary statistics, Monte Carlo output, or research visualizations for LaTeX inclusion. Triggers on "table", "figure", "tabulate", "stargazer", "publication-ready", "LaTeX table", "event study plot", "coefficient plot", "RD plot", "power curve", "specification curve", "binscatter", "format results", "booktabs".
 ---
 
 # Publication Output
@@ -10,6 +11,12 @@ Generate publication-quality tables and figures for academic research papers. Ro
 
 ## When to Use
 
+Skip when:
+- The task is choosing an empirical method or running estimation (use `empirical-playbook` or `causal-inference` skill)
+- The task is journal submission logistics or referee responses (use `submission-guide` skill)
+- Results are exploratory and not yet ready for formatted output (finish estimation first)
+
+Use when:
 - After estimation: format regression results, diagnostics, or robustness checks into tables
 - After simulation: format Monte Carlo results (bias, RMSE, coverage) into comparison tables
 - For descriptive work: summary statistics, balance tables, transition matrices
@@ -65,10 +72,20 @@ Generate publication-quality tables and figures for academic research papers. Ro
 
 | Language | Tables | Figures |
 |---|---|---|
-| Python | pandas, stargazer, tabulate | matplotlib + seaborn |
-| R | stargazer, modelsummary, kableExtra, gt | ggplot2, coefplot, binsreg |
+| Python | pandas, stargazer, pystout, tabulate | matplotlib + seaborn |
+| R | stargazer, modelsummary, kableExtra, gt, tinytable, fixest::etable() | ggplot2, coefplot, binsreg |
 | Julia | PrettyTables.jl, Latexify.jl | Plots.jl, Makie.jl |
 | Stata | esttab, outreg2, estout | twoway, coefplot, binscatter |
+
+**Package notes:**
+
+- `pystout` (Python) — estout-style regression tables for statsmodels and linearmodels (OLS, IV2SLS, PanelOLS). Supports `mgroups` for column grouping, `modstat` for custom statistics rows.
+- `tinytable` (R) — lightweight, native Typst support, used as modelsummary backend.
+- `fixest::etable()` (R) — direct from estimation, handles multi-way FE notation automatically.
+
+**Automated vs semi-automated tradeoff:** Automated tools (esttab, stargazer) are quick but hard to customize. Semi-automated tools (save intermediates, generate LaTeX separately) are harder to start but easier to customize. Costs are convex for automated, concave for semi-automated.
+
+**Quarto+Typst:** Quarto with Typst backend offers sub-second compilation for iterative work. Use `keep-tex: true` for journal submission when you need the raw LaTeX output.
 
 ## Multi-Panel Assembly
 
@@ -136,7 +153,7 @@ Before finalizing any output:
 
 ## Integration with Other Components
 
-- `results-verifier` agent preloads this skill to audit tables against code output
+- `econometric-reviewer` agent preloads this skill to audit tables against code output
 - `econometric-reviewer` may request formatted output during `/workflows:review`
 - `/workflows:compound` captures table/figure templates into `docs/solutions/`
 - Companion outputs: regression table → summary statistics table; event study → pre-trend test figure

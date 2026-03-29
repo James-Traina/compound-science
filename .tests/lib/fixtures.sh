@@ -1,191 +1,55 @@
 #!/usr/bin/env bash
-# Test fixture creation for hook simulation tests
+# Shared test fixtures and constants
 
 set -euo pipefail
 
-# Create a temp directory and return its path
-fixture_dir() {
-  local name="${1:-test}"
-  local dir
-  dir=$(mktemp -d "${TMPDIR:-/tmp}/cs-qa-${name}-XXXXXX")
-  echo "$dir"
-}
-
-# Fixture: empty project
-fixture_empty() {
-  fixture_dir "empty"
-}
-
-# Fixture: Python econometrics project
-fixture_python_econometrics() {
-  local dir
-  dir=$(fixture_dir "python-econ")
-  echo "statsmodels>=0.14" > "$dir/requirements.txt"
-  echo "$dir"
-}
-
-# Fixture: R econometrics project
-fixture_r_project() {
-  local dir
-  dir=$(fixture_dir "r-project")
-  printf 'Package: mypackage\nImports: fixest, dplyr\n' > "$dir/DESCRIPTION"
-  echo "$dir"
-}
-
-# Fixture: Stata econometrics project
-fixture_stata() {
-  local dir
-  dir=$(fixture_dir "stata")
-  echo "regress y x1 x2, robust" > "$dir/analysis.do"
-  echo "$dir"
-}
-
-# Fixture: Julia project
-fixture_julia() {
-  local dir
-  dir=$(fixture_dir "julia")
-  cat > "$dir/Project.toml" << 'TOML'
-[deps]
-Optim = "429524aa-4258-5aef-a3af-852621145aeb"
-Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
-TOML
-  echo "$dir"
-}
-
-# Fixture: LaTeX paper only
-fixture_latex_paper() {
-  local dir
-  dir=$(fixture_dir "paper")
-  touch "$dir/manuscript.tex"
-  echo "$dir"
-}
-
-# Fixture: empirical paper (Python + LaTeX)
-fixture_empirical_paper() {
-  local dir
-  dir=$(fixture_dir "empirical-paper")
-  echo "linearmodels>=5.0" > "$dir/requirements.txt"
-  touch "$dir/paper.tex"
-  echo "$dir"
-}
-
-# Fixture: project with data directory
-fixture_with_data() {
-  local dir
-  dir=$(fixture_dir "with-data")
-  mkdir -p "$dir/data"
-  echo "$dir"
-}
-
-# Fixture: project with Makefile pipeline
-fixture_with_pipeline() {
-  local dir
-  dir=$(fixture_dir "with-pipeline")
-  echo "all: results" > "$dir/Makefile"
-  echo "$dir"
-}
-
-# Fixture: full project (Python + LaTeX + data + pipeline)
-fixture_full_project() {
-  local dir
-  dir=$(fixture_dir "full")
-  echo "pyblp>=1.0" > "$dir/requirements.txt"
-  touch "$dir/paper.tex"
-  mkdir -p "$dir/data"
-  echo "all: results" > "$dir/Makefile"
-  echo "$dir"
-}
-
-# Fixture: Python project with Snakemake pipeline
-fixture_python_pipeline() {
-  local dir
-  dir=$(fixture_dir "python-pipeline")
-  echo "statsmodels>=0.14" > "$dir/requirements.txt"
-  cat > "$dir/Snakefile" << 'EOF'
-rule all:
-    input: "results/estimates.csv"
-EOF
-  echo "$dir"
-}
-
-# Fixture: Bayesian project with Stan files
-fixture_bayesian_project() {
-  local dir
-  dir=$(fixture_dir "bayesian")
-  printf 'pymc\narviz\ncmdstanpy\n' > "$dir/requirements.txt"
-  touch "$dir/model.stan"
-  echo "$dir"
-}
-
-# Fixture: R Bayesian project with brms
-fixture_r_bayesian() {
-  local dir
-  dir=$(fixture_dir "r-bayesian")
-  printf 'Package: mypackage\nImports: brms, tidyverse\n' > "$dir/DESCRIPTION"
-  echo "$dir"
-}
-
-# Fixture: project with .local.md config
-fixture_with_local_config() {
-  local dir
-  dir=$(fixture_dir "local-config")
-  mkdir -p "$dir/.claude"
-  echo "# Local settings" > "$dir/.claude/compound-science.local.md"
-  echo "$dir"
-}
-
-# Run session-start.sh against a fixture directory, capture env vars and output
-run_session_init() {
-  local project_dir="$1"
-  local script="$2"
-  local env_file
-  env_file=$(mktemp "${TMPDIR:-/tmp}/cs-qa-env-XXXXXX")
-
-  local output
-  output=$(CLAUDE_PROJECT_DIR="$project_dir" CLAUDE_ENV_FILE="$env_file" bash "$script" 2>&1) || true
-
-  # Parse env file in one pass
-  local project_type="" estimation_lang="" has_data="" has_pipeline=""
-  while IFS= read -r line; do
-    key="${line#export }"; key="${key%%=*}"
-    val="${line#*=}"
-    case "$key" in
-      CS_PROJECT_TYPE)    project_type="$val" ;;
-      CS_ESTIMATION_LANG) estimation_lang="$val" ;;
-      CS_HAS_DATA)        has_data="$val" ;;
-      CS_HAS_PIPELINE)    has_pipeline="$val" ;;
-    esac
-  done < "$env_file"
-
-  # Clean up
-  rm -f "$env_file"
-
-  # Return as tab-separated: project_type, estimation_lang, has_data, has_pipeline, output
-  printf '%s\t%s\t%s\t%s\t%s' "$project_type" "$estimation_lang" "$has_data" "$has_pipeline" "$output"
-}
-
-# Clean up all fixture temp dirs
-cleanup_fixtures() {
-  rm -rf "${TMPDIR:-/tmp}"/cs-qa-*
-}
-
 # Canonical skill list — shared by test files to prevent drift when skills are added
+# v0.8: 10 domain knowledge + 6 workflow + 2 chain + 2 wrapper = 20 total
+# 7 skills merged in v0.8: strategy-brainstorm→workflows-brainstorm, swarm-orchestration→slfg,
+#   compound-catalog→workflows-compound, referee-response→submission-guide,
+#   project-setup→workflows-review, git-worktree→workflows-work, data-acquisition→empirical-playbook
 SKILLS=(
-  "strategy-brainstorm"
+  # --- Domain knowledge skills (10) ---
   "causal-inference"
   "causal-ml"
   "game-theory"
   "identification-proofs"
   "bayesian-estimation"
-  "compound-catalog"
-  "git-worktree"
-  "swarm-orchestration"
   "reproducible-pipelines"
-  "project-setup"
   "structural-modeling"
   "submission-guide"
   "empirical-playbook"
-  "data-acquisition"
-  "referee-response"
+  "publication-output"
+  # --- Workflow skills (6) ---
+  "workflows-ideate"
+  "workflows-brainstorm"
+  "workflows-plan"
+  "workflows-work"
+  "workflows-review"
+  "workflows-compound"
+  # --- Chain skills (2) ---
+  "lfg"
+  "slfg"
+  # --- Wrapper skills (2) ---
+  "estimate"
+  "replicate"
+)
+
+# --- Skill subsets for targeted testing ---
+
+# Workflow skills — full depth, phases, Pipeline mode
+WORKFLOW_SKILLS=("workflows-ideate" "workflows-brainstorm" "workflows-plan" "workflows-work" "workflows-review" "workflows-compound")
+
+# Chain skills — must have disable-model-invocation: true
+CHAIN_SKILLS=("lfg" "slfg")
+
+# Wrapper skills — short redirects
+WRAPPER_SKILLS=("estimate" "replicate")
+
+# Original domain knowledge skills (10) — full depth/quality checks apply
+ORIGINAL_SKILLS=(
+  "causal-inference" "causal-ml" "game-theory"
+  "identification-proofs" "bayesian-estimation" "reproducible-pipelines"
+  "structural-modeling" "submission-guide" "empirical-playbook"
   "publication-output"
 )

@@ -1,7 +1,7 @@
 ---
 name: causal-ml
 description: >-
-  Guide for causal machine learning methods in applied economics and quantitative social science. Use when implementing or choosing between modern ML-based causal estimators — including double machine learning, DML, partially linear models, interactive regression models, cross-fitting, Neyman orthogonality, debiased ML, causal forests, generalized random forest, GRF, honest causal trees, AIPW with machine learning, doubly robust with machine learning, DR-Learner, T-Learner, S-Learner, X-Learner, meta-learners, heterogeneous treatment effects, conditional average treatment effect, CATE, HTE, high-dimensional controls, LASSO controls, post-LASSO, post-double selection, Belloni-Chernozhukov-Hansen, Riesz representer, Chernozhukov, sample splitting, econml, DoubleML package, or any combination of machine learning and causal inference.
+  This skill covers causal machine learning methods in applied economics and quantitative social science. Use when implementing or choosing between modern ML-based causal estimators — including double machine learning, DML, partially linear models, interactive regression models, cross-fitting, Neyman orthogonality, debiased ML, causal forests, generalized random forest, GRF, honest causal trees, AIPW with machine learning, doubly robust with machine learning, DR-Learner, T-Learner, S-Learner, X-Learner, meta-learners, heterogeneous treatment effects, conditional average treatment effect, CATE, HTE, high-dimensional controls, LASSO controls, post-LASSO, post-double selection, Belloni-Chernozhukov-Hansen, Riesz representer, Chernozhukov, sample splitting, econml, DoubleML package, or any combination of machine learning and causal inference.
 ---
 
 # Causal Machine Learning
@@ -20,8 +20,9 @@ Use when the user is:
 Skip when:
 - Sample is small (n < 500 — ML nuisance models need data)
 - A well-specified parametric model is available and defensible
-- The primary question is identification, not estimation (use `causal-inference` skill first)
+- The task is standard IV/DiD/RDD without high-dimensional controls (use `causal-inference` skill)
 - Structural modeling is needed (use `structural-modeling` skill)
+- The task needs formal identification proof (use `identification-proofs` skill)
 
 ## Where to Start
 
@@ -120,9 +121,9 @@ Causal ML nests traditional estimators: DML with linear nuisance = OLS (Frisch-W
 
 ## Integration with Plugin
 
-**Agents:** `econometric-reviewer` (post-estimation review), `identification-critic` (IV/PLIV assumptions), `numerical-auditor` (convergence, seeding), `results-verifier` (table/code consistency), `simulation-designer` (Monte Carlo validation).
+**Agents:** `econometric-reviewer` (post-estimation review, table/code consistency), `identification-critic` (IV/PLIV assumptions), `numerical-auditor` (convergence, seeding, Monte Carlo validation).
 
-**Cross-references:** `empirical-playbook` skill → `sensitivity-analysis.md` (specification curve over ML choices), `empirical-playbook` skill → `diagnostic-battery.md` (nuisance R², overlap, calibration), `simulation-designer` agent (synthetic data with known CATE).
+**Cross-references:** `empirical-playbook` skill → `sensitivity-analysis.md` (specification curve over ML choices), `empirical-playbook` skill → `diagnostic-battery.md` (nuisance R², overlap, calibration), `numerical-auditor` agent (synthetic data with known CATE).
 
 **Relationship to `causal-inference` skill:** Use `causal-inference` to establish identification; use `causal-ml` for implementation with high-dimensional controls or when heterogeneity is primary. Complements, not substitutes.
 

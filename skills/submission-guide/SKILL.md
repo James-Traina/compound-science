@@ -1,7 +1,7 @@
 ---
 name: submission-guide
 description: >-
-  Guide for academic journal submission, referee responses, and revision management. Use when the user is preparing a manuscript for submission, formatting for a specific journal, responding to referees, or managing revisions. Triggers on "submit", "referee", "revision", "R&R", "response letter", "journal", "formatting", "submission", "resubmit", "cover letter", "referee report", "revise and resubmit".
+  This skill covers academic journal submission, referee responses, and revision management. Use when the user is preparing a manuscript for submission, formatting for a specific journal, responding to referees, or managing revisions. Triggers on "submit", "referee", "revision", "R&R", "response letter", "journal", "formatting", "submission", "resubmit", "cover letter", "referee report", "revise and resubmit".
 ---
 
 # Journal Submission
@@ -42,7 +42,7 @@ Complete every item before submitting. Missing any one of these is a common reas
 - [ ] **Anonymization**: Remove all author-identifying information. Check PDF metadata, acknowledgments, file paths in code, dataset names that reveal institution.
 - [ ] **Page/word count**: Within journal limits. Many journals have strict limits (e.g., AER Papers & Proceedings: 5 pages).
 - [ ] **Spell check and grammar**: Run a final pass. Typos in the abstract signal carelessness.
-- [ ] **Agent review**: Run the `journal-referee` agent for an adversarial review and the `results-verifier` agent to audit tables against code output.
+- [ ] **Agent review**: Run the `journal-referee` agent for an adversarial review and the `econometric-reviewer` agent to audit tables against code output.
 
 ### Tables
 
@@ -106,7 +106,7 @@ Quick lookup:
 
 ### Response Letter Structure
 
-The response letter is the most important document in the revision. Structure: Opening (thank editor and referees) → summary of major changes (3-5 sentences) → point-by-point responses organized by referee, with Major and Minor sections. Quote each referee comment, then respond with specific page/section references to changes in the revised manuscript. Use tracked changes or color highlighting. For the full template and formatting conventions, use the `referee-response` skill.
+The response letter is the most important document in the revision. Structure: Opening (thank editor and referees) → summary of major changes (3-5 sentences) → point-by-point responses organized by referee, with Major and Minor sections. Quote each referee comment, then respond with specific page/section references to changes in the revised manuscript. Use tracked changes or color highlighting. For full response templates and revision routing, see `references/referee-response-templates.md`.
 
 ### Tone and Framing
 
@@ -192,3 +192,19 @@ Reference page numbers from the clean revised manuscript, not the diff. Editors 
 | Dual submission | Most economics and finance journals prohibit simultaneous submission to multiple journals. Confirm the journal's policy. |
 | Semester timing | Avoid July-August (editors and referees on vacation). September-November and January-March tend to be faster. |
 | Market timing | Junior scholars should have papers submitted and preferably under review by September of their market year. |
+
+## Pre-Print and Archive Workflows
+
+### arXiv Submission
+1. Create a flat submission folder with: `paper.tex`, `paper.bbl` (compiled bibliography), all figures as PDF
+2. Adjust preamble: remove `\usepackage{hyperref}` if it causes issues, ensure `\graphicspath` is relative
+3. Remove or inline any custom `.sty` files
+4. Zip and upload to arxiv.org; select `econ` category (econ.EM for econometrics, econ.GN for general)
+
+### Working Paper Distribution
+- **SSRN**: Post before journal submission — journals expect papers to circulate as working papers first
+- **NBER/CEPR**: If affiliated, submit to the relevant working paper series
+- **RePEc**: Register at ideas.repec.org/stepbystep.html for archival and citation tracking
+
+### Quarto to Journal Format
+For Quarto users: `quarto use template hchulkim/econ-paper-template` provides AEA-format output (`aea-pdf`/`aea-html`). Always set `keep-tex: true` since journals require `.tex` source files.

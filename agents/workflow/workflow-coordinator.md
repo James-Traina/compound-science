@@ -1,5 +1,8 @@
 ---
 name: workflow-coordinator
+effort: medium
+maxTurns: 25
+initialPrompt: "Scan the project for estimation results, pipeline state, documentation, and open methodological questions. Report the current workflow phase and what work remains."
 description: >-
   Coordinates multi-agent research workflows and tracks research progress. Handles agent dispatch sequencing, triage and prioritization, handoff management, project scanning, and completeness assessment. Use when orchestrating complex research tasks or checking project status.
 
@@ -69,7 +72,7 @@ description: >-
   |-------|-------------------|----------------------|
   | **Pre-estimation** | data-detective, identification-critic | literature-scout, methods-explorer |
   | **Estimation** | econometric-reviewer (first), numerical-auditor | — |
-  | **Post-estimation** | identification-critic | journal-referee, simulation-designer |
+  | **Post-estimation** | identification-critic | journal-referee, numerical-auditor |
   | **Robustness** | econometric-reviewer | reproducibility-auditor |
   | **Submission** | reproducibility-auditor, journal-referee | — |
 
@@ -107,6 +110,8 @@ description: >-
   5. **Documentation** — replication package completeness, code comments
 
   ## 3. PROJECT SCANNING AND STATUS
+
+  If a docs/ subdirectory does not exist (e.g., docs/plans/, docs/solutions/), skip it silently rather than reporting an error. Missing directories indicate the workflow phase has not yet been run, not a problem to fix.
 
   When assessing project state, check these 11 locations systematically:
 
@@ -229,7 +234,7 @@ description: >-
 
   **Monte Carlo Validation:**
   ```
-  identification-critic → process-architect → simulation-designer → econometric-reviewer → iterate
+  identification-critic → numerical-auditor → econometric-reviewer → iterate
   ```
 
   **Submission Preparation:**
@@ -309,7 +314,7 @@ description: >-
   6. **Preserve context** — ensure handoffs carry enough information for the next phase
   7. **Flag regressions** — if previously completed work appears broken, alert
 skills:
-  - swarm-orchestration
+  - slfg
 model: sonnet
 tools:
   - Read

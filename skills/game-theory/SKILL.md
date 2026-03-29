@@ -1,7 +1,8 @@
 ---
 name: game-theory
+argument-hint: "<equilibrium concept or game type>"
 description: >-
-  Guide for game-theoretic methods in structural econometrics and industrial organization. Use when the user is working with strategic interactions, equilibrium analysis, or game-theoretic structural models — including entry games, conduct testing, auction models with strategic bidding, bargaining, or matching markets. Triggers on "Nash equilibrium", "subgame perfect", "best response", "strategic interaction", "entry game", "conduct testing", "auction", "mechanism design", "matching market", "bargaining", "BNE", "Bayesian Nash", "static game", "dynamic game", "repeated game", "multiple equilibria", "equilibrium selection", "discrete game", "oligopoly", "game-theoretic", "player", "payoff", "strategy", "dominant strategy", "Bresnahan-Reiss", "Ciliberto-Tamer", "partial identification", "set identification", or markup test.
+  This skill covers game-theoretic methods in structural econometrics and industrial organization. Use when the user is working with strategic interactions, equilibrium analysis, or game-theoretic structural models — including entry games, conduct testing, auction models with strategic bidding, bargaining, or matching markets. Triggers on "Nash equilibrium", "subgame perfect", "best response", "strategic interaction", "entry game", "conduct testing", "auction", "mechanism design", "matching market", "bargaining", "BNE", "Bayesian Nash", "static game", "dynamic game", "repeated game", "multiple equilibria", "equilibrium selection", "discrete game", "oligopoly", "game-theoretic", "player", "payoff", "strategy", "dominant strategy", "Bresnahan-Reiss", "Ciliberto-Tamer", "partial identification", "set identification", or markup test.
 ---
 
 # Game Theory
@@ -22,6 +23,8 @@ Skip when:
 - The model is single-agent (use `structural-modeling` skill for dynamic discrete choice, demand estimation)
 - The task is standard causal inference without strategic interaction (use `causal-inference` skill)
 - The game is a well-known IO model with standard estimation code (pyblp covers BLP demand; see `structural-modeling`)
+
+**Quick reference only** — for full implementation code, see `references/` subdirectory.
 
 ## Where to Start
 
@@ -121,11 +124,11 @@ For full model specifications, estimation code, and references, see `references/
 
 ## Integration with compound-science
 
-- Use `equilibrium-analyst` agent to verify equilibrium existence, uniqueness, and stability properties before reporting results
+- Use `identification-critic` agent to verify equilibrium existence, uniqueness, and stability properties before reporting results
 - Use `structural-modeling` skill for the estimation machinery (GMM, MLE, NFXP, MPEC) when the game-theoretic structure is already set up
 - Use `identification-critic` agent to stress-test the game-theoretic identification argument — exclusion restrictions, rank conditions, separability assumptions
 - Use the `identification-critic` agent (or `identification-proofs` skill) to formalize the full identification argument: target parameter → model → equilibrium concept → moment conditions → rank condition
-- Use `simulation-designer` agent to design Monte Carlo studies verifying identification and estimator performance in your specific game
+- Use `numerical-auditor` agent to design Monte Carlo studies verifying identification and estimator performance in your specific game
 
 ---
 

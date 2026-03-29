@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
-# Test Group 14: Skill description trigger matching (20 tests)
+# Test Group 14: Skill description trigger matching (13 tests)
 #
 # Verifies that each skill's description contains keywords that align with
 # the UserPromptSubmit categories and common user prompts. This ensures
 # Claude Code can auto-match skills to user intent via description matching.
+# v0.8: 7 merged skills removed (strategy-brainstorm, compound-catalog, git-worktree,
+#   swarm-orchestration, project-setup, data-acquisition, referee-response)
 
 source "$(dirname "$0")/../lib/assert.sh"
 
@@ -90,49 +92,7 @@ echo "$desc" | grep -qiE 'journal|submission|formatting|referee' \
   && pass "submission-guide: domain keywords" \
   || must_fix "submission-guide" "missing journal/submission keywords"
 
-# 10: referee-response — referee, R&R, or response
-desc=$(skill_desc "referee-response")
-echo "$desc" | grep -qiE 'referee|R&R|response|revision' \
-  && pass "referee-response: domain keywords" \
-  || must_fix "referee-response" "missing referee/R&R keywords"
-
-# 11: data-acquisition — FRED, World Bank, or time series
-desc=$(skill_desc "data-acquisition")
-echo "$desc" | grep -qiE 'FRED|World Bank|time series|economic' \
-  && pass "data-acquisition: domain keywords" \
-  || must_fix "data-acquisition" "missing FRED/World Bank keywords"
-
-# 12: compound-catalog — solution, documentation, or resolved
-desc=$(skill_desc "compound-catalog")
-echo "$desc" | grep -qiE 'solution|documentation|resolved|categorized' \
-  && pass "compound-catalog: domain keywords" \
-  || must_fix "compound-catalog" "missing solution/documentation keywords"
-
-# 13: strategy-brainstorm — brainstorm, research, or methodological
-desc=$(skill_desc "strategy-brainstorm")
-echo "$desc" | grep -qiE 'brainstorm|research|methodological|estimation' \
-  && pass "strategy-brainstorm: domain keywords" \
-  || must_fix "strategy-brainstorm" "missing brainstorm keywords"
-
-# 14: git-worktree — worktree, parallel, or concurrent
-desc=$(skill_desc "git-worktree")
-echo "$desc" | grep -qiE 'worktree|parallel|concurrent|isolated' \
-  && pass "git-worktree: domain keywords" \
-  || must_fix "git-worktree" "missing worktree/parallel keywords"
-
-# 15: swarm-orchestration — multi-agent, parallel, or teammates
-desc=$(skill_desc "swarm-orchestration")
-echo "$desc" | grep -qiE 'multi-agent|parallel|teammate|orchestrat' \
-  && pass "swarm-orchestration: domain keywords" \
-  || must_fix "swarm-orchestration" "missing orchestration keywords"
-
-# 16: project-setup — configure, setup, or local.md
-desc=$(skill_desc "project-setup")
-echo "$desc" | grep -qiE 'configure|setup|local.md|review agent' \
-  && pass "project-setup: domain keywords" \
-  || must_fix "project-setup" "missing setup/configure keywords"
-
-# 16b: publication-output — table, figure, LaTeX, or stargazer
+# 10: publication-output — table, figure, LaTeX, or stargazer
 desc=$(skill_desc "publication-output")
 echo "$desc" | grep -qiE 'table|figure|LaTeX|stargazer|publication' \
   && pass "publication-output: domain keywords" \
@@ -145,22 +105,17 @@ echo "$desc" | grep -qiE 'table|figure|LaTeX|stargazer|publication' \
 
 group "Hook → Skill Cross-References"
 
-# 17: causal-inference skill exists (referenced by UPS IDENTIFICATION)
+# 11: causal-inference skill exists (referenced by UPS IDENTIFICATION)
 [ -d "$SKILLS_DIR/causal-inference" ] \
   && pass "UPS → causal-inference skill exists" \
   || must_fix "UPS → causal-inference" "skill directory not found"
 
-# 18: structural-modeling skill exists (referenced by UPS ESTIMATION/CONVERGENCE)
+# 12: structural-modeling skill exists (referenced by UPS ESTIMATION/CONVERGENCE)
 [ -d "$SKILLS_DIR/structural-modeling" ] \
   && pass "UPS → structural-modeling skill exists" \
   || must_fix "UPS → structural-modeling" "skill directory not found"
 
-# 19: submission-guide skill exists (referenced by UPS SUBMISSION)
+# 13: submission-guide skill exists (referenced by UPS SUBMISSION)
 [ -d "$SKILLS_DIR/submission-guide" ] \
   && pass "UPS → submission-guide skill exists" \
   || must_fix "UPS → submission-guide" "skill directory not found"
-
-# 20: bayesian-estimation skill exists (referenced by PTU Bayesian detection)
-[ -d "$SKILLS_DIR/bayesian-estimation" ] \
-  && pass "PTU → bayesian-estimation skill exists" \
-  || must_fix "PTU → bayesian-estimation" "skill directory not found"

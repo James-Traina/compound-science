@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
-# Test Group 10: Hook prompt coverage and integration (24 tests)
+# Test Group 10: Hook prompt coverage and integration (18 tests)
 source "$(dirname "$0")/../lib/assert.sh"
 
 export HOOKS_FILE="$PLUGIN_DIR/hooks/hooks.json"
 
 group "Hook Event Coverage"
 
-# 1-7: All 7 expected events present
-EXPECTED_EVENTS=("SessionStart" "UserPromptSubmit" "PostToolUse" "Stop" "PreCompact" "PreToolUse" "SubagentStop")
+# 1-5: All 5 expected events present
+EXPECTED_EVENTS=("SessionStart" "UserPromptSubmit" "Stop" "PreCompact" "SubagentStop")
 for event in "${EXPECTED_EVENTS[@]}"; do
   export EVENT="$event"
   py_eval "event $event present" "
@@ -87,30 +87,6 @@ else
   if $conv_ok; then pass "UserPromptSubmit CONVERGENCE has trigger keywords (Hessian/BFGS/Nelder-Mead)"; fi
 fi
 
-group "PostToolUse — Content Coverage"
-
-# 16: PostToolUse covers all content types (languages + bibliography + pipeline)
-ptu_text=$(python3 -c "
-import json, os
-d = json.load(open(os.environ['HOOKS_FILE']))
-for m in d['hooks']['PostToolUse']:
-    for h in m['hooks']:
-        if h['type'] == 'prompt':
-            print(h['prompt'])
-" 2>/dev/null || echo "")
-
-ptu_missing=""
-for term in "Python" "R estimation" "Stata" "Julia" "simulation-designer" "mathematical-prover" "bib" "Makefile" "results-verifier" "econometric-reviewer"; do
-  if ! echo "$ptu_text" | grep -qi "$term"; then
-    ptu_missing="$ptu_missing $term"
-  fi
-done
-if [ -z "$ptu_missing" ]; then
-  pass "PostToolUse covers all 10 content categories"
-else
-  must_fix "PostToolUse covers all 10 content categories" "missing:$ptu_missing"
-fi
-
 group "Stop Hook — Completeness Checks"
 
 if ! stop_text=$(python3 -c "
@@ -123,7 +99,7 @@ for m in d['hooks']['Stop']:
 " 2>/dev/null); then
   must_fix "Stop prompt extraction" "python3 failed — check HOOKS_FILE"
 else
-  # 17: Stop checks cross-cutting completeness conditions (v0.5: SEs and seeds moved to agent-scoped hooks)
+  # 17: Stop checks cross-cutting completeness conditions (v0.5.1: SEs/seeds/regularity moved to SubagentStop)
   # Stop now covers: merge validation, results saved, sensitivity, replication, diagnostics, DiD, IV
   stop_missing=""
   for term in "merge" "sensitiv" "replication" "diagnostic"; do
@@ -183,16 +159,9 @@ else
   must_fix "PreCompact preserves key state" "missing:$pc_missing"
 fi
 
-group "New Hooks — PreToolUse & SubagentStop"
+group "SubagentStop"
 
-# 19: PreToolUse matcher is "Bash"
-py_eval "PreToolUse matcher is Bash" "
-import json, os
-d = json.load(open(os.environ['HOOKS_FILE']))
-assert d['hooks']['PreToolUse'][0]['matcher'] == 'Bash'
-" "expected matcher 'Bash'"
-
-# 20: SubagentStop matcher is "*"
+# 19: SubagentStop matcher is "*"
 py_eval "SubagentStop matcher is *" "
 import json, os
 d = json.load(open(os.environ['HOOKS_FILE']))

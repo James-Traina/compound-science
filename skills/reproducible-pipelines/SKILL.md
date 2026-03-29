@@ -1,7 +1,7 @@
 ---
 name: reproducible-pipelines
 description: >-
-  Guide for building reproducible research pipelines and replication packages. Use when the user is setting up a research project directory structure, configuring workflow managers (Make, Snakemake, DVC), managing computational environments, preparing replication packages for journal submission, or debugging reproducibility failures. Triggers on "reproducible", "replication package", "Makefile", "Snakemake", "DVC", "pipeline", "workflow manager", "data versioning", "conda environment", "Docker", "seed management", "AEA data editor", "replication", "project structure", or "submission checklist".
+  This skill covers reproducible research pipelines and replication packages. Use when the user is setting up a research project directory structure, configuring workflow managers (Make, Snakemake, DVC), managing computational environments, preparing replication packages for journal submission, or debugging reproducibility failures. Triggers on "reproducible", "replication package", "Makefile", "Snakemake", "DVC", "pipeline", "workflow manager", "data versioning", "conda environment", "Docker", "seed management", "AEA data editor", "replication", "project structure", or "submission checklist".
 ---
 
 # Reproducible Pipelines
@@ -20,8 +20,8 @@ Use when the user is:
 
 Skip when:
 - The task is about estimation methodology (use `causal-inference` or `structural-modeling` skill)
-- The task is git workflow management (use `git-worktree` skill)
-- The task is about orchestrating Claude agents (use `swarm-orchestration` skill)
+- The task is git workflow management (see `workflows-work/references/worktree-patterns.md`)
+- The task is about orchestrating Claude agents (see `slfg/references/orchestration-patterns.md`)
 
 ## Where to Start
 - **New project?** Start with Directory Structure below
@@ -289,16 +289,20 @@ dvc fetch --run-cache          # Prefetch cached stage outputs
 
 ### Which Workflow Manager to Use
 
-| Factor | Make | Snakemake | DVC |
-|--------|------|-----------|-----|
-| Complexity | Simple pipelines (< 20 targets) | Complex pipelines, parameter sweeps | Data-heavy pipelines |
-| Learning curve | Low (most researchers know it) | Medium (Python-like syntax) | Medium (git-like commands) |
-| Cluster support | Manual (submit scripts) | Built-in (SLURM, SGE) | Via CML |
-| Data versioning | No | No | Yes (core feature) |
-| Availability | Everywhere | pip install | pip install |
-| Reviewer familiarity | Very high | Medium | Lower |
+| Factor | Make | Snakemake | DVC | pytask |
+|--------|------|-----------|-----|--------|
+| Complexity | Simple pipelines (< 20 targets) | Complex pipelines, parameter sweeps | Data-heavy pipelines | Mixed-language projects |
+| Learning curve | Low (most researchers know it) | Medium (Python-like syntax) | Medium (git-like commands) | Medium (Python decorators) |
+| Cluster support | Manual (submit scripts) | Built-in (SLURM, SGE) | Via CML | Via plugins |
+| Data versioning | No | No | Yes (core feature) | No |
+| Availability | Everywhere | pip install | pip install | pip install |
+| Reviewer familiarity | Very high | Medium | Lower | Lower |
 
-**Recommendation:** Start with Make. Switch to Snakemake if you need cluster execution or parameter sweeps. Add DVC if data files are too large for git.
+### pytask (Python-Native DAG)
+
+pytask — Python-native DAG manager using decorated functions with type-annotated dependencies. First-class plugins for Stata, R, Julia. `pixi run pytask` rebuilds the entire project. Good for mixed-language economics projects.
+
+**Recommendation:** Start with Make. Switch to Snakemake if you need cluster execution or parameter sweeps. Add DVC if data files are too large for git. Consider pytask if your team prefers Python-native tooling and works across multiple languages.
 
 ## Additional References
 

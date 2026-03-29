@@ -1,7 +1,8 @@
 ---
 name: causal-inference
+argument-hint: "<method or identification strategy>"
 description: >-
-  Guide for causal inference methods in observational and quasi-experimental settings. Use when the user is implementing, choosing between, or debugging causal identification strategies — including instrumental variables, difference-in-differences, regression discontinuity, synthetic control, or matching estimators. Triggers on "causal effect", "identification strategy", "instrumental variable", "2SLS", "GMM", "difference-in-differences", "DiD", "staggered treatment", "regression discontinuity", "RDD", "synthetic control", "matching", "propensity score", "IPW", "AIPW", "doubly robust", "LATE", "ATT", "ATE", "parallel trends", "exclusion restriction", "first stage", "weak instruments", or "endogeneity".
+  This skill covers causal inference methods in observational and quasi-experimental settings. Use when the user is implementing, choosing between, or debugging causal identification strategies — including instrumental variables, difference-in-differences, regression discontinuity, synthetic control, or matching estimators. Triggers on "causal effect", "identification strategy", "instrumental variable", "2SLS", "GMM", "difference-in-differences", "DiD", "staggered treatment", "regression discontinuity", "RDD", "synthetic control", "matching", "propensity score", "IPW", "AIPW", "doubly robust", "LATE", "ATT", "ATE", "parallel trends", "exclusion restriction", "first stage", "weak instruments", or "endogeneity".
 ---
 
 # Causal Inference
@@ -20,7 +21,7 @@ Use when the user is:
 Skip when:
 - The task is structural estimation (use `structural-modeling` skill)
 - The task is pure prediction/ML (no causal question)
-- The user needs simulation design (use `simulation-designer` agent)
+- The user needs simulation design (use `numerical-auditor` agent)
 
 ## Where to Start
 - **Choosing a method?** Jump to [Method Selection Guide](#method-selection-guide) at the end

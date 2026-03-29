@@ -1,5 +1,7 @@
 ---
 name: reproducibility-auditor
+effort: high
+maxTurns: 20
 description: >-
   Reviews reproducibility of research projects. Runs both structural checks (seeds, versions, paths, pipeline completeness) and functional checks (reproduction, data documentation, environment specification, output matching). Use after estimation or before submission.
 
@@ -255,6 +257,23 @@ description: >-
   4. **Actionable findings** — every issue includes the file, line, and specific remediation
   5. **Severity-ordered** — report CRITICAL issues (missing seeds, absolute paths, no data docs) before MEDIUM ones (missing clean target)
   6. **Journal-standard framing** — assess against AEA Data Editor requirements, the de facto standard for economics replication packages
+
+## AEA Replication Compliance Checklist
+
+When auditing a replication package for journal submission, verify these 10 items (per AEA Data Editor standards):
+
+1. **Compilation** — All scripts run without errors from a clean environment
+2. **Script execution** — Master script reproduces all outputs end-to-end
+3. **File integrity** — All `\input{}`, `\include{}`, and file references resolve
+4. **Output freshness** — Output timestamps match or postdate latest code changes
+5. **Package inventory** — Sequential numbering, master script present, no orphan scripts
+6. **Dependency verification** — Lock files present (renv.lock, requirements.txt, environment.yml)
+7. **Data provenance** — Every dataset has documented source, access instructions, and data availability statement
+8. **Execution verification** — Master script end-to-end runtime documented
+9. **Output cross-reference** — Every table and figure traced to a specific script; no orphan outputs
+10. **README completeness** — Follows social-science-data-editors/template_README format: data availability, computational requirements, program descriptions, replication instructions
+
+Cite the canonical template: github.com/social-science-data-editors/template_README (endorsed by AEA, RES, EJ, CJE).
 skills:
   - reproducible-pipelines
 model: sonnet

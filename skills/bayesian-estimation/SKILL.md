@@ -1,7 +1,8 @@
 ---
 name: bayesian-estimation
+argument-hint: "<model or estimation problem>"
 description: >-
-  Guide for Bayesian estimation and inference in quantitative social science. Use when the user is specifying priors, running MCMC, diagnosing chain convergence, or reporting posterior summaries — including hierarchical models, Bayesian structural models, and small-sample settings where priors regularize. Triggers on "Bayesian estimation", "Bayesian inference", "MCMC", "Markov chain Monte Carlo", "Stan", "PyMC", "NumPyro", "prior", "posterior", "credible interval", "Bayesian structural", "Bayesian BLP", "Bayesian DSGE", "hierarchical model", "random effects Bayesian", "posterior predictive check", "Bayes factor", "prior predictive check", "NUTS", "HMC", "Hamiltonian Monte Carlo", "R-hat", "rhat", "effective sample size", "ESS", "Bayesian calibration", "posterior distribution", "prior elicitation", "weakly informative prior", "brms", "rstanarm", "cmdstanpy", "pymc", "arviz".
+  This skill covers Bayesian estimation and inference in quantitative social science. Use when the user is specifying priors, running MCMC, diagnosing chain convergence, or reporting posterior summaries — including hierarchical models, Bayesian structural models, and small-sample settings where priors regularize. Triggers on "Bayesian estimation", "Bayesian inference", "MCMC", "Markov chain Monte Carlo", "Stan", "PyMC", "NumPyro", "prior", "posterior", "credible interval", "Bayesian structural", "Bayesian BLP", "Bayesian DSGE", "hierarchical model", "random effects Bayesian", "posterior predictive check", "Bayes factor", "prior predictive check", "NUTS", "HMC", "Hamiltonian Monte Carlo", "R-hat", "rhat", "effective sample size", "ESS", "Bayesian calibration", "posterior distribution", "prior elicitation", "weakly informative prior", "brms", "rstanarm", "cmdstanpy", "pymc", "arviz".
 ---
 
 # Bayesian Estimation
@@ -190,7 +191,7 @@ For Bayesian structural models (BLP, dynamic discrete choice, hierarchical DiD) 
 - `numerical-auditor`: Review MCMC convergence diagnostics — R-hat, ESS, divergences. Report format should include all five convergence metrics.
 - `econometric-reviewer`: Review prior elicitation strategy, sensitivity analysis, and whether priors are consistent with identification. Use for prior predictive checks and moment-matching to literature targets.
 - `methods-explorer`: Find literature calibration targets to set informative prior means. Ask for point estimates and uncertainty ranges, not just means.
-- `results-verifier`: Verify that reported posterior means, credible intervals, and model comparison statistics match the actual ArviZ/Stan output.
+- `econometric-reviewer`: Verify that reported posterior means, credible intervals, and model comparison statistics match the actual ArviZ/Stan output.
 
 **Related skills:**
 
@@ -200,7 +201,7 @@ For Bayesian structural models (BLP, dynamic discrete choice, hierarchical DiD) 
 **Extensions to Bayesian context:**
 
 - `empirical-playbook` skill (`diagnostic-battery.md`): Convergence diagnostics (R-hat, ESS, divergences) are a subset of the full diagnostic battery
-- `simulation-designer` agent: Prior predictive simulation is a special case of the Monte Carlo simulation workflow
+- `numerical-auditor` agent: Prior predictive simulation is a special case of the Monte Carlo simulation workflow
 - `empirical-playbook` skill (`sensitivity-analysis.md`): Prior sensitivity analysis (vary prior SD 0.5x and 2x) is a natural robustness check for Bayesian models
 
 ---

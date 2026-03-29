@@ -1,24 +1,24 @@
 #!/usr/bin/env bash
-# Test Group 12: Hook integration and cross-component wiring (20 tests)
+# Test Group 12: Hook integration and cross-component wiring (16 tests)
 source "$(dirname "$0")/../lib/assert.sh"
 
 export HOOKS_FILE="$PLUGIN_DIR/hooks/hooks.json"
 
 group "Hook Count"
 
-# 1: Total hook events = 7
+# 1: Total hook events = 5
 event_count=$(python3 -c "
 import json, os
 d = json.load(open(os.environ['HOOKS_FILE']))
 print(len(d['hooks']))
 " 2>/dev/null || echo "0")
-assert_count "total hook events = 7" 7 "$event_count"
+assert_count "total hook events = 5" 5 "$event_count"
 
-# 2: All 7 events are valid Claude Code hook events
+# 2: All 5 events are valid Claude Code hook events
 py_eval "all events are valid Claude Code hook events" "
 import json, os
 d = json.load(open(os.environ['HOOKS_FILE']))
-valid = {'SessionStart','SessionEnd','UserPromptSubmit','PreToolUse','PostToolUse','Stop','SubagentStop','PreCompact','Notification'}
+valid = {'SessionStart','SessionEnd','UserPromptSubmit','PreToolUse','PostToolUse','PostToolUseFailure','Stop','StopFailure','SubagentStart','SubagentStop','PreCompact','PostCompact','Notification','PermissionRequest','TaskCreated','TaskCompleted','TeammateIdle','InstructionsLoaded','ConfigChange','CwdChanged','FileChanged','WorktreeCreate','WorktreeRemove','Elicitation','ElicitationResult'}
 for event in d['hooks']:
     assert event in valid, f'invalid: {event}'
 " "found invalid event name"
@@ -31,60 +31,6 @@ keys = re.findall(r'\"((?:Session|User|Pre|Post|Stop|Sub|Notification)\w*)\"(?=\
 dups = len(keys) - len(set(keys))
 assert dups == 0, str(dups) + ' duplicate key(s) found'
 " "could not check for duplicate event keys"
-
-group "PreToolUse Specifics"
-
-# Extract all PreToolUse fields in one call
-if ! ptu_data=$(python3 -c "
-import json, os
-d = json.load(open(os.environ['HOOKS_FILE']))
-ptu = d['hooks']['PreToolUse'][0]
-h = ptu['hooks'][0]
-print(ptu['matcher'])
-print(h['type'])
-print(h['prompt'])
-" 2>/dev/null); then
-  must_fix "PreToolUse data extraction" "python3 failed — check HOOKS_FILE syntax"
-else
-  ptu_matcher=$(echo "$ptu_data" | head -1)
-  ptu_type=$(echo "$ptu_data" | sed -n '2p')
-  ptu_prompt=$(echo "$ptu_data" | tail -n +3)
-
-  # 4: PreToolUse matcher is exactly "Bash"
-  if [ "$ptu_matcher" = "Bash" ]; then
-    pass "PreToolUse matcher is exactly Bash"
-  else
-    must_fix "PreToolUse matcher is Bash" "got: $ptu_matcher"
-  fi
-
-  # 5: PreToolUse hook type is "prompt"
-  if [ "$ptu_type" = "prompt" ]; then
-    pass "PreToolUse hook type is prompt"
-  else
-    must_fix "PreToolUse hook type is prompt" "got: $ptu_type"
-  fi
-
-  # 6: PreToolUse prompt mentions seed/random
-  if echo "$ptu_prompt" | grep -qi "seed\|random"; then
-    pass "PreToolUse prompt mentions seed/random"
-  else
-    must_fix "PreToolUse mentions seed/random" "missing"
-  fi
-
-  # 7: PreToolUse prompt mentions absolute path
-  if echo "$ptu_prompt" | grep -qi "absolute path\|home directory\|relative path"; then
-    pass "PreToolUse prompt mentions absolute paths"
-  else
-    must_fix "PreToolUse mentions absolute paths" "missing"
-  fi
-
-  # 8: PreToolUse prompt mentions version/pin
-  if echo "$ptu_prompt" | grep -qi "version\|pin"; then
-    pass "PreToolUse prompt mentions version/pin"
-  else
-    must_fix "PreToolUse mentions version/pin" "missing"
-  fi
-fi
 
 group "SubagentStop Specifics"
 
@@ -143,12 +89,13 @@ fi
 group "Cross-Component Wiring"
 
 # 14: All prompt hooks reference >=1 agent name that exists in agents/
-AGENT_NAMES=("econometric-reviewer" "mathematical-prover" "numerical-auditor" "identification-critic" "journal-referee" "simulation-designer" "process-architect" "equilibrium-analyst" "results-verifier" "literature-scout" "methods-explorer" "data-detective" "reproducibility-auditor" "workflow-coordinator")
+AGENT_NAMES=("econometric-reviewer" "mathematical-prover" "numerical-auditor" "identification-critic" "journal-referee" "literature-scout" "methods-explorer" "data-detective" "reproducibility-auditor" "workflow-coordinator")
 export AGENT_NAMES_STR="${AGENT_NAMES[*]}"
 
 # Check each prompt hook references at least one agent
 all_ref=true
-for event in SessionStart UserPromptSubmit PostToolUse Stop PreCompact PreToolUse SubagentStop; do
+# SessionStart is a meta-level hook (project detection) — no specific agents
+for event in UserPromptSubmit Stop PreCompact SubagentStop; do
   export EVENT="$event"
   if ! event_prompt=$(python3 -c "
 import json, os
@@ -179,8 +126,8 @@ if event in d['hooks']:
 done
 if $all_ref; then pass "all prompt hooks reference existing agents"; fi
 
-# 15: UserPromptSubmit mentions agents/skills that replaced utility commands
-# v0.5: Utility commands are now deprecated stubs. UPS routes to agents/skills instead.
+# 15: UserPromptSubmit mentions agents/skills for each domain area
+# v0.6: All commands migrated to skills. UPS routes to agents/skills directly.
 ups_prompt=$(python3 -c "
 import json, os
 d = json.load(open(os.environ['HOOKS_FILE']))
@@ -191,40 +138,20 @@ for m in d['hooks']['UserPromptSubmit']:
 " 2>/dev/null || echo "")
 
 util_ok=true
-# Check that UPS references the skills/agents that replaced the utility commands
-for component in "empirical-playbook" "publication-output" "identification-critic" "simulation-designer" "reproducibility-auditor"; do
+# Check that UPS references the skills/agents for each domain area
+for component in "empirical-playbook" "publication-output" "identification-critic" "numerical-auditor" "reproducibility-auditor"; do
   if ! echo "$ups_prompt" | grep -q "$component"; then
     util_ok=false
   fi
 done
 if $util_ok; then
-  pass "UserPromptSubmit mentions replacement agents/skills for utility commands"
+  pass "UserPromptSubmit mentions replacement agents/skills for each domain area"
 else
-  must_fix "UserPromptSubmit mentions replacement components" "missing one or more of empirical-playbook/publication-output/identification-critic/simulation-designer/reproducibility-auditor"
+  must_fix "UserPromptSubmit mentions replacement components" "missing one or more of empirical-playbook/publication-output/identification-critic/numerical-auditor/reproducibility-auditor"
 fi
 
-# 16: PostToolUse mentions >=3 distinct agent names
-agent_count=$(python3 -c "
-import json, os
-d = json.load(open(os.environ['HOOKS_FILE']))
-agents = os.environ['AGENT_NAMES_STR'].split()
-text = ''
-for m in d['hooks']['PostToolUse']:
-    for h in m['hooks']:
-        if h['type'] == 'prompt':
-            text += h['prompt']
-found = sum(1 for a in agents if a in text)
-print(found)
-" 2>/dev/null || echo "0")
-
-if [ "$agent_count" -ge 3 ]; then
-  pass "PostToolUse mentions >= 3 agent names ($agent_count)"
-else
-  must_fix "PostToolUse mentions >= 3 agents" "got $agent_count"
-fi
-
-# 17: Stop prompt mentions >=2 component names (agents, skills, or commands)
-# v0.5: Stop hook routes to agents/skills rather than slash commands
+# 16: Stop prompt mentions >=2 component names (agents or skills)
+# v0.6: Stop hook routes to agents/skills directly
 component_count=$(python3 -c "
 import json, re, os
 d = json.load(open(os.environ['HOOKS_FILE']))
@@ -257,17 +184,18 @@ for event, matchers in d['hooks'].items():
             assert 'timeout' in h, f'missing timeout: {event}'
 " "missing timeout field"
 
-# 19: SessionStart command path includes session-start.sh
-py_eval "SessionStart references session-start.sh" "
+# 19: SessionStart prompt detects research project types
+py_eval "SessionStart prompt covers project detection" "
 import json, os
 d = json.load(open(os.environ['HOOKS_FILE']))
-found = any(
-    'command' in h and 'session-start.sh' in h['command']
-    for m in d['hooks']['SessionStart']
-    for h in m['hooks']
-)
-assert found, 'session-start.sh not referenced'
-" "missing"
+prompt = ''
+for m in d['hooks']['SessionStart']:
+    for h in m['hooks']:
+        if h['type'] == 'prompt':
+            prompt += h['prompt']
+for kw in ['Python', 'Stata', 'LaTeX', 'empirical', 'paper', 'Pipeline']:
+    assert kw.lower() in prompt.lower(), f'SessionStart prompt missing: {kw}'
+" "missing project detection keywords"
 
 # 20: No hook prompt exceeds 5000 characters (bloat guard)
 if python3 -c "

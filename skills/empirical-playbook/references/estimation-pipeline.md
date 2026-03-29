@@ -155,7 +155,7 @@ If issues are present but non-critical (moderate missingness, outliers, minor ty
    - RNG seeding (any simulation-based component must be seeded)
 
 6. **Specialized dispatches** (when applicable):
-   - For models with equilibrium computation: dispatch `equilibrium-analyst` to verify existence, uniqueness, and stability
+   - For models with equilibrium computation: dispatch `identification-critic` to verify existence, uniqueness, and stability
    - For calibrated structural models: dispatch `econometric-reviewer` to verify parameter reasonableness and moment selection
 
 ### GATE: Convergence
@@ -301,7 +301,7 @@ Each gate is a hard decision point. The purpose of the gates is to prevent downs
 **Agents dispatched by this pipeline:**
 - `identification-critic` (Phase 2) — evaluates identification argument
 - `numerical-auditor` (Phase 3) — checks floating-point stability and gradient accuracy
-- `equilibrium-analyst` (Phase 3, if applicable) — verifies equilibrium properties
+- `identification-critic` (Phase 3, if applicable) — verifies equilibrium properties
 - `econometric-reviewer` (Phase 3, if applicable) — reviews calibration strategy
 - `econometric-reviewer` (Phase 5) — final review of the full estimation
 

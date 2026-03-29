@@ -86,7 +86,8 @@ def agents() -> list[Path]:
 
 
 def commands() -> list[Path]:
-    return find("commands/**/*.md", "commands/**/*.yaml")
+    # v0.6: commands/ migrated to skills/; return empty for backward compat
+    return []
 
 
 def skills() -> list[Path]:

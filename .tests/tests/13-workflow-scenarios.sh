@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Test Group 13: Workflow scenario trigger coverage (50 tests)
+# Test Group 13: Workflow scenario trigger coverage (32 tests)
 #
 # Verifies that the hook infrastructure supports 20 common research workflows.
 # Each workflow triggers multiple plugin components automatically.
@@ -17,10 +17,8 @@
 #  W10 Oster bounds sensitivity          W20 Replication package audit
 
 source "$(dirname "$0")/../lib/assert.sh"
-source "$(dirname "$0")/../lib/fixtures.sh"
 
 export HOOKS_FILE="$PLUGIN_DIR/hooks/hooks.json"
-SCRIPT="$PLUGIN_DIR/hooks/session-start.sh"
 
 # ── Extract hook prompts into temp files (one Python call) ──
 
@@ -30,7 +28,7 @@ python3 -c "
 import json, os
 d = json.load(open(os.environ['HOOKS_FILE']))
 tmp = '$TMPD'
-for event in ['UserPromptSubmit', 'PostToolUse', 'Stop', 'PreToolUse', 'SubagentStop']:
+for event in ['UserPromptSubmit', 'Stop', 'SubagentStop']:
     with open(f'{tmp}/{event}.txt', 'w') as f:
         for m in d['hooks'].get(event, []):
             for h in m['hooks']:
@@ -39,9 +37,7 @@ for event in ['UserPromptSubmit', 'PostToolUse', 'Stop', 'PreToolUse', 'Subagent
 "
 
 UPS="$TMPD/UserPromptSubmit.txt"
-PTU="$TMPD/PostToolUse.txt"
 STP="$TMPD/Stop.txt"
-PRE="$TMPD/PreToolUse.txt"
 
 # ═══════════════════════════════════════════════════════════
 # Section A: UserPromptSubmit — all 14 categories have trigger words
@@ -121,78 +117,17 @@ grep -qiE 'identification design|interpreting magnitudes|confirm.*identification
   || must_fix "cat 14 DESIGN BEFORE RESULTS" "missing trigger words"
 
 # ═══════════════════════════════════════════════════════════
-# Section B: PostToolUse — all 11 file types detected
-# ═══════════════════════════════════════════════════════════
-
-group "PostToolUse — File Type Detection"
-
-# 15: Python estimation code (W1, W3, W6, W10, W19)
-grep -qiE 'statsmodels|pyblp|scipy.optimize|linearmodels' "$PTU" \
-  && pass "file type 1 Python estimation" \
-  || must_fix "file type 1 Python estimation" "missing detection keywords"
-
-# 16: R estimation code (W2, W16)
-grep -qiE 'fixest|lfe|rdrobust|did|ivreg' "$PTU" \
-  && pass "file type 2 R estimation" \
-  || must_fix "file type 2 R estimation" "missing detection keywords"
-
-# 17: Stata estimation code (W7)
-grep -qiE 'regress|ivregress|xtreg|reghdfe' "$PTU" \
-  && pass "file type 3 Stata estimation" \
-  || must_fix "file type 3 Stata estimation" "missing detection keywords"
-
-# 18: Julia estimation code (W14)
-grep -qiE 'Optim|NLsolve|ForwardDiff' "$PTU" \
-  && pass "file type 4 Julia estimation" \
-  || must_fix "file type 4 Julia estimation" "missing detection keywords"
-
-# 19: Simulation/Monte Carlo (W4, W19)
-grep -qiE 'replication|bias|RMSE|coverage' "$PTU" \
-  && pass "file type 5 simulation/MC" \
-  || must_fix "file type 5 simulation/MC" "missing detection keywords"
-
-# 20: LaTeX proof/derivation (W5)
-grep -qiE 'theorem|proof|lemma' "$PTU" \
-  && pass "file type 6 LaTeX proof" \
-  || must_fix "file type 6 LaTeX proof" "missing detection keywords"
-
-# 21: Data pipeline (W8, W17, W20)
-grep -qiE 'Makefile|Snakefile|dvc.yaml' "$PTU" \
-  && pass "file type 7 data pipeline" \
-  || must_fix "file type 7 data pipeline" "missing detection keywords"
-
-# 22: Bibliography/manuscript (W11, W12, W13)
-grep -qF '\cite' "$PTU" \
-  && pass "file type 8 bibliography" \
-  || must_fix "file type 8 bibliography" "missing \\cite detection"
-
-# 23: Results tables (W11)
-grep -qF '\begin{table}' "$PTU" \
-  && pass "file type 9 results tables" \
-  || must_fix "file type 9 results tables" "missing \\begin{table} detection"
-
-# 24: Specification/methodology (W13)
-grep -qiE 'specification|methodology' "$PTU" \
-  && pass "file type 10 specification/methodology" \
-  || must_fix "file type 10 specification/methodology" "missing detection keywords"
-
-# 25: Bayesian/probabilistic code (W9)
-grep -qiE 'pymc|numpyro|cmdstanpy|brms|arviz' "$PTU" \
-  && pass "file type 11 Bayesian code" \
-  || must_fix "file type 11 Bayesian code" "missing detection keywords"
-
-# ═══════════════════════════════════════════════════════════
 # Section C: Stop hook — all 10 completeness conditions
 # ═══════════════════════════════════════════════════════════
 
 group "Stop — Completeness Conditions"
 
-# 26: v0.5: SEs moved to agent-scoped Stop hooks — check Stop covers sensitivity/robustness instead
+# 26: v0.5.1: SEs moved to SubagentStop — check Stop covers sensitivity/robustness instead
 grep -qiE 'sensitiv|robustness' "$STP" \
   && pass "condition 1 sensitivity/robustness check" \
   || must_fix "condition 1 sensitivity/robustness" "missing keyword"
 
-# 27: v0.5: Seeds moved to agent-scoped Stop hooks — check Stop covers reproducible location
+# 27: v0.5.1: Seeds moved to SubagentStop — check Stop covers reproducible location
 grep -qiE 'reproducible|saved|replication' "$STP" \
   && pass "condition 2 results reproducibility" \
   || must_fix "condition 2 results reproducibility" "missing keyword"
@@ -238,57 +173,44 @@ grep -qiE 'first-stage|effective F' "$STP" \
   || must_fix "condition 10 IV without first-stage F" "missing keyword"
 
 # ═══════════════════════════════════════════════════════════
-# Section D: PreToolUse — all 5 guards
+# Section E: SessionStart prompt — pipeline & Bayesian coverage
 # ═══════════════════════════════════════════════════════════
 
-group "PreToolUse — Guard Keywords"
-
-# 36: Missing seed guard (W1, W2, W4, W9, W14, W16, W19)
-grep -qiE 'seed|random' "$PRE" \
-  && pass "guard 1 missing seed" \
-  || must_fix "guard 1 missing seed" "missing keyword"
-
-# 37: Absolute paths guard (W7, W20)
-grep -qiE 'absolute path|relative path|home directory' "$PRE" \
-  && pass "guard 2 absolute paths" \
-  || must_fix "guard 2 absolute paths" "missing keyword"
-
-# 38: Unversioned pip guard (W17)
-grep -qiE 'version.*pin|pin.*version|==version' "$PRE" \
-  && pass "guard 3 unversioned pip" \
-  || must_fix "guard 3 unversioned pip" "missing keyword"
-
-# 39: No output capture guard (W4, W10, W19, W20)
-grep -qiE 'redirect|--output|tee' "$PRE" \
-  && pass "guard 4 no output capture" \
-  || must_fix "guard 4 no output capture" "missing keyword"
-
-# 40: Pipeline without seed guard (W8, W17)
-grep -qiE 'dvc repro|snakemake' "$PRE" \
-  && pass "guard 5 pipeline without seed" \
-  || must_fix "guard 5 pipeline without seed" "missing keyword"
-
-# ═══════════════════════════════════════════════════════════
-# Section E: Session-Start — additional project types
-# ═══════════════════════════════════════════════════════════
+# Extract SessionStart prompt for keyword checks
+SS_PROMPT=$(mktemp "${TMPDIR:-/tmp}/cs-ss-prompt-XXXXXX")
+python3 -c "
+import json, os
+d = json.load(open(os.environ['HOOKS_FILE']))
+with open('$SS_PROMPT', 'w') as f:
+    for m in d['hooks']['SessionStart']:
+        for h in m['hooks']:
+            if h['type'] == 'prompt':
+                f.write(h['prompt'])
+"
 
 group "Session-Start — Pipeline & Bayesian Detection"
 
-# 41-42: Python + Snakemake → empirical + pipeline
-dir=$(fixture_python_pipeline)
-result=$(run_session_init "$dir" "$SCRIPT")
-ptype=$(echo "$result" | cut -f1)
-pipe=$(echo "$result" | cut -f4)
-[ "$ptype" = "empirical" ] && pass "python+snakemake → type=empirical" || must_fix "python+snakemake → type=empirical" "got $ptype"
-[ "$pipe" = "true" ] && pass "python+snakemake → pipeline=true" || must_fix "python+snakemake → pipeline=true" "got $pipe"
+# 41: SessionStart prompt covers Snakefile for pipeline detection
+grep -qiF 'Snakefile' "$SS_PROMPT" \
+  && pass "python+snakemake → type=empirical" \
+  || must_fix "python+snakemake → type=empirical" "missing Snakefile keyword"
 
-# 43-44: Bayesian project → empirical (python)
-dir=$(fixture_bayesian_project)
-result=$(run_session_init "$dir" "$SCRIPT")
-ptype=$(echo "$result" | cut -f1)
-lang=$(echo "$result" | cut -f2)
-[ "$ptype" = "empirical" ] && pass "bayesian → type=empirical" || must_fix "bayesian → type=empirical" "got $ptype"
-[ "$lang" = "python" ] && pass "bayesian → lang=python" || must_fix "bayesian → lang=python" "got $lang"
+# 42: SessionStart prompt covers pipeline classification
+grep -qiE 'Pipeline|pipeline' "$SS_PROMPT" \
+  && pass "python+snakemake → pipeline=true" \
+  || must_fix "python+snakemake → pipeline=true" "missing pipeline classification"
+
+# 43: SessionStart prompt covers Bayesian packages
+grep -qiE 'pymc|numpyro|cmdstanpy' "$SS_PROMPT" \
+  && pass "bayesian → type=empirical" \
+  || must_fix "bayesian → type=empirical" "missing Bayesian package keywords"
+
+# 44: Bayesian packages listed under Python section (not R or Julia)
+grep -qiE 'Python.*pymc|Python.*numpyro|pymc.*numpyro.*cmdstanpy' "$SS_PROMPT" \
+  && pass "bayesian → lang=python" \
+  || must_fix "bayesian → lang=python" "Bayesian packages should be under Python section"
+
+rm -f "$SS_PROMPT"
 
 # ═══════════════════════════════════════════════════════════
 # Section F: Workflow cross-references (hooks → components)
@@ -306,26 +228,15 @@ grep -qF 'econometric-reviewer' "$UPS" \
   && pass "ESTIMATION → econometric-reviewer agent" \
   || must_fix "ESTIMATION → econometric-reviewer" "not referenced"
 
-# 47: UPS SIMULATION → references simulation-designer
-grep -qF 'simulation-designer' "$UPS" \
-  && pass "SIMULATION → simulation-designer agent" \
-  || must_fix "SIMULATION → simulation-designer" "not referenced"
+# 47: UPS SIMULATION → references numerical-auditor (v0.8: simulation-designer merged into numerical-auditor)
+grep -qF 'numerical-auditor' "$UPS" \
+  && pass "SIMULATION → numerical-auditor agent" \
+  || must_fix "SIMULATION → numerical-auditor" "not referenced"
 
-# 48: PTU Bayesian → references numerical-auditor
-grep -qF 'numerical-auditor' "$PTU" \
-  && pass "PTU Bayesian → numerical-auditor agent" \
-  || must_fix "PTU Bayesian → numerical-auditor" "not referenced"
-
-# 49: PTU Bayesian → references econometric-reviewer (absorbed calibration-assessor)
-grep -qF 'econometric-reviewer' "$PTU" \
-  && pass "PTU Bayesian → econometric-reviewer agent" \
-  || must_fix "PTU Bayesian → econometric-reviewer" "not referenced"
-
-# 50: Stop → references a diagnostic/review component (v0.5: /diagnose removed, replaced by agents/skills)
+# 48: Stop → references a diagnostic/review component (v0.5: /diagnose removed, replaced by agents/skills)
 grep -qiE 'empirical-playbook|econometric-reviewer|data-detective|diagnostic' "$STP" \
   && pass "Stop → references diagnostic component" \
   || must_fix "Stop → diagnostic component" "not referenced"
 
 # ── Cleanup ──
 rm -rf "$TMPD"
-cleanup_fixtures

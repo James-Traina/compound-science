@@ -1,7 +1,8 @@
 ---
 name: empirical-playbook
+argument-hint: "<method, research question, or diagnostic>"
 description: >-
-  Guide for choosing and implementing applied microeconomic empirical methods. Use when the user is selecting an identification strategy, comparing estimators, running diagnostics, designing a research study, or evaluating an empirical strategy. Triggers on "which method", "what estimator", "how to choose", "method comparison", "empirical strategy", "research design", "applied micro", "identification strategy", "power analysis", "design-based", "model-based", "minimum detectable effect", "specification".
+  This skill covers applied microeconomic empirical methods and research design. Use when the user is selecting an identification strategy, comparing estimators, running diagnostics, designing a research study, or evaluating an empirical strategy. Triggers on "which method", "what estimator", "how to choose", "method comparison", "empirical strategy", "research design", "applied micro", "identification strategy", "power analysis", "design-based", "model-based", "minimum detectable effect", "specification".
 ---
 
 # Applied Micro Toolkit
@@ -17,11 +18,14 @@ Use when the user is:
 - Designing a study and needs to calculate statistical power
 - Reviewing or critiquing an empirical strategy
 - Preparing the "Empirical Strategy" section of a paper
+- Downloading macroeconomic or cross-national data (see `references/data-sources.md` for FRED/World Bank API access)
 
 Skip when:
 - Implementation details for a specific method are needed (use `causal-inference` skill for IV, DiD, RDD, SC, matching)
 - The task is structural estimation (use `structural-modeling` skill)
 - The task is manuscript preparation or journal logistics (use `submission-guide` skill)
+- The task is formal identification proof (use `identification-proofs` skill)
+- The task is Bayesian model specification (use `bayesian-estimation` skill)
 
 After selecting a method, the `econometric-reviewer` agent can review the implementation and the `identification-critic` agent can evaluate the identification argument.
 
@@ -231,7 +235,7 @@ For full minimum reporting standards (method-specific checklists for IV, DiD, RD
 
 - `econometric-reviewer`: Reviews identification strategy, standard errors, and diagnostic results
 - `identification-critic`: Evaluates identification argument completeness and exclusion restrictions
-- `simulation-designer`: Designs power simulations for nonstandard study designs
+- `numerical-auditor`: Designs power simulations for nonstandard study designs
 - `journal-referee`: Reviews whether the empirical strategy meets journal standards
 
 **Cross-references:**

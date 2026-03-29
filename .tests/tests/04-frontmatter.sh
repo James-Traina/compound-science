@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
-# Test Group 4: YAML frontmatter validation for all markdown components (20 tests)
+# Test Group 4: YAML frontmatter validation for all markdown components (13 tests)
+# v0.6: commands/ removed; former commands are now skills
 source "$(dirname "$0")/../lib/assert.sh"
+source "$(dirname "$0")/../lib/fixtures.sh"
 
 group "Frontmatter — Agents"
 
@@ -48,60 +50,20 @@ for file in "$PLUGIN_DIR"/agents/*/*.md; do
 done
 if $all_tools; then pass "all agents have tools listed"; fi
 
-group "Frontmatter — Commands"
-
-# 5: All commands have frontmatter
-all_fm=true
-for file in "$PLUGIN_DIR"/commands/*.md "$PLUGIN_DIR"/commands/workflows/*.md; do
+# 5: Review agents have disallowedTools (read-only enforcement)
+all_have=true
+for file in "$PLUGIN_DIR"/agents/review/*.md; do
   name=$(basename "$file" .md)
-  if ! head -1 "$file" | grep -q '^---'; then
-    all_fm=false
-    must_fix "command $name has frontmatter" "must start with ---"
+  if ! grep -q 'disallowedTools' "$file"; then
+    all_have=false
+    must_fix "agent $name has disallowedTools" "missing — review agents must be read-only"
   fi
 done
-if $all_fm; then pass "all commands have frontmatter"; fi
-
-# 6: All commands have description
-all_desc=true
-for file in "$PLUGIN_DIR"/commands/*.md "$PLUGIN_DIR"/commands/workflows/*.md; do
-  name=$(basename "$file" .md)
-  if ! grep -q '^description:' "$file"; then
-    all_desc=false
-    must_fix "command $name has description" "YAML needs description field"
-  fi
-done
-if $all_desc; then pass "all commands have description"; fi
-
-# 7: Full commands have argument-hint (stubs and wrappers excluded)
-# v0.5: 7 deprecated stubs + 2 thin wrappers are excluded from this check
-STUB_COMMANDS="simulate identify diagnose tabulate visualize stress-test deepen-plan"
-WRAPPER_COMMANDS="estimate replicate"
-all_hints=true
-for cmd in estimate simulate identify diagnose tabulate replicate visualize stress-test; do
-  case "$STUB_COMMANDS $WRAPPER_COMMANDS" in *"$cmd"*) continue ;; esac
-  file="$PLUGIN_DIR/commands/$cmd.md"
-  if [ -f "$file" ] && ! grep -q '^argument-hint:' "$file"; then
-    all_hints=false
-    must_fix "command $cmd has argument-hint" "domain/utility commands need argument-hint"
-  fi
-done
-if $all_hints; then pass "all full commands have argument-hint (stubs/wrappers excluded)"; fi
-
-group "Frontmatter — Chain Commands"
-
-# 8-9
-for chain in lfg slfg; do
-  file="$PLUGIN_DIR/commands/$chain.md"
-  if grep -q 'disable-model-invocation: true' "$file"; then
-    pass "$chain has disable-model-invocation: true"
-  else
-    must_fix "$chain has disable-model-invocation: true" "chain commands must not invoke model directly"
-  fi
-done
+if $all_have; then pass "all review agents have disallowedTools"; fi
 
 group "Frontmatter — Skills"
 
-# 10: All skills have frontmatter
+# 5: All skills have frontmatter
 all_fm=true
 for dir in "$PLUGIN_DIR"/skills/*/; do
   name=$(basename "$dir")
@@ -113,7 +75,7 @@ for dir in "$PLUGIN_DIR"/skills/*/; do
 done
 if $all_fm; then pass "all skills have frontmatter"; fi
 
-# 11: All skills have description with trigger keywords
+# 6: All skills have description with trigger keywords
 all_desc=true
 for dir in "$PLUGIN_DIR"/skills/*/; do
   name=$(basename "$dir")
@@ -125,9 +87,36 @@ for dir in "$PLUGIN_DIR"/skills/*/; do
 done
 if $all_desc; then pass "all skills have description"; fi
 
+# 7: Workflow skills have argument-hint (stubs/wrappers/chains excluded)
+all_hints=true
+for skill in "${WORKFLOW_SKILLS[@]}"; do
+  file="$PLUGIN_DIR/skills/$skill/SKILL.md"
+  if [ -f "$file" ] && ! grep -q '^argument-hint:' "$file"; then
+    all_hints=false
+    must_fix "skill $skill has argument-hint" "workflow skills need argument-hint"
+  fi
+done
+if $all_hints; then pass "all workflow skills have argument-hint (stubs/wrappers/chains excluded)"; fi
+
+group "Frontmatter — Chain Skills"
+
+# 8-9: Chain skills have disable-model-invocation: true
+for chain in "${CHAIN_SKILLS[@]}"; do
+  file="$PLUGIN_DIR/skills/$chain/SKILL.md"
+  if [ -f "$file" ]; then
+    if grep -q 'disable-model-invocation: true' "$file"; then
+      pass "$chain has disable-model-invocation: true"
+    else
+      must_fix "$chain has disable-model-invocation: true" "chain skills must not invoke model directly"
+    fi
+  else
+    must_fix "$chain exists" "file not found: skills/$chain/SKILL.md"
+  fi
+done
+
 group "Frontmatter — Name Consistency"
 
-# 12: Agent name field matches filename
+# 10: Agent name field matches filename
 all_match=true
 for file in "$PLUGIN_DIR"/agents/*/*.md; do
   filename=$(basename "$file" .md)
@@ -139,59 +128,49 @@ for file in "$PLUGIN_DIR"/agents/*/*.md; do
 done
 if $all_match; then pass "all agent names match filenames"; fi
 
-# 13: Command name field matches filename (or workflows: prefix)
+# 11: All skill names match directory names
 all_match=true
-for file in "$PLUGIN_DIR"/commands/*.md; do
-  filename=$(basename "$file" .md)
-  name_field=$(grep '^name:' "$file" | head -1 | sed 's/^name: *//')
-  if [ "$filename" != "$name_field" ]; then
-    all_match=false
-    must_fix "command name matches filename: $filename" "name field says '$name_field'"
+for dir in "$PLUGIN_DIR"/skills/*/; do
+  name=$(basename "$dir")
+  file="$dir/SKILL.md"
+  if [ -f "$file" ]; then
+    name_field=$(grep '^name:' "$file" | head -1 | sed 's/^name: *//')
+    # Normalize colon to hyphen for comparison (workflows:brainstorm → workflows-brainstorm)
+    name_field_normalized=$(echo "$name_field" | sed 's/:/-/g')
+    if [ "$name" != "$name_field" ] && [ "$name" != "$name_field_normalized" ]; then
+      all_match=false
+      must_fix "skill name matches dir: $name" "name field says '$name_field'"
+    fi
   fi
 done
-if $all_match; then pass "all root command names match filenames"; fi
+if $all_match; then pass "all skill names match directory names"; fi
 
-# 14: Workflow command names have workflows: prefix
-all_prefix=true
-for file in "$PLUGIN_DIR"/commands/workflows/*.md; do
-  name_field=$(grep '^name:' "$file" | head -1 | sed 's/^name: *//')
-  if ! echo "$name_field" | grep -q '^workflows:'; then
-    all_prefix=false
-    must_fix "workflow $(basename $file .md) has workflows: prefix" "got: $name_field"
+# Workflow skills have allowed-tools
+all_tools=true
+for skill in "${WORKFLOW_SKILLS[@]}"; do
+  file="$PLUGIN_DIR/skills/$skill/SKILL.md"
+  if [ -f "$file" ] && ! grep -q 'allowed-tools' "$file"; then
+    all_tools=false
+    should_fix "skill $skill has allowed-tools" "missing tool restrictions"
   fi
 done
-if $all_prefix; then pass "all workflow commands have workflows: prefix"; fi
+if $all_tools; then pass "all workflow skills have allowed-tools"; fi
 
 group "Frontmatter — Content Depth"
 
-# 15: Full commands have Pipeline mode statement (stubs/wrappers excluded)
-STUB_COMMANDS="simulate identify diagnose tabulate visualize stress-test deepen-plan"
-WRAPPER_COMMANDS="estimate replicate"
+# 12: Workflow skills have Pipeline mode statement (ideate excluded — divergent phase)
 all_pipeline=true
-for cmd in estimate simulate identify diagnose tabulate replicate visualize stress-test; do
-  case "$STUB_COMMANDS $WRAPPER_COMMANDS" in *"$cmd"*) continue ;; esac
-  file="$PLUGIN_DIR/commands/$cmd.md"
+for skill in "${WORKFLOW_SKILLS[@]}"; do
+  [ "$skill" = "workflows-ideate" ] && continue
+  file="$PLUGIN_DIR/skills/$skill/SKILL.md"
   if [ -f "$file" ] && ! grep -q 'Pipeline mode' "$file"; then
     all_pipeline=false
-    must_fix "command $cmd has Pipeline mode statement" "missing pipeline mode"
+    must_fix "skill $skill has Pipeline mode statement" "missing pipeline mode"
   fi
 done
-if $all_pipeline; then pass "all full commands have Pipeline mode (stubs/wrappers excluded)"; fi
+if $all_pipeline; then pass "all workflow skills have Pipeline mode (ideate excluded)"; fi
 
-# 16: Full commands have phases (stubs/wrappers excluded)
-all_phases=true
-for cmd in estimate simulate identify diagnose tabulate replicate visualize stress-test; do
-  case "$STUB_COMMANDS $WRAPPER_COMMANDS" in *"$cmd"*) continue ;; esac
-  file="$PLUGIN_DIR/commands/$cmd.md"
-  phase_count=$(grep -c '### Phase\|## Phase\|Phase [0-9]' "$file" 2>/dev/null) || phase_count=0
-  if [ "$phase_count" -lt 3 ]; then
-    all_phases=false
-    must_fix "command $cmd has >=3 phases" "found $phase_count"
-  fi
-done
-if $all_phases; then pass "all full commands have >=3 phases (stubs/wrappers excluded)"; fi
-
-# 17: All agents have examples section
+# 13: All agents have examples section
 all_examples=true
 for file in "$PLUGIN_DIR"/agents/*/*.md; do
   name=$(basename "$file" .md)
@@ -201,31 +180,3 @@ for file in "$PLUGIN_DIR"/agents/*/*.md; do
   fi
 done
 if $all_examples; then pass "all agents have examples section"; fi
-
-# 18: New skills have sufficient depth (>100 lines)
-for skill in submission-guide empirical-playbook; do
-  file="$PLUGIN_DIR/skills/$skill/SKILL.md"
-  if [ -f "$file" ]; then
-    lines=$(wc -l < "$file" | tr -d ' ')
-    if [ "$lines" -ge 100 ]; then
-      pass "skill $skill has depth ($lines lines)"
-    else
-      must_fix "skill $skill has depth" "only $lines lines, need >=100"
-    fi
-  fi
-done
-
-# 20: All skills have name field matching directory
-all_match=true
-for dir in "$PLUGIN_DIR"/skills/*/; do
-  name=$(basename "$dir")
-  file="$dir/SKILL.md"
-  if [ -f "$file" ]; then
-    name_field=$(grep '^name:' "$file" | head -1 | sed 's/^name: *//')
-    if [ "$name" != "$name_field" ]; then
-      all_match=false
-      must_fix "skill name matches dir: $name" "name field says '$name_field'"
-    fi
-  fi
-done
-if $all_match; then pass "all skill names match directory names"; fi

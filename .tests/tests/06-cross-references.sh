@@ -1,16 +1,20 @@
 #!/usr/bin/env bash
 # Test Group 6: Cross-reference integrity between components (22 tests)
+# v0.6: commands/ removed; cross-references updated for skills-only architecture
 source "$(dirname "$0")/../lib/assert.sh"
+source "$(dirname "$0")/../lib/fixtures.sh"
 
 export HOOKS_FILE="$PLUGIN_DIR/hooks/hooks.json"
 
-group "Cross-References — Agents in Commands"
+group "Cross-References — Agents in Skills"
 
-# 1: Agent references in commands resolve to real agent files
+# 1: Agent references in workflow/wrapper skills resolve to real agent files
 ref_count=0
 all_valid=true
-for cmd_file in "$PLUGIN_DIR"/commands/*.md "$PLUGIN_DIR"/commands/workflows/*.md; do
-  agents_referenced=$(grep -oE '`[a-z]+-[a-z-]+`' "$cmd_file" 2>/dev/null | tr -d '`' | sort -u || true)
+for skill in "${WORKFLOW_SKILLS[@]}" "${WRAPPER_SKILLS[@]}"; do
+  file="$PLUGIN_DIR/skills/$skill/SKILL.md"
+  [ -f "$file" ] || continue
+  agents_referenced=$(grep -oE '`[a-z]+-[a-z-]+`' "$file" 2>/dev/null | tr -d '`' | sort -u || true)
   for agent_ref in $agents_referenced; do
     if find "$PLUGIN_DIR/agents" -name "$agent_ref.md" 2>/dev/null | grep -q .; then
       ref_count=$((ref_count + 1))
@@ -18,32 +22,34 @@ for cmd_file in "$PLUGIN_DIR"/commands/*.md "$PLUGIN_DIR"/commands/workflows/*.m
   done
 done
 if [ "$ref_count" -gt 0 ]; then
-  pass "commands reference $ref_count valid agents"
+  pass "workflow/wrapper skills reference $ref_count valid agents"
 else
-  must_fix "commands reference agents" "no agent references found"
+  must_fix "workflow/wrapper skills reference agents" "no agent references found"
 fi
 
-group "Cross-References — Skills in Commands"
+group "Cross-References — Skills in Skills"
 
-# 2: Skill references in commands resolve to real skill directories
+# 2: Workflow skills reference agents (v0.8: agents mediate between workflow skills and domain skills)
 ref_count=0
-for cmd_file in "$PLUGIN_DIR"/commands/*.md "$PLUGIN_DIR"/commands/workflows/*.md; do
-  skills_referenced=$(grep -oE '`[a-z]+-[a-z-]+`' "$cmd_file" 2>/dev/null | tr -d '`' | sort -u || true)
-  for skill_ref in $skills_referenced; do
-    if [ -d "$PLUGIN_DIR/skills/$skill_ref" ]; then
+for skill in "${WORKFLOW_SKILLS[@]}"; do
+  file="$PLUGIN_DIR/skills/$skill/SKILL.md"
+  [ -f "$file" ] || continue
+  agents_referenced=$(grep -oE '`[a-z]+-[a-z-]+`' "$file" 2>/dev/null | tr -d '`' | sort -u || true)
+  for agent_ref in $agents_referenced; do
+    if find "$PLUGIN_DIR/agents" -name "$agent_ref.md" 2>/dev/null | grep -q .; then
       ref_count=$((ref_count + 1))
     fi
   done
 done
 if [ "$ref_count" -gt 0 ]; then
-  pass "commands reference $ref_count valid skills"
+  pass "workflow skills reference $ref_count valid agents"
 else
-  should_fix "commands reference skills" "no skill references found"
+  should_fix "workflow skills reference agents" "no agent references found"
 fi
 
 group "Cross-References — CLAUDE.md Agents"
 
-# 3: CLAUDE.md backtick names resolve to agents, skills, or commands
+# 3: CLAUDE.md backtick names resolve to agents or skills
 # Names that are legitimate non-component references (config keys, etc.) are excluded.
 claude_names=$(grep -oE '`[a-z]+-[a-z-]+`' "$PLUGIN_DIR/CLAUDE.md" | tr -d '`' | sort -u)
 # These hyphenated names appear in CLAUDE.md backticks but are not plugin components.
@@ -56,8 +62,6 @@ for name in $claude_names; do
     : # valid agent
   elif [ -d "$PLUGIN_DIR/skills/$name" ]; then
     : # valid skill
-  elif [ -f "$PLUGIN_DIR/commands/$name.md" ] || [ -f "$PLUGIN_DIR/commands/workflows/$name.md" ]; then
-    : # valid command
   else
     unresolved="$unresolved $name"
   fi
@@ -79,53 +83,60 @@ for file in "$PLUGIN_DIR"/agents/*/*.md; do
 done
 if $all_mentioned; then pass "all agents mentioned in CLAUDE.md"; fi
 
-# 5: Every skill is mentioned in CLAUDE.md
+# 5: Every skill is mentioned in CLAUDE.md (check dir name, colon form, or base name)
 all_mentioned=true
 for dir in "$PLUGIN_DIR"/skills/*/; do
   name=$(basename "$dir")
-  if ! grep -q "$name" "$PLUGIN_DIR/CLAUDE.md"; then
+  # Also check colon form (workflows-brainstorm → workflows:brainstorm) and base name (brainstorm)
+  colon_form=$(echo "$name" | sed 's/-/:/')
+  base_name=$(echo "$name" | sed 's/^workflows-//')
+  if ! grep -q "$name\|$colon_form\|$base_name" "$PLUGIN_DIR/CLAUDE.md"; then
     all_mentioned=false
     must_fix "skill $name in CLAUDE.md" "skill not documented"
   fi
 done
 if $all_mentioned; then pass "all skills mentioned in CLAUDE.md"; fi
 
-group "Cross-References — README Commands"
+group "Cross-References — README Skills"
 
-# 6: Slash commands in README exist as files
+# 6: Slash commands in README exist as skill files
 quickstart_cmds=$(python3 -c "
 import re, os
 text = open(os.environ['PLUGIN_DIR'] + '/README.md').read()
-cmds = set(re.findall(r'(?<!\w)/((?:workflows:)?(?:brainstorm|plan|work|review|compound|estimate|simulate|identify|lfg|slfg|diagnose|tabulate|replicate|visualize|stress-test))\b', text))
+cmds = set(re.findall(r'(?<!\w)/((?:workflows:)?(?:ideate|brainstorm|plan|work|review|compound|estimate|lfg|slfg|replicate))\b', text))
 for c in sorted(cmds):
     print('/' + c)
 " 2>/dev/null)
 
 all_valid=true
 for cmd in $quickstart_cmds; do
-  cmd_path=$(echo "$cmd" | sed 's|^/||; s|:|/|g')
-  if [ ! -f "$PLUGIN_DIR/commands/$cmd_path.md" ]; then
+  # Convert slash command name to skill directory name
+  # /workflows:brainstorm -> workflows-brainstorm, /lfg -> lfg
+  skill_name=$(echo "$cmd" | sed 's|^/||; s|:|-|g')
+  if [ ! -f "$PLUGIN_DIR/skills/$skill_name/SKILL.md" ]; then
     all_valid=false
-    must_fix "README command $cmd exists" "no file at commands/$cmd_path.md"
+    must_fix "README command $cmd exists as skill" "no file at skills/$skill_name/SKILL.md"
   fi
 done
-if $all_valid; then pass "all README commands resolve to files"; fi
+if $all_valid; then pass "all README slash commands resolve to skill files"; fi
 
-# 7: Every command file is mentioned in README
+# 7: Every migrated skill name is mentioned in README
 all_mentioned=true
-for file in "$PLUGIN_DIR"/commands/*.md; do
-  name=$(basename "$file" .md)
-  if ! grep -q "$name" "$PLUGIN_DIR/README.md"; then
+for skill in "${WORKFLOW_SKILLS[@]}" "${CHAIN_SKILLS[@]}" "${WRAPPER_SKILLS[@]}"; do
+  # Check for the skill name or its slash-command form
+  # workflows-brainstorm -> check for "brainstorm" (appears in /workflows:brainstorm)
+  base_name=$(echo "$skill" | sed 's/^workflows-//')
+  if ! grep -q "$base_name" "$PLUGIN_DIR/README.md"; then
     all_mentioned=false
-    must_fix "command $name in README" "command not documented"
+    must_fix "skill $skill in README" "skill not documented"
   fi
 done
-if $all_mentioned; then pass "all root commands mentioned in README"; fi
+if $all_mentioned; then pass "all migrated skills mentioned in README"; fi
 
 group "Cross-References — Hook Integrity"
 
 # 8: Hook event types are valid Claude Code events
-valid_events="SessionStart|SessionEnd|PreToolUse|PostToolUse|Stop|SubagentStop|UserPromptSubmit|PreCompact|Notification"
+valid_events="SessionStart|SessionEnd|PreToolUse|PostToolUse|PostToolUseFailure|Stop|StopFailure|SubagentStart|SubagentStop|UserPromptSubmit|PreCompact|PostCompact|Notification|PermissionRequest|TaskCreated|TaskCompleted|TeammateIdle|InstructionsLoaded|ConfigChange|CwdChanged|FileChanged|WorktreeCreate|WorktreeRemove|Elicitation|ElicitationResult"
 hook_events=$(python3 -c "
 import json, os
 d = json.load(open(os.environ['HOOKS_FILE']))
@@ -142,20 +153,13 @@ for event in $hook_events; do
 done
 if $all_valid; then pass "all hook events are valid Claude Code events"; fi
 
-# 9: SessionStart script path resolves
-session_cmd=$(python3 -c "
+# 9: SessionStart is prompt-based (no external script dependency)
+py_eval "SessionStart hook is prompt-based" "
 import json, os
 d = json.load(open(os.environ['HOOKS_FILE']))
 for h in d['hooks']['SessionStart'][0]['hooks']:
-    if h['type'] == 'command':
-        print(h['command'])
-" 2>/dev/null || echo "")
-
-if echo "$session_cmd" | grep -q 'CLAUDE_PLUGIN_ROOT.*session-start.sh'; then
-  pass "SessionStart hook uses portable path"
-else
-  must_fix "SessionStart hook uses portable path" "got: $session_cmd"
-fi
+    assert h['type'] == 'prompt', f'expected prompt type, got {h[\"type\"]}'
+" "SessionStart should be a prompt hook"
 
 group "Cross-References — Hook Content"
 
@@ -175,23 +179,7 @@ else
   must_fix "UserPromptSubmit references >=5 agents" "found $ups_agents"
 fi
 
-# 11: PostToolUse references at least 3 agents
-ptu_agents=$(python3 -c "
-import json, re, os
-d = json.load(open(os.environ['HOOKS_FILE']))
-for m in d['hooks']['PostToolUse']:
-    for h in m['hooks']:
-        if h['type'] == 'prompt':
-            agents = set(re.findall(r'\x60([a-z]+-[a-z-]+)\x60', h['prompt']))
-            print(len(agents))
-" 2>/dev/null || echo "0")
-if [ "$ptu_agents" -ge 3 ]; then
-  pass "PostToolUse references $ptu_agents agents"
-else
-  must_fix "PostToolUse references >=3 agents" "found $ptu_agents"
-fi
-
-# 12: UserPromptSubmit references at least 3 skills (v0.5: commands removed from UPS, skills are the routing targets)
+# 11: UserPromptSubmit references at least 3 skills (v0.6: skills are the routing targets)
 ups_skills=$(python3 -c "
 import json, re, os
 d = json.load(open(os.environ['HOOKS_FILE']))
@@ -221,12 +209,11 @@ for m in d['hooks']['UserPromptSubmit']:
   fi
 fi
 
-group "Cross-References — New Commands"
+group "Cross-References — Workflow Skills"
 
-# 13-14: Non-stub commands reference existing agents (stubs excluded)
-# v0.5: diagnose and stress-test are now deprecated stubs — check workflow commands instead
-for cmd in workflows/review workflows/work; do
-  file="$PLUGIN_DIR/commands/$cmd.md"
+# 13-14: Workflow skills reference existing agents
+for skill in workflows-review workflows-work; do
+  file="$PLUGIN_DIR/skills/$skill/SKILL.md"
   if [ -f "$file" ]; then
     agent_refs=$(grep -oE '`[a-z]+-[a-z-]+`' "$file" 2>/dev/null | tr -d '`' | sort -u || true)
     found=false
@@ -237,37 +224,36 @@ for cmd in workflows/review workflows/work; do
       fi
     done
     if $found; then
-      pass "command $(basename $cmd) references valid agents"
+      pass "skill $skill references valid agents"
     else
-      should_fix "command $(basename $cmd) references agents" "no agent references found"
+      should_fix "skill $skill references agents" "no agent references found"
     fi
   fi
 done
 
-# 15-16: Non-stub commands reference skills (stubs excluded)
-# v0.5: replicate and visualize are now stubs/wrappers — check estimate and replicate wrappers
-for cmd in estimate replicate; do
-  file="$PLUGIN_DIR/commands/$cmd.md"
+# 15-16: Wrapper skills reference skills or agents
+for skill in "${WRAPPER_SKILLS[@]}"; do
+  file="$PLUGIN_DIR/skills/$skill/SKILL.md"
   if [ -f "$file" ]; then
-    skill_refs=$(grep -oE '`[a-z]+-[a-z-]+`' "$file" 2>/dev/null | tr -d '`' | sort -u || true)
+    refs=$(grep -oE '`[a-z]+-[a-z-]+`' "$file" 2>/dev/null | tr -d '`' | sort -u || true)
     found=false
-    for ref in $skill_refs; do
-      if [ -d "$PLUGIN_DIR/skills/$ref" ]; then
+    for ref in $refs; do
+      if [ -d "$PLUGIN_DIR/skills/$ref" ] || find "$PLUGIN_DIR/agents" -name "$ref.md" 2>/dev/null | grep -q .; then
         found=true
         break
       fi
     done
     if $found; then
-      pass "command $cmd references valid skills"
+      pass "skill $skill references valid components"
     else
-      should_fix "command $cmd references skills" "no skill references found"
+      should_fix "skill $skill references components" "no skill or agent references found"
     fi
   fi
 done
 
 group "Cross-References — README Completeness"
 
-# 17: All agent categories in README
+# 17-19: All agent categories in README
 for cat in "Review" "Research" "Workflow"; do
   if grep -q "$cat" "$PLUGIN_DIR/README.md"; then
     pass "README has $cat agent section"
@@ -276,34 +262,24 @@ for cat in "Review" "Research" "Workflow"; do
   fi
 done
 
-# 20: README mentions all new commands
-all_new=true
-for cmd in diagnose tabulate replicate visualize stress-test; do
-  if ! grep -q "$cmd" "$PLUGIN_DIR/README.md"; then
-    all_new=false
-    must_fix "README mentions $cmd" "new command not documented"
-  fi
-done
-if $all_new; then pass "README mentions all new commands"; fi
+group "Cross-References — Chain Skills"
 
-group "Cross-References — Chain Commands"
-
-# 21-22: Chain commands delegate to workflow commands (plan, work, review, compound)
-for chain_cmd in lfg slfg; do
-  file="$PLUGIN_DIR/commands/$chain_cmd.md"
+# 21-22: Chain skills delegate to workflow skills (plan, work, review, compound)
+for chain in "${CHAIN_SKILLS[@]}"; do
+  file="$PLUGIN_DIR/skills/$chain/SKILL.md"
   if [ -f "$file" ]; then
     delegates_ok=true
     for target in plan work review compound; do
-      if ! grep -q "workflows:$target\|/$target" "$file"; then
+      if ! grep -q "workflows:$target\|workflows-$target\|/$target" "$file"; then
         delegates_ok=false
       fi
     done
     if $delegates_ok; then
-      pass "/$chain_cmd delegates to all 4 workflow commands"
+      pass "/$chain delegates to all 4 workflow skills"
     else
-      must_fix "/$chain_cmd delegates to workflows" "missing delegation targets"
+      must_fix "/$chain delegates to workflows" "missing delegation targets"
     fi
   else
-    must_fix "/$chain_cmd exists" "file not found"
+    must_fix "/$chain exists" "file not found"
   fi
 done
