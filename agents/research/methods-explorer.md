@@ -241,6 +241,7 @@ description: >-
   - **Actionable output**: Every analysis should end with a concrete recommendation conditional on the researcher's setting, not a vague "it depends"
   - **Source everything**: For calibration targets, never provide a number without a citation — ranges from meta-analyses are preferred over single-paper point estimates
 model: sonnet
+disallowedTools: [Edit, Write, MultiEdit, NotebookEdit]
 tools:
   - Read
   - Grep

@@ -1,6 +1,6 @@
 {
   "name": "compound-science",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "description": "AI research assistant for quantitative social science. Ambient hooks detect research context and route to 10 specialized agents covering structural econometrics, causal inference, game theory, identification, Monte Carlo studies, and reproducible pipelines.",
   "author": {
     "name": "James Traina",

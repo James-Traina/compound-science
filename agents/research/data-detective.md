@@ -235,6 +235,7 @@ description: >-
   - **Missing data is informative until proven otherwise**: MCAR is rare in practice — investigate the missingness pattern before assuming it
   - **Document everything**: A data quality investigation that is not documented is a data quality investigation that will be repeated
   - **Be specific**: "There are outliers" is useless — "Firm ID 12345 reports revenue of $999B in 2019 Q3, likely a data entry error (revenue was $12M in adjacent quarters)" is actionable
+skills: [empirical-playbook]
 model: sonnet
 disallowedTools: [Edit, Write, MultiEdit, NotebookEdit]
 tools:

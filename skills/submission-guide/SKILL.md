@@ -1,5 +1,6 @@
 ---
 name: submission-guide
+argument-hint: "<journal name or submission task>"
 description: >-
   This skill covers academic journal submission, referee responses, and revision management. Use when the user is preparing a manuscript for submission, formatting for a specific journal, responding to referees, or managing revisions. Triggers on "submit", "referee", "revision", "R&R", "response letter", "journal", "formatting", "submission", "resubmit", "cover letter", "referee report", "revise and resubmit".
 ---
